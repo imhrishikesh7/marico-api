@@ -27,7 +27,7 @@ services:
     ports:
       - "${LOCAL_MYSQL_PORT}:3306"
     volumes:
-      - ./data:/var/lib/mysql
+      - $pwd/data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${PROJECTID}
       - MYSQL_ROOT_HOST=%

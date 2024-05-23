@@ -30,16 +30,6 @@ const permissions: Permission[] = [
     name: 'Admin > Roles',
   },
   {
-    key: 'PRODUCTS',
-    level: 1,
-    name: 'Products',
-  },
-  {
-    key: 'PRODUCTS_CATEGORIES',
-    level: 2,
-    name: 'Products > Categories',
-  },
-  {
     key: 'REGION',
     level: 1,
     name: 'Region',
@@ -49,29 +39,6 @@ const permissions: Permission[] = [
     key: 'REGION',
     level: 2,
     name: 'Region > Ecommerce Links',
-  },
-  {
-    key: 'BLOGS',
-    level: 1,
-    name: 'Blogs',
-  },
-  {
-    // key: 'REGION_ECOMM_LINK',
-    key: 'BLOGS_CATEGORIES',
-    level: 2,
-    name: 'Blogs > Categories',
-  },
-  {
-    // key: 'REGION_ECOMM_LINK',
-    key: 'BLOGS_AUTHOR',
-    level: 2,
-    name: 'Blogs > Author',
-  },
-  {
-    // key: 'REGION_ECOMM_LINK',
-    key: 'BLOGS_TAGS',
-    level: 2,
-    name: 'Blogs > Tags',
   },
 ];
 
