@@ -9,9 +9,10 @@ import { AdminModule } from './admin/admin.module';
 import { AdminGuard } from './admin/admin.guard';
 import { RolesGuard } from './admin/roles.guard';
 import { RegionsModule } from './regions/regions.module';
+import { BrandsModule } from './brands/brands.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule],
+  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, BrandsModule],
   controllers: [AppController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
