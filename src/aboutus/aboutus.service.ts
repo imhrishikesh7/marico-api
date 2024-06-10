@@ -2,12 +2,15 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AboutusMember } from './entities/aboutus_member.entity';
 import { Like, Repository } from 'typeorm';
+import { Recognition } from './entities/aboutus_recognition.entit';
 
 @Injectable()
 export class AboutusService {
   constructor(
     @InjectRepository(AboutusMember)
     private readonly aboutUsRepository: Repository<AboutusMember>,
+    @InjectRepository(Recognition)
+    private readonly recognitionRepository: Repository<Recognition>,
   ) {}
 
   async getMemberList(search?: string): Promise<AboutusMember[]> {
@@ -68,6 +71,73 @@ export class AboutusService {
       member.thumbnail = thumbnail;
       member.is_active = is_active;
       return await this.aboutUsRepository.save(member);
+    }
+  }
+
+  async getAwardList(search?: string): Promise<Recognition[]> {
+    if (search != null && search != '') {
+      return await this.recognitionRepository.find({
+        where: {
+          award_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.recognitionRepository.find({});
+    }
+  }
+
+  async getAwardById(id: number): Promise<Recognition | null> {
+    return await this.recognitionRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateAward(
+    id: number,
+    url_title: string,
+    thumbnail: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    award_title: string,
+    year: string,
+    description: string,
+    category: string,
+    is_featured: boolean,
+    awardRegions: string[],
+  ): Promise<Recognition> {
+    if (id) {
+      const recognition = await this.getAwardById(id);
+      if (recognition) {
+        recognition.id = id;
+        recognition.url_title = url_title;
+        recognition.thumbnail = thumbnail;
+        recognition.award_title = award_title;
+        recognition.year = year;
+        recognition.description = description;
+        recognition.category = category;
+        recognition.is_featured = is_featured;
+        recognition.regions = awardRegions;
+        return this.recognitionRepository.save(recognition);
+      }
+      throw new Error('Recognition not found');
+    } else {
+      const recognition = new Recognition();
+
+      recognition.id = id;
+      recognition.url_title = url_title;
+      recognition.thumbnail = thumbnail;
+      recognition.award_title = award_title;
+      recognition.year = year;
+      recognition.description = description;
+      recognition.category = category;
+      recognition.is_featured = is_featured;
+      recognition.regions = awardRegions;
+      return this.recognitionRepository.save(recognition);
     }
   }
 }
