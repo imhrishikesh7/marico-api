@@ -23,7 +23,7 @@ import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { Region } from 'src/regions/entities/region.entity';
-import { Recognition } from './entities/aboutus_recognition.entit';
+import { Recognition } from './entities/aboutus_recognition.entity';
 import { RegionsService } from 'src/regions/regions.service';
 
 @Controller('admin/about_us')
