@@ -128,7 +128,6 @@ export class AboutusService {
     } else {
       const recognition = new Recognition();
 
-      recognition.id = id;
       recognition.url_title = url_title;
       recognition.thumbnail = thumbnail;
       recognition.award_title = award_title;
