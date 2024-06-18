@@ -27,7 +27,7 @@ import { Recognition } from './entities/aboutus_recognition.entity';
 import { RegionsService } from 'src/regions/regions.service';
 
 @Controller('admin/about_us')
-export class AboutusController {
+export class AboutusAdminController {
   constructor(
     private readonly aboutusService: AboutusService,
     private readonly regionService: RegionsService,
@@ -43,14 +43,14 @@ export class AboutusController {
     required: false,
   })
   @Roles(['ABOUT_US'])
-  @Get('member_list')
+  @Get('member_lists')
   async getMemberList(
     @Query('search', new DefaultValuePipe('')) search: string,
   ): Promise<AboutusMember[]> {
     return await this.aboutusService.getMemberList(search || undefined);
   }
 
-  @Get('member_list/:id')
+  @Get('member_lists/:id')
   async getMemberById(@Param('id', ParseIntPipe) id: number): Promise<{
     member: AboutusMember | null;
   }> {
@@ -111,7 +111,7 @@ export class AboutusController {
     },
   })
   @Roles(['ABOUT_US'])
-  @Post('member_list/add')
+  @Post('member_lists/add-update')
   async addUpdateMember(
     @Body('id', ParseIntPipe) id: number,
     @Body('name', EmptystringPipe) name: string,

@@ -28,7 +28,7 @@ import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
 
 @Controller('admin/brands')
-export class BrandsController {
+export class BrandsAdminController {
   constructor(
     private readonly brandService: BrandsService,
     private readonly regionService: RegionsService,
@@ -442,8 +442,8 @@ export class BrandsController {
 
     await this.adminService.addAdminActivity(
       this.request.admin,
-      `Created member ${tvc.tvc_title}`,
-      'created_member',
+      `Created brand ${tvc.tvc_title}`,
+      'created_brand',
       `${tvc.id}`,
       {
         id,

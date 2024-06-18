@@ -35,10 +35,39 @@ const permissions: Permission[] = [
     name: 'Region',
   },
   {
-    // key: 'REGION_ECOMM_LINK',
     key: 'REGION',
     level: 2,
     name: 'Region > Ecommerce Links',
+  },
+  {
+    key: 'ABOUT_US',
+    level: 1,
+    name: 'About Us > MemberList',
+  },
+  {
+    key: 'ABOUT_US',
+    level: 2,
+    name: 'About Us > Recognition',
+  },
+  {
+    key: 'ABOUT_US',
+    level: 2,
+    name: 'About Us > History',
+  },
+  {
+    key: 'BRAND',
+    level: 1,
+    name: 'Brands > Master',
+  },
+  {
+    key: 'BRAND',
+    level: 2,
+    name: 'Brands > Print Ad',
+  },
+  {
+    key: 'BRAND',
+    level: 2,
+    name: 'Brands > TVC',
   },
 ];
 

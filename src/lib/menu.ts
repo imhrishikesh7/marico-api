@@ -17,8 +17,50 @@ const menu: MenuItem[] = [
     sub: [
       {
         name: 'Region',
-        url: '/region/list',
+        url: '/region',
         role: ['REGION'],
+      },
+    ],
+  },
+  {
+    name: 'About Us',
+    role: ['ABOUT_US'],
+    sub: [
+      {
+        name: 'MemberList',
+        url: '/about_us/member_lists',
+        role: ['ABOUT_US_MEMBER'],
+      },
+      {
+        name: 'Recognition',
+        url: '/about_us/recognition',
+        role: ['ABOUT_US_RECOGNITION'],
+      },
+      {
+        name: 'History',
+        url: '/about_us/history',
+        role: ['ABOUT_US_HISTORY'],
+      },
+    ],
+  },
+  {
+    name: 'Brands',
+    role: ['BRAND'],
+    sub: [
+      {
+        name: 'Master',
+        url: '/brands/master',
+        role: ['BRAND_MASTER'],
+      },
+      {
+        name: 'Print Ad',
+        url: '/brands/print_ad',
+        role: ['BRAND_PRINT_AD'],
+      },
+      {
+        name: 'TVC',
+        url: '/brands/tvc',
+        role: ['BRAND_TVC'],
       },
     ],
   },

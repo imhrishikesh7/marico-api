@@ -11,10 +11,13 @@ import { RolesGuard } from './admin/roles.guard';
 import { RegionsModule } from './regions/regions.module';
 import { AboutusModule } from './aboutus/aboutus.module';
 import { BrandsModule } from './brands/brands.module';
+import { RegionAdminController } from './regions/regions.admin.controller';
+import { AboutusAdminController } from './aboutus/aboutus.admin.controller';
+import { BrandsAdminController } from './brands/brands.admin.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule],
-  controllers: [AppController],
+  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
