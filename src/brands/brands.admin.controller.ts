@@ -19,18 +19,21 @@ import { AdminOnly } from 'src/admin/admin.decorator';
 import { ApiBearerAuth, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { Roles } from 'src/admin/roles.decorator';
 import { Brand } from './entities/brand.entity';
-import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
-import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
-import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { Region } from 'src/regions/entities/region.entity';
 import { RegionsService } from 'src/regions/regions.service';
 import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
+import { Recognition } from 'src/aboutus/entities/aboutus_recognition.entity';
+import { AboutusService } from 'src/aboutus/aboutus.service';
+import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
+import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
+import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 
 @Controller('admin/brands')
 export class BrandsAdminController {
   constructor(
     private readonly brandService: BrandsService,
+    private readonly aboutusService: AboutusService,
     private readonly regionService: RegionsService,
     private readonly adminService: AdminService,
     @Inject(REQUEST) private readonly request: AdminRequest,
@@ -55,16 +58,28 @@ export class BrandsAdminController {
   async getBrandById(@Param('id', ParseIntPipe) id: number): Promise<{
     brand: Brand | null;
     brands: Brand[] | null;
+    subbrands: Brand[] | null;
     regions: Region[] | null;
+    tvc_relations: Tvc[] | null;
+    print_ad_relations: PrintAd[] | null;
+    award_relations: Recognition[] | null;
   }> {
     const toReturn = {
       brand: await this.brandService.getBrandById(id),
-      brands: await this.brandService.getBrandList(),
+      brands: await this.brandService.getBrandsDropdown(),
+      subbrands: await this.brandService.getSubBrandList(),
       regions: await this.regionService.getRegionList(),
+      tvc_relations: await this.brandService.getTVCList(),
+      print_ad_relations: await this.brandService.getPrintAdList(),
+      award_relations: await this.aboutusService.getAwardList(),
     } as {
       brand: Brand | null;
       brands: Brand[] | null;
+      subbrands: Brand[] | null;
       regions: Region[] | null;
+      tvc_relations: Tvc[] | null;
+      print_ad_relations: PrintAd[] | null;
+      award_relations: Recognition[] | null;
     };
     return toReturn;
   }
@@ -338,13 +353,18 @@ export class BrandsAdminController {
   @Get('tvc/:id')
   async getTVCById(@Param('id', ParseIntPipe) id: number): Promise<{
     tvc: Tvc | null;
+    tvcs: Tvc[] | null;
     regions: Region[] | null;
   }> {
+    console.log(id, '==idd');
+    const tvcs = await this.brandService.getTvcDropdown();
     const toReturn = {
       tvc: await this.brandService.getTVCById(id),
+      tvcs: tvcs,
       regions: await this.regionService.getRegionList(),
     } as {
       tvc: Tvc | null;
+      tvcs: Tvc[] | null;
       regions: Region[] | null;
     };
     return toReturn;
@@ -481,13 +501,17 @@ export class BrandsAdminController {
   @Get('print_ad/:id')
   async getPrintAdById(@Param('id', ParseIntPipe) id: number): Promise<{
     printAd: PrintAd | null;
+    printAds: PrintAd[] | null;
     regions: Region[] | null;
   }> {
+    const printAds = await this.brandService.getPrintAdDropDown();
     const toReturn = {
       printAd: await this.brandService.getPrintAdById(id),
+      printAds: printAds,
       regions: await this.regionService.getRegionList(),
     } as {
       printAd: PrintAd | null;
+      printAds: PrintAd[] | null;
       regions: Region[] | null;
     };
     return toReturn;

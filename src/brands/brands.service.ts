@@ -40,6 +40,14 @@ export class BrandsService {
     });
   }
 
+  async getTvcDropdown(): Promise<Tvc[]> {
+   return await this.tvcRepository.find({
+      order: {
+        sort_order: 'ASC',
+      },
+    });
+  }
+
   async getTVCById(id: number): Promise<Tvc | null> {
     return await this.tvcRepository.findOne({
       where: {
@@ -123,6 +131,36 @@ export class BrandsService {
     });
   }
 
+  async getBrandsDropdown(): Promise<Brand[]> {
+    return await this.brandRepository.find({
+      select: ['id', 'title'],
+      order: {
+        sort_order: 'ASC',
+      },
+    });
+  }
+
+  async getSubBrandList(search?: string | null): Promise<Brand[]> {
+    const where: any = {};
+    // if (region != null && region != '') {
+    //   const regionName = await this.regionRepository.findOne({
+    //     where: {
+    //       alias: region,
+    //     },
+    //   });
+
+    //   if (regionName != null) {
+    //     where.region = Like('%' + regionName.name + '%');
+    //   }
+    // }
+    if (search != null && search != '') {
+      where.title = search;
+    }
+    where.brand_type = 'sub-brand';
+    return await this.brandRepository.find({
+      where,
+    });
+  }
   async getBrandById(id: number): Promise<Brand | null> {
     return await this.brandRepository.findOne({
       where: {
@@ -251,6 +289,14 @@ export class BrandsService {
     });
   }
 
+  async getPrintAdDropDown(): Promise<PrintAd[]> {
+    return await this.printAdRepository.find({
+       order: {
+         sort_order: 'ASC',
+       },
+     });
+   }
+  
   async getPrintAdById(id: number): Promise<PrintAd | null> {
     return await this.printAdRepository.findOne({
       where: {
@@ -302,12 +348,12 @@ export class BrandsService {
 
       // make alias using name
       printAd.title = title;
-        printAd.url_title = url_title;
-        printAd.print_ad_title = print_ad_title;
-        printAd.regions = regions;
-        printAd.sort_order = sort_order;
-        printAd.small_thumbnail = small_thumbnail;
-        printAd.large_thumbnail = large_thumbnail;
+      printAd.url_title = url_title;
+      printAd.print_ad_title = print_ad_title;
+      printAd.regions = regions;
+      printAd.sort_order = sort_order;
+      printAd.small_thumbnail = small_thumbnail;
+      printAd.large_thumbnail = large_thumbnail;
       return this.printAdRepository.save(printAd);
     }
   }
