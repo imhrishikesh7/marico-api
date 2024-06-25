@@ -25,6 +25,7 @@ import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { Region } from 'src/regions/entities/region.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { RegionsService } from 'src/regions/regions.service';
+import { History } from './entities/aboutus_history.entity';
 
 @Controller('admin/about_us')
 export class AboutusAdminController {
@@ -182,7 +183,7 @@ export class AboutusAdminController {
     };
     return toReturn;
   }
-  //add new member
+  //add new recognition
   @AdminOnly()
   @ApiBearerAuth()
   @ApiBody({
@@ -287,6 +288,126 @@ export class AboutusAdminController {
     );
     return {
       recognition,
+    };
+  }
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['ABOUT_US'])
+  @Get('history')
+  async getHistory(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<History[]> {
+    return await this.aboutusService.getHistory(search || undefined);
+  }
+
+  @Get('history/:id')
+  async getHistoryById(@Param('id', ParseIntPipe) id: number): Promise<{
+    history: History | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      history: await this.aboutusService.getHistoryById(id),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      history: History | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new history
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        thumbnail: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        history_title: {
+          type: 'string',
+        },
+        year: {
+          type: 'number',
+        },
+        description: {
+          type: 'string',
+        },
+        regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['ABOUT_US'])
+  @Post('history/add-update')
+  async addUpdateHistory(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('thumbnail', ImagefileOrNullPipe)
+    thumbnail: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('history_title', EmptystringPipe) history_title: string,
+    @Body('year', ParseIntPipe) year: number,
+    @Body('description', EmptystringPipe) description: string,
+    @Body('regions') regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ history: History }> {
+    const history = await this.aboutusService.addUpdateHistory(
+      id,
+      title,
+      url_title,
+      thumbnail,
+      history_title,
+      year,
+      description,
+      regions,
+      sort_order,
+    );
+    return {
+      history,
     };
   }
 }

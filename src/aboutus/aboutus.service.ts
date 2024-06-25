@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AboutusMember } from './entities/aboutus_member.entity';
 import { Like, Repository } from 'typeorm';
 import { Recognition } from './entities/aboutus_recognition.entity';
+import { History } from './entities/aboutus_history.entity';
 
 @Injectable()
 export class AboutusService {
@@ -11,6 +12,8 @@ export class AboutusService {
     private readonly aboutUsRepository: Repository<AboutusMember>,
     @InjectRepository(Recognition)
     private readonly recognitionRepository: Repository<Recognition>,
+    @InjectRepository(History)
+    private readonly historyRepository: Repository<History>,
   ) {}
 
   async getMemberList(search?: string): Promise<AboutusMember[]> {
@@ -137,6 +140,73 @@ export class AboutusService {
       recognition.is_featured = is_featured;
       recognition.regions = awardRegions;
       return this.recognitionRepository.save(recognition);
+    }
+  }
+
+  async getHistory(search?: string): Promise<History[]> {
+    if (search != null && search != '') {
+      return await this.historyRepository.find({
+        where: {
+          history_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.historyRepository.find({});
+    }
+  }
+
+  async getHistoryById(id: number): Promise<History | null> {
+    return await this.historyRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateHistory(
+    id: number,
+    title: string,
+    url_title: string,
+    thumbnail: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    history_title: string,
+    year: number,
+    description: string,
+    historyRegions: string[],
+    sort_order: number,
+  ): Promise<History> {
+    if (id) {
+      const history = await this.getHistoryById(id);
+      if (history) {
+        history.id = id;
+        history.title = title;
+        history.url_title = url_title;
+        history.thumbnail = thumbnail;
+        history.history_title = history_title;
+        history.year = year;
+        history.description = description;
+        history.regions = historyRegions;
+        history.sort_order = sort_order;
+
+        return this.historyRepository.save(history);
+      }
+      throw new Error('History not found');
+    } else {
+      const history = new History();
+
+      history.title = title;
+      history.url_title = url_title;
+      history.thumbnail = thumbnail;
+      history.history_title = history_title;
+      history.year = year;
+      history.description = description;
+      history.regions = historyRegions;
+      history.sort_order = sort_order;
+      return this.historyRepository.save(history);
     }
   }
 }
