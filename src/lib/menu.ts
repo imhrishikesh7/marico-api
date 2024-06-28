@@ -65,6 +65,27 @@ const menu: MenuItem[] = [
     ],
   },
   {
+    name: 'Investors',
+    role: ['INVESTOR'],
+    sub: [
+      {
+        name: 'ShareHolder Info',
+        url: '/investors/shi',
+        role: ['INVESTOR_SHI'],
+      },
+      {
+        name: 'Anual General Meeting',
+        url: '/investors/agm',
+        role: ['INVESTOR_AGM'],
+      },
+      {
+        name: 'Dividends',
+        url: '/investors/dividends',
+        role: ['INVESTOR_DIVIDENDS'],
+      },
+    ],
+  },
+  {
     name: 'Admin',
     role: ['ADMIN'],
     sub: [

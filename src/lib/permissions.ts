@@ -69,6 +69,21 @@ const permissions: Permission[] = [
     level: 2,
     name: 'Brands > TVC',
   },
+  {
+    key: 'INVESTORS',
+    level: 1,
+    name: 'Investors > ShareHolder Info',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Anual General Meeting',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Dividends',
+  },
 ];
 
 export default permissions;
