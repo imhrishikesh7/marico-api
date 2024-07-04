@@ -25,6 +25,8 @@ import { InvestorAGM } from './entities/investor_agm.entity';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { InvestorDividends } from './entities/investor_dividend.entity';
+import { InvestorQUMaster } from './entities/investor_qu_master.entity';
+import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 
 @Controller('investors')
 export class InvestorsAdminController {
@@ -501,5 +503,145 @@ export class InvestorsAdminController {
     return {
       dividend,
     };
+  }
+
+  @Roles(['INVESTOR'])
+  @Get('quartely_update')
+  async getQU(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorQUMaster[]> {
+    return await this.investorsService.getQU(search || undefined);
+  }
+
+  @Get('quartely_update/:id')
+  async getQUById(@Param('id', ParseIntPipe) id: number): Promise<{
+    qu: InvestorQUMaster | null;
+  }> {
+    const toReturn = {
+      qu: await this.investorsService.getQUById(id),
+    } as {
+      qu: InvestorQUMaster | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        investor_qu_year: {
+          type: 'string',
+        },
+        qu_year_sort: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('quartely_update/add-update')
+  async addUpdateQU(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('investor_qu_year', EmptystringPipe)
+    investor_qu_year: string,
+    @Body('qu_year_sort', ParseIntPipe) qu_year_sort: number,
+  ): Promise<{ qu: InvestorQUMaster }> {
+    const qu = await this.investorsService.addUpdateQU(
+      id,
+      title,
+      url_title,
+      investor_qu_year,
+      qu_year_sort,
+    );
+    return {
+      qu,
+    };
+  }
+
+  @Get('quartely_update/pdfs/:investor_qu_id')
+  async getQUPDFById(
+    @Param('investor_qu_id', ParseIntPipe) investor_qu_id: number,
+  ): Promise<{
+    qu_pdf: QuartelyUpdate[];
+    qu: InvestorQUMaster | null;
+  }> {
+    const toReturn = {
+      qu_pdf: await this.investorsService.getQUPDFById(investor_qu_id),
+      qu: await this.investorsService.getQUById(investor_qu_id),
+    } as {
+      qu_pdf: QuartelyUpdate[];
+      qu: InvestorQUMaster | null;
+    };
+    return toReturn;
+  }
+
+  // add-update product images
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        product_id: {
+          type: 'number',
+        },
+        images: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              url: {
+                type: 'string',
+              },
+              alt: {
+                type: 'string',
+              },
+              width: {
+                type: 'number',
+              },
+              height: {
+                type: 'number',
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('quartely_update/pdfs/add-update')
+  async addUpdateQUPDFs(
+    @Body('investor_qu_id', ParseIntPipe) investor_qu_id: number,
+    @Body('contentText')
+    contentText: {
+    investor_qu: string,
+    investor_qu_pdf: string,
+    qu_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    },
+  sort_order: number,
+  }[]
+  ): Promise<QuartelyUpdate[]> {
+    return await this.investorsService.addUpdateQUPDFs(
+      investor_qu_id,
+      contentText,
+    );
   }
 }
