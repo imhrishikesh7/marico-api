@@ -13,7 +13,7 @@ export class InvestorsService {
         @InjectRepository(InvestorAGM)
         private readonly agmRepository: Repository<InvestorAGM>,
         @InjectRepository(InvestorDividends)
-        private readonly dividendRepository: Repository<InvestorDividends>,
+        private readonly dividendsRepository: Repository<InvestorDividends>,
       ) {}
 
     async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -144,6 +144,112 @@ export class InvestorsService {
           agm.investors_agm_category = investors_agm_category;
           agm.sort_order = sort_order;
           return this.agmRepository.save(agm);
+        }
+      }
+
+      async getDividends(search?: string): Promise<InvestorDividends[]> {
+        if (search != null && search != '') {
+          return await this.dividendsRepository.find({
+            where: {
+                url_title: Like('%' + search + '%'),
+            },
+          });
+        } else {
+          return await this.dividendsRepository.find({});
+        }
+      }
+    
+      async getDividendsById(id: number): Promise<InvestorDividends | null> {
+        return await this.dividendsRepository.findOne({
+          where: {
+            id: id,
+          },
+        });
+      }
+
+      async addUpdateDividends(
+        id: number,
+        title: string,
+        url_title: string,
+        dividend_history: {
+          url: string;
+          width: number;
+          height: number;
+          alt: string;
+        } | null,
+        history_writeup: string,
+        unclaimed_interim_dividends: {
+          url: string;
+          width: number;
+          height: number;
+          alt: string;
+        } | null,
+        unclaimed_interim_dividends_writeup: string,
+        unclaimed_interim_dividends_year: string,
+        unclaimed_dividends: {
+          url: string;
+          width: number;
+          height: number;
+          alt: string;
+        } | null,
+        unclaimed_dividends_writeup: string,
+        unclaimed_dividends_year: string,
+        transfer_shares_to_IEPF: {
+          url: string;
+          width: number;
+          height: number;
+          alt: string;
+        } | null,
+        transfer_shares_to_IEPF_writeup: string,
+        transfer_shares_to_IEPF_year: string,
+        forms_pdf: {
+          url: string;
+          width: number;
+          height: number;
+          alt: string;
+        } | null,
+      ): Promise<InvestorDividends> {
+        if (id) {
+          const dividend = await this.getDividendsById(id);
+          if (dividend) {
+            dividend.id = id;
+            dividend.title = title;
+            dividend.url_title = url_title;
+            dividend.dividend_history = dividend_history;
+            dividend.history_writeup = history_writeup;
+            dividend.unclaimed_interim_dividends = unclaimed_interim_dividends;
+            dividend.unclaimed_interim_dividends_writeup = unclaimed_interim_dividends_writeup;
+            dividend.unclaimed_interim_dividends_year = unclaimed_interim_dividends_year;
+            dividend.unclaimed_dividends = unclaimed_dividends;
+            dividend.unclaimed_dividends_writeup = unclaimed_dividends_writeup;
+            dividend.unclaimed_dividends_year = unclaimed_dividends_year;
+            dividend.transfer_shares_to_IEPF = transfer_shares_to_IEPF;
+            dividend.transfer_shares_to_IEPF_writeup = transfer_shares_to_IEPF_writeup;
+            dividend.transfer_shares_to_IEPF_year = transfer_shares_to_IEPF_year;
+            dividend.forms_pdf = forms_pdf;
+    
+            return this.dividendsRepository.save(dividend);
+          }
+          throw new Error('dividend not found');
+        } else {
+          const dividend = new InvestorDividends();
+    
+          dividend.id = id;
+          dividend.title = title;
+          dividend.url_title = url_title;
+          dividend.dividend_history = dividend_history;
+          dividend.history_writeup = history_writeup;
+          dividend.unclaimed_interim_dividends = unclaimed_interim_dividends;
+          dividend.unclaimed_interim_dividends_writeup = unclaimed_interim_dividends_writeup;
+          dividend.unclaimed_interim_dividends_year = unclaimed_interim_dividends_year;
+          dividend.unclaimed_dividends = unclaimed_dividends;
+          dividend.unclaimed_dividends_writeup = unclaimed_dividends_writeup;
+          dividend.unclaimed_dividends_year = unclaimed_dividends_year;
+          dividend.transfer_shares_to_IEPF = transfer_shares_to_IEPF;
+          dividend.transfer_shares_to_IEPF_writeup = transfer_shares_to_IEPF_writeup;
+          dividend.transfer_shares_to_IEPF_year = transfer_shares_to_IEPF_year;
+          dividend.forms_pdf = forms_pdf;
+          return this.dividendsRepository.save(dividend);
         }
       }
 }

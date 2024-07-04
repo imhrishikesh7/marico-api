@@ -15,10 +15,11 @@ import { RegionAdminController } from './regions/regions.admin.controller';
 import { AboutusAdminController } from './aboutus/aboutus.admin.controller';
 import { BrandsAdminController } from './brands/brands.admin.controller';
 import { InvestorsModule } from './investors/investors.module';
+import { InvestorsAdminController } from './investors/investors.admin.controller';
 
 @Module({
   imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule],
-  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController],
+  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
     { provide: APP_GUARD, useClass: RolesGuard },

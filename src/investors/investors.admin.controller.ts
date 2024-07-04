@@ -24,6 +24,7 @@ import { InvestorShareHolder } from './entities/investor_shareholder.entity';
 import { InvestorAGM } from './entities/investor_agm.entity';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
+import { InvestorDividends } from './entities/investor_dividend.entity';
 
 @Controller('investors')
 export class InvestorsAdminController {
@@ -135,7 +136,8 @@ export class InvestorsAdminController {
     } | null,
     @Body('regions') regions: string[],
     @Body('investors_shi_year', EmptystringPipe) investors_shi_year: string,
-    @Body('investors_shi_category', EmptystringPipe) investors_shi_category: string,
+    @Body('investors_shi_category', EmptystringPipe)
+    investors_shi_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ shi: InvestorShareHolder }> {
     const shi = await this.investorsService.addUpdateSHI(
@@ -184,90 +186,320 @@ export class InvestorsAdminController {
     return toReturn;
   }
 
-   //add new shi
-   @AdminOnly()
-   @ApiBearerAuth()
-   @ApiBody({
-     schema: {
-       type: 'object',
-       properties: {
-         id: {
-           type: 'number',
-         },
-         title: {
-           type: 'string',
-         },
-         url_title: {
-           type: 'string',
-         },
-         agm_documentation_title: {
-           type: 'string',
-         },
-         agm_documentation_pdf: {
-           type: 'object',
-           properties: {
-             url: {
-               type: 'string',
-             },
-             width: {
-               type: 'number',
-             },
-             height: {
-               type: 'number',
-             },
-             alt: {
-               type: 'string',
-             },
-           },
-         },
-         agm_regions: {
-           type: 'array',
-           items: {
-             type: 'string',
-             example: 'UK',
-           },
-         },
-         investors_agm_category: {
-           type: 'string',
-         },
-         sort_order: {
-           type: 'number',
-         },
-       },
-     },
-   })
-   @Roles(['INVESTOR'])
-   @Post('agm/add-update')
-   async addUpdateAGM(
-     @Body('id', ParseIntPipe) id: number,
-     @Body('title', EmptystringPipe) title: string,
-     @Body('url_title', EmptystringPipe) url_title: string,
-     @Body('agm_documentation_title', EmptystringPipe) agm_documentation_title: string,
-     @Body('agm_documentation_pdf', ImagefileOrNullPipe)
-     agm_documentation_pdf: {
-       url: string;
-       alt: string;
-       width: number;
-       height: number;
-     } | null,
-     @Body('agm_regions') agm_regions: string[],
-     @Body('investors_agm_category', EmptystringPipe) investors_agm_category: string,
-     @Body('sort_order', ParseIntPipe) sort_order: number,
-   ): Promise<{ agm: InvestorAGM }> {
-     const agm = await this.investorsService.addUpdateAGM(
-       id,
-       title,
-       url_title,
-       agm_documentation_title,
-       agm_documentation_pdf,
-       agm_regions,
-       investors_agm_category,
-       sort_order,
-     );
-     return {
-       agm,
-     };
-   }
- 
-}
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        agm_documentation_title: {
+          type: 'string',
+        },
+        agm_documentation_pdf: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        agm_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        investors_agm_category: {
+          type: 'string',
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('agm/add-update')
+  async addUpdateAGM(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('agm_documentation_title', EmptystringPipe)
+    agm_documentation_title: string,
+    @Body('agm_documentation_pdf', ImagefileOrNullPipe)
+    agm_documentation_pdf: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('agm_regions') agm_regions: string[],
+    @Body('investors_agm_category', EmptystringPipe)
+    investors_agm_category: string,
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ agm: InvestorAGM }> {
+    const agm = await this.investorsService.addUpdateAGM(
+      id,
+      title,
+      url_title,
+      agm_documentation_title,
+      agm_documentation_pdf,
+      agm_regions,
+      investors_agm_category,
+      sort_order,
+    );
+    return {
+      agm,
+    };
+  }
 
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('dividends')
+  async getDividends(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorDividends[]> {
+    return await this.investorsService.getDividends(search || undefined);
+  }
+
+  @Get('dividends/:id')
+  async getDividendsById(@Param('id', ParseIntPipe) id: number): Promise<{
+    dividends: InvestorDividends | null;
+  }> {
+    const toReturn = {
+      dividends: await this.investorsService.getDividendsById(id),
+    } as {
+      dividends: InvestorDividends | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        dividend_history: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        history_writeup: {
+          type: 'string',
+        },
+        unclaimed_interim_dividends: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        unclaimed_interim_dividends_writeup: {
+          type: 'string',
+        },
+        unclaimed_interim_dividends_year: {
+          type: 'string',
+        },
+        unclaimed_dividends: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        unclaimed_dividends_writeup: {
+          type: 'string',
+        },
+        unclaimed_dividends_year: {
+          type: 'string',
+        },
+        transfer_shares_to_IEPF: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        transfer_shares_to_IEPF_writeup: {
+          type: 'string',
+        },
+        transfer_shares_to_IEPF_year: {
+          type: 'string',
+        },
+        forms_pdf: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('dividends/add-update')
+  async addUpdateDividends(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('dividend_history', ImagefileOrNullPipe)
+    dividend_history: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('history_writeup', EmptystringPipe)
+    history_writeup: string,
+    @Body('unclaimed_interim_dividends', ImagefileOrNullPipe)
+    unclaimed_interim_dividends: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('unclaimed_interim_dividends_writeup', EmptystringPipe)
+    unclaimed_interim_dividends_writeup: string,
+    @Body('unclaimed_interim_dividends_year', EmptystringPipe)
+    unclaimed_interim_dividends_year: string,
+    @Body('unclaimed_dividends', ImagefileOrNullPipe)
+    unclaimed_dividends: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('unclaimed_dividends_writeup', EmptystringPipe)
+    unclaimed_dividends_writeup: string,
+    @Body('unclaimed_dividends_year', EmptystringPipe)
+    unclaimed_dividends_year: string,
+    @Body('transfer_shares_to_IEPF', ImagefileOrNullPipe)
+    transfer_shares_to_IEPF: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('transfer_shares_to_IEPF_writeup', EmptystringPipe)
+    transfer_shares_to_IEPF_writeup: string,
+    @Body('transfer_shares_to_IEPF_year', EmptystringPipe)
+    transfer_shares_to_IEPF_year: string,
+    @Body('forms_pdf', ImagefileOrNullPipe)
+    forms_pdf: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+  ): Promise<{ dividend: InvestorDividends }> {
+    const dividend = await this.investorsService.addUpdateDividends(
+      id,
+      title,
+      url_title,
+      dividend_history,
+      history_writeup,
+      unclaimed_interim_dividends,
+      unclaimed_interim_dividends_writeup,
+      unclaimed_interim_dividends_year,
+      unclaimed_dividends,
+      unclaimed_dividends_writeup,
+      unclaimed_dividends_year,
+      transfer_shares_to_IEPF,
+      transfer_shares_to_IEPF_writeup,
+      transfer_shares_to_IEPF_year,
+      forms_pdf,
+    );
+    return {
+      dividend,
+    };
+  }
+}
