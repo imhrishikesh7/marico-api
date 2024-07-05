@@ -6,6 +6,8 @@ import { Region } from 'src/regions/entities/region.entity';
 import { InvestorAGM } from './entities/investor_agm.entity';
 import { InvestorShareHolder } from './entities/investor_shareholder.entity';
 import { InvestorDividends } from './entities/investor_dividend.entity';
+import { InvestorQUMaster } from './entities/investor_qu_master.entity';
+import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { InvestorDividends } from './entities/investor_dividend.entity';
       InvestorAGM,
       InvestorShareHolder,
       InvestorDividends,
+      InvestorQUMaster,
+      QuartelyUpdate,
       Region,
     ]),
   ],

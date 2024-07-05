@@ -28,7 +28,7 @@ import { InvestorDividends } from './entities/investor_dividend.entity';
 import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 
-@Controller('investors')
+@Controller('admin/investors')
 export class InvestorsAdminController {
   constructor(
     private readonly investorsService: InvestorsService,
