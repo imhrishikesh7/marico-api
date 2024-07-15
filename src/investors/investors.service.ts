@@ -6,6 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { QuartelyUpdate } from './entities/investor_qu_update.entity';
+import { Sustainability } from './entities/investor_sustainability.entity';
+import { InvestorSchedule } from './entities/investor_schedule.entity';
+import { CorporateGovernance } from './entities/investor_cogevernance.entity';
+import { InformationUpdate } from './entities/investor_iu.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -20,6 +24,14 @@ export class InvestorsService {
     private readonly quRepository: Repository<InvestorQUMaster>,
     @InjectRepository(QuartelyUpdate)
     private readonly quPdfRepository: Repository<QuartelyUpdate>,
+    @InjectRepository(Sustainability)
+    private readonly sustainabilityRepository: Repository<Sustainability>,
+    @InjectRepository(InvestorSchedule)
+    private readonly scheduleRepository: Repository<InvestorSchedule>,
+    @InjectRepository(CorporateGovernance)
+    private readonly cgRepository: Repository<CorporateGovernance>,
+    @InjectRepository(InformationUpdate)
+    private readonly iuRepository: Repository<InformationUpdate>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -357,4 +369,243 @@ export class InvestorsService {
     });
     return await this.quPdfRepository.save(newPDFs);
   }
+
+  async getSustainability(search?: string): Promise<Sustainability[]> {
+    if (search != null && search != '') {
+      return await this.sustainabilityRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.sustainabilityRepository.find({});
+    }
+  }
+
+  async getSustainabilityById(id: number): Promise<Sustainability | null> {
+    return await this.sustainabilityRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateSustainability(
+    id: number,
+    title: string,
+    url_title: string,
+    sustainability_title: string,
+    sustain_documentation_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    sustainRegions: string[],
+    sort_order: number,
+  ): Promise<Sustainability> {
+    if (id) {
+      const sustainability = await this.getSustainabilityById(id);
+      if (sustainability) {
+        sustainability.id = id;
+        sustainability.title = title;
+        sustainability.url_title = url_title;
+        sustainability.sustainability_title = sustainability_title;
+        sustainability.sustain_documentation_pdf = sustain_documentation_pdf;
+        sustainability.sustain_regions = sustainRegions;
+        sustainability.sort_order = sort_order;
+
+        return this.sustainabilityRepository.save(sustainability);
+      }
+      throw new Error('sustainability not found');
+    } else {
+      const sustainability = new Sustainability();
+
+      sustainability.title = title;
+      sustainability.url_title = url_title;
+      sustainability.sustainability_title = sustainability_title;
+      sustainability.sustain_documentation_pdf = sustain_documentation_pdf;
+      sustainability.sustain_regions = sustainRegions;
+      sustainability.sort_order = sort_order;
+      return this.sustainabilityRepository.save(sustainability);
+    }
+  }
+
+  async getSchedule(search?: string): Promise<InvestorSchedule[]> {
+    if (search != null && search != '') {
+      return await this.scheduleRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.scheduleRepository.find({});
+    }
+  }
+
+  async getScheduleById(id: number): Promise<InvestorSchedule | null> {
+    return await this.scheduleRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateSchedule(
+    id: number,
+    title: string,
+    url_title: string,
+    schedule_analyst_meet_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    schedule_analyst_meet_year: string,
+  ): Promise<InvestorSchedule> {
+    if (id) {
+      const schedule = await this.getScheduleById(id);
+      if (schedule) {
+        schedule.id = id;
+        schedule.title = title;
+        schedule.url_title = url_title;
+        schedule.schedule_analyst_meet_pdf = schedule_analyst_meet_pdf;
+        schedule.schedule_analyst_meet_year = schedule_analyst_meet_year;
+
+        return this.scheduleRepository.save(schedule);
+      }
+      throw new Error('schedule not found');
+    } else {
+      const schedule = new InvestorSchedule();
+
+      schedule.title = title;
+      schedule.url_title = url_title;
+      schedule.schedule_analyst_meet_pdf = schedule_analyst_meet_pdf;
+      schedule.schedule_analyst_meet_year = schedule_analyst_meet_year;
+      return this.scheduleRepository.save(schedule);
+    }
+  }
+
+  async getCG(search?: string): Promise<CorporateGovernance[]> {
+    if (search != null && search != '') {
+      return await this.cgRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.cgRepository.find({});
+    }
+  }
+
+  async getCGById(id: number): Promise<CorporateGovernance | null> {
+    return await this.cgRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateCG(
+    id: number,
+    title: string,
+    url_title: string,
+    documentation_cg_title: string,
+    documentation_cg_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    cgRegions: string[],
+    sort_order: number,
+  ): Promise<CorporateGovernance> {
+    if (id) {
+      const cg = await this.getCGById(id);
+      if (cg) {
+        cg.id = id;
+        cg.title = title;
+        cg.url_title = url_title;
+        cg.documentation_cg_title = documentation_cg_title;
+        cg.documentation_cg_pdf = documentation_cg_pdf;
+        cg.cg_regions = cgRegions;
+        cg.sort_order = sort_order;
+
+        return this.cgRepository.save(cg);
+      }
+      throw new Error('Corporate Governance not found');
+    } else {
+      const cg = new CorporateGovernance();
+
+      cg.title = title;
+      cg.url_title = url_title;
+      cg.documentation_cg_title = documentation_cg_title;
+      cg.documentation_cg_pdf = documentation_cg_pdf;
+      cg.cg_regions = cgRegions;
+      cg.sort_order = sort_order;
+      return this.cgRepository.save(cg);
+    }
+  }
+
+  async getIU(search?: string): Promise<InformationUpdate[]> {
+    if (search != null && search != '') {
+      return await this.iuRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.iuRepository.find({});
+    }
+  }
+
+  async getIUById(id: number): Promise<InformationUpdate | null> {
+    return await this.iuRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateIU(
+    id: number,
+    title: string,
+    url_title: string,
+    documentation_iu_title: string,
+    iu_documentation_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    iuRegions: string[],
+    sort_order: number,
+  ): Promise<InformationUpdate> {
+    if (id) {
+      const iu = await this.getIUById(id);
+      if (iu) {
+        iu.id = id;
+        iu.title = title;
+        iu.url_title = url_title;
+        iu.documentation_iu_title = documentation_iu_title;
+        iu.iu_documentation_pdf = iu_documentation_pdf;
+        iu.iu_regions = iuRegions;
+        iu.sort_order = sort_order;
+
+        return this.iuRepository.save(iu);
+      }
+      throw new Error('information not found');
+    } else {
+      const iu = new InformationUpdate();
+
+      iu.title = title;
+      iu.url_title = url_title;
+      iu.documentation_iu_title = documentation_iu_title;
+      iu.iu_documentation_pdf = iu_documentation_pdf;
+      iu.iu_regions = iuRegions;
+      iu.sort_order = sort_order;
+      return this.iuRepository.save(iu);
+    }
+  }
+
 }

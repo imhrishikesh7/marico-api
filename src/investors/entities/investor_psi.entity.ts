@@ -1,0 +1,41 @@
+import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+
+@Entity()
+export class InvestorPSI {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  @Index()
+  title: string;
+
+  @Column()
+  @Index()
+  url_title: string;
+
+  @Column()
+  @Index()
+  documentation_psi_title: string;
+
+  @Column({ type: 'json', nullable: true })
+  psi_documentation_pdf: { url: string; alt: string; width: number; height: number} | null;
+  
+  @Column('json')
+  psi_regions: string[]; 
+
+  @Column()
+  @Index()
+  psi_category: string;
+  
+  @Column()
+  @Index()
+  sort_order: number;
+
+  @CreateDateColumn()
+  @Index()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  @Index()
+  updated_at: Date;
+}
