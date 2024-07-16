@@ -85,7 +85,7 @@ const menu: MenuItem[] = [
       },
       {
         name: 'Quarterly Updates',
-        url: '/investors/quartely_update',
+        url: '/investors/qu',
         role: ['INVESTOR_QU'],
       },
       {

@@ -513,14 +513,14 @@ export class InvestorsAdminController {
   }
 
   @Roles(['INVESTOR'])
-  @Get('qu/add_year')
+  @Get('qu')
   async getQU(
     @Query('search', new DefaultValuePipe('')) search: string,
   ): Promise<InvestorQUMaster[]> {
     return await this.investorsService.getQU(search || undefined);
   }
 
-  @Get('qu/add_year/:id')
+  @Get('qu/:id')
   async getQUById(@Param('id', ParseIntPipe) id: number): Promise<{
     qu: InvestorQUMaster | null;
   }> {
@@ -558,7 +558,7 @@ export class InvestorsAdminController {
     },
   })
   @Roles(['INVESTOR'])
-  @Post('qu/add_year/add-update')
+  @Post('qu/add-update')
   async addUpdateQU(
     @Body('id', ParseIntPipe) id: number,
     @Body('title', EmptystringPipe) title: string,
