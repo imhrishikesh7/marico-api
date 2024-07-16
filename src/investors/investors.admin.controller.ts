@@ -513,14 +513,14 @@ export class InvestorsAdminController {
   }
 
   @Roles(['INVESTOR'])
-  @Get('quartely_update')
+  @Get('qu/add_year')
   async getQU(
     @Query('search', new DefaultValuePipe('')) search: string,
   ): Promise<InvestorQUMaster[]> {
     return await this.investorsService.getQU(search || undefined);
   }
 
-  @Get('quartely_update/:id')
+  @Get('qu/add_year/:id')
   async getQUById(@Param('id', ParseIntPipe) id: number): Promise<{
     qu: InvestorQUMaster | null;
   }> {
@@ -558,7 +558,7 @@ export class InvestorsAdminController {
     },
   })
   @Roles(['INVESTOR'])
-  @Post('quartely_update/add-update')
+  @Post('qu/add_year/add-update')
   async addUpdateQU(
     @Body('id', ParseIntPipe) id: number,
     @Body('title', EmptystringPipe) title: string,
@@ -579,7 +579,7 @@ export class InvestorsAdminController {
     };
   }
 
-  @Get('quartely_update/pdfs/:investor_qu_id')
+  @Get('qu/pdfs/:investor_qu_id')
   async getQUPDFById(
     @Param('investor_qu_id', ParseIntPipe) investor_qu_id: number,
   ): Promise<{
@@ -630,7 +630,7 @@ export class InvestorsAdminController {
     },
   })
   @Roles(['INVESTOR'])
-  @Post('quartely_update/pdfs/add-update')
+  @Post('qu/pdfs/add-update')
   async addUpdateQUPDFs(
     @Body('investor_qu_id', ParseIntPipe) investor_qu_id: number,
     @Body('contentText')
