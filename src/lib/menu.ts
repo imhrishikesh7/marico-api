@@ -74,7 +74,7 @@ const menu: MenuItem[] = [
         role: ['INVESTOR_SHI'],
       },
       {
-        name: 'Anual General Meeting',
+        name: 'Annual General Meeting',
         url: '/investors/agm',
         role: ['INVESTOR_AGM'],
       },

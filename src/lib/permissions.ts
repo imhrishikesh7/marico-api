@@ -82,12 +82,52 @@ const permissions: Permission[] = [
   {
     key: 'INVESTORS',
     level: 2,
-    name: 'Investors > Anual General Meeting',
+    name: 'Investors > Annual General Meeting',
   },
   {
     key: 'INVESTORS',
     level: 2,
     name: 'Investors > Dividends',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Quarterly Updates',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Information Update',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Sustainability',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Schedule of investors',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Corporate Governance',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Contact',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Placement Document',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > Price Sensitive Information',
   },
 ];
 
