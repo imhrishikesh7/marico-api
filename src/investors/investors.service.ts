@@ -10,6 +10,9 @@ import { Sustainability } from './entities/investor_sustainability.entity';
 import { InvestorSchedule } from './entities/investor_schedule.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
+import { InvestorPlacement } from './entities/investor_placement.entity';
+import { InvestorContact } from './entities/investor_contact.entity';
+import { InvestorPSI } from './entities/investor_psi.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -32,6 +35,12 @@ export class InvestorsService {
     private readonly cgRepository: Repository<CorporateGovernance>,
     @InjectRepository(InformationUpdate)
     private readonly iuRepository: Repository<InformationUpdate>,
+    @InjectRepository(InvestorPlacement)
+    private readonly pdRepository: Repository<InvestorPlacement>,
+    @InjectRepository(InvestorContact)
+    private readonly icRepository: Repository<InvestorContact>,
+    @InjectRepository(InvestorPSI)
+    private readonly psiRepository: Repository<InvestorPSI>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -608,4 +617,181 @@ export class InvestorsService {
     }
   }
 
+  async getPD(search?: string): Promise<InvestorPlacement[]> {
+    if (search != null && search != '') {
+      return await this.pdRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.pdRepository.find({});
+    }
+  }
+
+  async getPDById(id: number): Promise<InvestorPlacement | null> {
+    return await this.pdRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdatePD(
+    id: number,
+    title: string,
+    url_title: string,
+    documentation_pd_title: string,
+    pd_documentation_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    pdRegions: string[],
+    sort_order: number,
+  ): Promise<InvestorPlacement> {
+    if (id) {
+      const pd = await this.getPDById(id);
+      if (pd) {
+        pd.id = id;
+        pd.title = title;
+        pd.url_title = url_title;
+        pd.documentation_pd_title = documentation_pd_title;
+        pd.pd_documentation_pdf = pd_documentation_pdf;
+        pd.pd_regions = pdRegions;
+        pd.sort_order = sort_order;
+
+        return this.pdRepository.save(pd);
+      }
+      throw new Error('pd not found');
+    } else {
+      const pd = new InvestorPlacement();
+
+      pd.title = title;
+      pd.url_title = url_title;
+      pd.documentation_pd_title = documentation_pd_title;
+      pd.pd_documentation_pdf = pd_documentation_pdf;
+      pd.pd_regions = pdRegions;
+      pd.sort_order = sort_order;
+      return this.pdRepository.save(pd);
+    }
+  }
+
+  async getIC(search?: string): Promise<InvestorContact[]> {
+    if (search != null && search != '') {
+      return await this.icRepository.find({
+        where: {
+          title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.icRepository.find({});
+    }
+  }
+
+  async getICById(id: number): Promise<InvestorContact | null> {
+    return await this.icRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateIC(
+    id: number,
+    title: string,
+    url_title: string,
+    ic_contact_info: string,
+    icRegions: string[],
+    sort_order: number,
+  ): Promise<InvestorContact> {
+    if (id) {
+      const ic = await this.getICById(id);
+      if (ic) {
+        ic.id = id;
+        ic.title = title;
+        ic.url_title = url_title;
+        ic.ic_contact_info = ic_contact_info;
+        ic.ic_regions = icRegions;
+        ic.sort_order = sort_order;
+
+        return this.icRepository.save(ic);
+      }
+      throw new Error('Contact not found');
+    } else {
+      const ic = new InvestorContact();
+
+      ic.title = title;
+      ic.url_title = url_title;
+      ic.ic_contact_info = ic_contact_info;
+      ic.ic_regions = icRegions;
+      ic.sort_order = sort_order;
+      return this.icRepository.save(ic);
+    }
+  }
+
+  async getPSI(search?: string): Promise<InvestorPSI[]> {
+    if (search != null && search != '') {
+      return await this.psiRepository.find({
+        where: {
+          documentation_psi_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.psiRepository.find({});
+    }
+  }
+
+  async getPSIById(id: number): Promise<InvestorPSI | null> {
+    return await this.psiRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdatePSI(
+    id: number,
+    title: string,
+    url_title: string,
+    documentation_psi_title: string,
+    psi_documentation_pdf: {
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
+    psiregions: string[],
+    psi_category: string,
+    sort_order: number,
+  ): Promise<InvestorPSI> {
+    if (id) {
+      const psi = await this.getPSIById(id);
+      if (psi) {
+        psi.id = id;
+        psi.title = title;
+        psi.url_title = url_title;
+        psi.documentation_psi_title = documentation_psi_title;
+        psi.psi_documentation_pdf = psi_documentation_pdf;
+        psi.psi_regions = psiregions;
+        psi.psi_category = psi_category;
+        psi.sort_order = sort_order;
+
+        return this.psiRepository.save(psi);
+      }
+      throw new Error('psi not found');
+    } else {
+      const psi = new InvestorPSI();
+
+      psi.title = title;
+      psi.url_title = url_title;
+      psi.documentation_psi_title = documentation_psi_title;
+      psi.psi_documentation_pdf = psi_documentation_pdf;
+      psi.psi_regions = psiregions;
+      psi.psi_category = psi_category;
+      psi.sort_order = sort_order;
+      return this.psiRepository.save(psi);
+    }
+  }
 }

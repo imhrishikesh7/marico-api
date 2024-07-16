@@ -83,6 +83,46 @@ const menu: MenuItem[] = [
         url: '/investors/dividends',
         role: ['INVESTOR_DIVIDENDS'],
       },
+      {
+        name: 'Quarterly Updates',
+        url: '/investors/quartely_update',
+        role: ['INVESTOR_QU'],
+      },
+      {
+        name: 'Information Update',
+        url: '/investors/iu',
+        role: ['INVESTOR_IU'],
+      },
+      {
+        name: 'Sustainability',
+        url: '/investors/sustainability',
+        role: ['INVESTOR_SUSTAINABILITY'],
+      },
+      {
+        name: 'Schedule of investors',
+        url: '/investors/schedule',
+        role: ['INVESTOR_SCHEDULE'],
+      },
+      {
+        name: 'Corporate Governance',
+        url: '/investors/cg',
+        role: ['INVESTOR_CG'],
+      },
+      {
+        name: 'Contact',
+        url: '/investors/contact',
+        role: ['INVESTOR_CONTACT'],
+      },
+      {
+        name: 'Placement Document',
+        url: '/investors/placement',
+        role: ['INVESTOR_PD'],
+      },
+      {
+        name: 'Price Sensitive Information',
+        url: '/investors/contact',
+        role: ['INVESTOR_PSI'],
+      },
     ],
   },
   {

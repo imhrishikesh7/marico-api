@@ -10,6 +10,11 @@ import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 import { Sustainability } from './entities/investor_sustainability.entity';
 import { InvestorSchedule } from './entities/investor_schedule.entity';
+import { InformationUpdate } from './entities/investor_iu.entity';
+import { InvestorPlacement } from './entities/investor_placement.entity';
+import { InvestorContact } from './entities/investor_contact.entity';
+import { InvestorPSI } from './entities/investor_psi.entity';
+import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 
 @Module({
   imports: [
@@ -21,6 +26,11 @@ import { InvestorSchedule } from './entities/investor_schedule.entity';
       QuartelyUpdate,
       Sustainability,
       InvestorSchedule,
+      CorporateGovernance,
+      InformationUpdate,
+      InvestorPlacement,
+      InvestorContact,
+      InvestorPSI,
       Region,
     ]),
   ],

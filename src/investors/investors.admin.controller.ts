@@ -32,6 +32,8 @@ import { InvestorSchedule } from './entities/investor_schedule.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
+import { InvestorContact } from './entities/investor_contact.entity';
+import { InvestorPSI } from './entities/investor_psi.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
@@ -1083,23 +1085,23 @@ export class InvestorsAdminController {
     required: false,
   })
   @Roles(['INVESTOR'])
-  @Get('pd')
+  @Get('placement')
   async getPD(
     @Query('search', new DefaultValuePipe('')) search: string,
   ): Promise<InvestorPlacement[]> {
     return await this.investorsService.getPD(search || undefined);
   }
 
-  @Get('pd/:id')
-  async getPDyById(@Param('id', ParseIntPipe) id: number): Promise<{
-    cg: InvestorPlacement | null;
+  @Get('placement/:id')
+  async getPDById(@Param('id', ParseIntPipe) id: number): Promise<{
+    pd: InvestorPlacement | null;
     regions: Region[] | null;
   }> {
     const toReturn = {
-      cg: await this.investorsService.getPDById(id),
+      pd: await this.investorsService.getPDById(id),
       regions: await this.regionService.getRegionList(),
     } as {
-      cg: InvestorPlacement | null;
+      pd: InvestorPlacement | null;
       regions: Region[] | null;
     };
     return toReturn;
@@ -1121,10 +1123,10 @@ export class InvestorsAdminController {
         url_title: {
           type: 'string',
         },
-        documentation_cg_title: {
+        documentation_pd_title: {
           type: 'string',
         },
-        documentation_cg_pdf: {
+        pd_documentation_pdf: {
           type: 'object',
           properties: {
             url: {
@@ -1141,7 +1143,7 @@ export class InvestorsAdminController {
             },
           },
         },
-        cg_regions: {
+        pd_regions: {
           type: 'array',
           items: {
             type: 'string',
@@ -1155,15 +1157,15 @@ export class InvestorsAdminController {
     },
   })
   @Roles(['INVESTOR'])
-  @Post('pd/add-update')
+  @Post('placement/add-update')
   async addUpdatePD(
     @Body('id', ParseIntPipe) id: number,
     @Body('title', EmptystringPipe) title: string,
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('documentation_pd_title', EmptystringPipe)
     documentation_pd_title: string,
-    @Body('documentation_pd_pdf', ImagefileOrNullPipe)
-    documentation_pd_pdf: {
+    @Body('pd_documentation_pdf', ImagefileOrNullPipe)
+    pd_documentation_pdf: {
       url: string;
       alt: string;
       width: number;
@@ -1171,18 +1173,221 @@ export class InvestorsAdminController {
     } | null,
     @Body('pd_regions') pd_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
-  ): Promise<{ pd: CorporateGovernance }> {
+  ): Promise<{ pd: InvestorPlacement }> {
     const pd = await this.investorsService.addUpdatePD(
       id,
       title,
       url_title,
       documentation_pd_title,
-      documentation_pd_pdf,
+      pd_documentation_pdf,
       pd_regions,
       sort_order,
     );
     return {
       pd,
+    };
+  }
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('contact')
+  async getIC(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorContact[]> {
+    return await this.investorsService.getIC(search || undefined);
+  }
+
+  @Get('contact/:id')
+  async getICById(@Param('id', ParseIntPipe) id: number): Promise<{
+    ic: InvestorContact | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      ic: await this.investorsService.getICById(id),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      ic: InvestorContact | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        ic_contact_info: {
+          type: 'string',
+        },
+        ic_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('contact/add-update')
+  async addUpdateIC(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('ic_contact_info', EmptystringPipe)
+    ic_contact_info: string,
+    @Body('ic_regions') ic_regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ ic: InvestorContact }> {
+    const ic = await this.investorsService.addUpdateIC(
+      id,
+      title,
+      url_title,
+      ic_contact_info,
+      ic_regions,
+      sort_order,
+    );
+    return {
+      ic,
+    };
+  }
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('psi')
+  async getPSI(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorPSI[]> {
+    return await this.investorsService.getPSI(search || undefined);
+  }
+
+  @Get('psi/:id')
+  async getPSIById(@Param('id', ParseIntPipe) id: number): Promise<{
+    psi: InvestorPSI | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      psi: await this.investorsService.getPSIById(id),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      psi: InvestorPSI | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        documentation_psi_title: {
+          type: 'string',
+        },
+        psi_documentation_pdf: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+            alt: {
+              type: 'string',
+            },
+          },
+        },
+        psi_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        psi_category: {
+          type: 'string',
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('psi/add-update')
+  async addUpdatePSI(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('title', EmptystringPipe) title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('documentation_psi_title', EmptystringPipe)
+    documentation_psi_title: string,
+    @Body('psi_documentation_pdf', ImagefileOrNullPipe)
+    psi_documentation_pdf: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('psi_regions') psi_regions: string[],
+    @Body('psi_category', EmptystringPipe)
+    psi_category: string,
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ psi: InvestorPSI }> {
+    const psi = await this.investorsService.addUpdatePSI(
+      id,
+      title,
+      url_title,
+      documentation_psi_title,
+      psi_documentation_pdf,
+      psi_regions,
+      psi_category,
+      sort_order,
+    );
+    return {
+      psi,
     };
   }
 }
