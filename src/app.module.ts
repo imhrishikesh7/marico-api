@@ -16,10 +16,12 @@ import { AboutusAdminController } from './aboutus/aboutus.admin.controller';
 import { BrandsAdminController } from './brands/brands.admin.controller';
 import { InvestorsModule } from './investors/investors.module';
 import { InvestorsAdminController } from './investors/investors.admin.controller';
+import { PageModule } from './page/page.module';
+import { PageAdminController } from './page/page.admin.controller';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule],
-  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController],
+  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule],
+  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController, PageAdminController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
