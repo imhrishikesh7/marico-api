@@ -13,8 +13,7 @@ export class PageContent {
     @Index()
     page_ref: string;
 
-    @Column()
-    @Index()
+    @Column('json' )
     content: {};
 
     @Column({ default: true })
