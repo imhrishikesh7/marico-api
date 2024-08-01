@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Page {
+export class Pages {
     @PrimaryGeneratedColumn()
     id: number;
   

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Page } from './entities/page.entity';
+import { Pages } from './entities/page.entity';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PageContent } from './entities/page_content.entity';
@@ -7,13 +7,13 @@ import { PageContent } from './entities/page_content.entity';
 @Injectable()
 export class PageService {
   constructor(
-    @InjectRepository(Page)
-    private readonly pageRepository: Repository<Page>,
+    @InjectRepository(Pages)
+    private readonly pageRepository: Repository<Pages>,
     @InjectRepository(PageContent )
     private readonly pageContentRepository: Repository<PageContent>,
   ) {}
 
-  async getPageList(search?: string): Promise<Page[]> {
+  async getPageList(search?: string): Promise<Pages[]> {
     if (search != null && search != '') {
       return await this.pageRepository.find({
         where: {
@@ -25,7 +25,7 @@ export class PageService {
     }
   }
   
-  async getPageById(id: number): Promise<Page | null> {
+  async getPageById(id: number): Promise<Pages | null> {
     return await this.pageRepository.findOne({
       where: {
         id: id,
@@ -47,7 +47,7 @@ export class PageService {
       alt: string;
     } | null,
     indexable: boolean,
-  ): Promise<Page> {
+  ): Promise<Pages> {
     if (id) {
       const page = await this.getPageById(id);
       // const sitemap = await this.getPageSitemapById(id);
@@ -65,7 +65,7 @@ export class PageService {
       }
       throw new Error('page not found');
     } else {
-      const page = new Page();
+      const page = new Pages();
 
       page.name = name;
       page.url = url;

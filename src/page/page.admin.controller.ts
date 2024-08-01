@@ -5,7 +5,7 @@ import { PageService } from './page.service';
 import { AdminOnly } from 'src/admin/admin.decorator';
 import { ApiBearerAuth, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { Roles } from 'src/admin/roles.decorator';
-import { Page } from './entities/page.entity';
+import { Pages } from './entities/page.entity';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
@@ -30,18 +30,18 @@ export class PageAdminController {
     @Get('page')
     async getPageList(
       @Query('search', new DefaultValuePipe('')) search: string,
-    ): Promise<Page[]> {
+    ): Promise<Pages[]> {
       return await this.pageService.getPageList(search);
     }
 
     @Get('page/:id')
     async getPageById(@Param('id', ParseIntPipe) id: number): Promise<{
-      page: Page | null;
+      page: Pages | null;
     }> {
       const toReturn = {
         page: await this.pageService.getPageById(id),
       } as {
-        page: Page | null;
+        page: Pages | null;
       };
       return toReturn;
     }
@@ -114,7 +114,7 @@ export class PageAdminController {
       height: number;
     } | null,
     @Body('indexable', SwitchPipe) indexable: boolean,
-  ): Promise<{ page: Page }> {
+  ): Promise<{ page: Pages }> {
     const page = await this.pageService.addUpdatePage(
       id,
       name,
