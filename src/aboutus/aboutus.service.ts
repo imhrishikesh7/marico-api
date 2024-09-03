@@ -4,6 +4,7 @@ import { AboutusMember } from './entities/aboutus_member.entity';
 import { Like, Repository } from 'typeorm';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
+import { Region } from 'src/regions/entities/region.entity';
 
 @Injectable()
 export class AboutusService {
@@ -14,6 +15,8 @@ export class AboutusService {
     private readonly recognitionRepository: Repository<Recognition>,
     @InjectRepository(History)
     private readonly historyRepository: Repository<History>,
+    @InjectRepository(Region)
+    private readonly regionRepository: Repository<Region>,
   ) {}
 
   async getMemberList(search?: string): Promise<AboutusMember[]> {
@@ -26,6 +29,27 @@ export class AboutusService {
     } else {
       return await this.aboutUsRepository.find({});
     }
+  }
+
+  async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
+    const where: any = {};
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.region = Like('%' + regionName.name + '%');
+      }
+    }
+    if (role != null && role != '') {
+      where.type = Like('%' + role + '%');
+    }
+    return await this.aboutUsRepository.find({
+      where,
+    });
   }
 
   async getMemberById(id: number): Promise<AboutusMember | null> {
@@ -89,6 +113,29 @@ export class AboutusService {
     }
   }
 
+  async getRecognition(
+    region?: string,
+    category?: string,
+  ): Promise<Recognition[]> {
+    const where: any = {};
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.name + '%');
+      }
+    }
+    if (category != null && category != '') {
+      where.category = Like('%' + category + '%');
+    }
+    return await this.recognitionRepository.find({
+      where,
+    });
+  }
   async getAwardById(id: number): Promise<Recognition | null> {
     return await this.recognitionRepository.findOne({
       where: {
@@ -153,6 +200,24 @@ export class AboutusService {
     } else {
       return await this.historyRepository.find({});
     }
+  }
+
+  async getHistories(region?: string): Promise<History[]> {
+    const where: any = {};
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.name + '%');
+      }
+    }
+    return await this.historyRepository.find({
+      where,
+    });
   }
 
   async getHistoryById(id: number): Promise<History | null> {
