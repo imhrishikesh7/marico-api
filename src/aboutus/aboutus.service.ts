@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AboutusMember } from './entities/aboutus_member.entity';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
 import { Region } from 'src/regions/entities/region.entity';
@@ -44,8 +44,8 @@ export class AboutusService {
         where.region = Like('%' + regionName.name + '%');
       }
     }
-    if (role != null && role != '') {
-      where.type = Like('%' + role + '%');
+    if (Array.isArray(role)) {
+      where.type = In(role); // Using In operator for multiple roles
     }
     return await this.aboutUsRepository.find({
       where,
