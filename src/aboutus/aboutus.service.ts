@@ -39,7 +39,6 @@ export class AboutusService {
     if (role != null && role != '') {
       where.type = Like('%' + role + '%'); // Using In operator for multiple roles
     }
-    console.log(where, 'where');
     return await this.aboutUsRepository.find({
       where,
     });
