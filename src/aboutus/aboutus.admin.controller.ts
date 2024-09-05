@@ -54,13 +54,16 @@ export class AboutusAdminController {
   @Get('member_lists/:id')
   async getMemberById(@Param('id', ParseIntPipe) id: number): Promise<{
     member: AboutusMember | null;
+    regions: Region[] | null;
     members: AboutusMember[] | null;
   }> {
     const toReturn = {
       member: await this.aboutusService.getMemberById(id),
+      regions: await this.regionService.getRegionList(),
       members: await this.aboutusService.getMemberList(),
     } as {
       member: AboutusMember | null;
+      regions: Region[] | null;
       members: AboutusMember[] | null;
     };
     return toReturn;
