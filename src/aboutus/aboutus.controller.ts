@@ -9,7 +9,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { History } from './entities/aboutus_history.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 
-@Controller(':region/about_us')
+@Controller(':region/about-us')
 export class AboutusController {
   constructor(private readonly aboutusService: AboutusService) {}
 
