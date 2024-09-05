@@ -28,6 +28,9 @@ import {
   
     @Column({ type: 'json', nullable: true })
     thumbnail: { url: string; alt: string; width: number; height: number } | null;
+
+    @Column('json')
+    regions: string[];
   
     @Column()
     @Index()

@@ -73,6 +73,7 @@ export class AboutusService {
       height: number;
       alt: string;
     } | null,
+    memberRegions: string[],
     is_active: boolean,
   ): Promise<AboutusMember> {
     if (id) {
@@ -84,6 +85,7 @@ export class AboutusService {
         member.type = memberType;
         member.description = description;
         member.thumbnail = thumbnail;
+        member.regions = memberRegions;
         member.is_active = is_active;
         return this.aboutUsRepository.save(member);
       }
@@ -96,6 +98,7 @@ export class AboutusService {
       member.type = memberType;
       member.description = description;
       member.thumbnail = thumbnail;
+      member.regions = memberRegions;
       member.is_active = is_active;
       return await this.aboutUsRepository.save(member);
     }

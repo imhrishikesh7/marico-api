@@ -108,6 +108,13 @@ export class AboutusAdminController {
             },
           },
         },
+        regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
         is_active: {
           type: 'boolean',
         },
@@ -129,6 +136,7 @@ export class AboutusAdminController {
       width: number;
       height: number;
     } | null,
+    @Body('regions') regions: string[],
     @Body('is_active', SwitchPipe) is_active: boolean,
   ): Promise<{ member: AboutusMember }> {
     const member = await this.aboutusService.addUpdateMember(
@@ -138,6 +146,7 @@ export class AboutusAdminController {
       type,
       description,
       thumbnail,
+      regions,
       is_active,
     );
 

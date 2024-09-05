@@ -76,6 +76,9 @@ import {
           name: {
             type: 'string',
           },
+          alias: {
+            type: 'string',
+          },
           thumbnail: {
             type: 'object',
             properties: {
