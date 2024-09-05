@@ -34,19 +34,12 @@ export class AboutusService {
   async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
     const where: any = {};
     if (region != null && region != '') {
-      const regionName = await this.regionRepository.findOne({
-        where: {
-          alias: region,
-        },
-      });
-
-      if (regionName != null) {
-        where.region = Like('%' + regionName.name + '%');
-      }
+        where.regions = Like('%' + region + '%');
     }
-    if (Array.isArray(role)) {
-      where.type = In(role); // Using In operator for multiple roles
+    if (role != null && role != '') {
+      where.type = Like('%' + role + '%'); // Using In operator for multiple roles
     }
+    console.log(where, 'where');
     return await this.aboutUsRepository.find({
       where,
     });
