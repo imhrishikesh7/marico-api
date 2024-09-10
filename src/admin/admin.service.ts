@@ -478,7 +478,10 @@ export class AdminService {
   }
 
   //upload file to s3
-  async uploadFileToS3(file: Express.Multer.File): Promise<string> {
+  async uploadFileToS3(
+    file: Express.Multer.File,
+    directory: string,
+  ): Promise<string> {
     const s3 = new AWS.S3({
       region: process.env.AWS_REGION,
     });
@@ -502,9 +505,11 @@ export class AdminService {
       }
     }
 
+    const sanitizedDirectory = directory.replace(/\/+$/, '');
+
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME || '',
-      Key: 'uploads/' + filename,
+      Key: `${sanitizedDirectory}/${filename}`,
       Body: file.buffer,
       //cache for 1 year
       CacheControl: 'max-age=31536000',

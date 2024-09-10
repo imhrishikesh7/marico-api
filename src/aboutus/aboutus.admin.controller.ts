@@ -373,7 +373,7 @@ export class AboutusAdminController {
           type: 'string',
         },
         year: {
-          type: 'number',
+          type: 'string',
         },
         description: {
           type: 'string',
@@ -405,7 +405,7 @@ export class AboutusAdminController {
       height: number;
     } | null,
     @Body('history_title', EmptystringPipe) history_title: string,
-    @Body('year', ParseIntPipe) year: number,
+    @Body('year', EmptystringPipe) year: string,
     @Body('description', EmptystringPipe) description: string,
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,

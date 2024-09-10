@@ -234,7 +234,7 @@ export class AboutusService {
       alt: string;
     } | null,
     history_title: string,
-    year: number,
+    year: string,
     description: string,
     historyRegions: string[],
     sort_order: number,

@@ -505,7 +505,11 @@ export class AdminController {
           type: 'string',
           format: 'binary',
         },
-      },
+        directory: {
+          type: 'string',
+          example: 'about-us/coc',
+        },
+      }, 
     },
   })
   @AdminOnly()
@@ -513,9 +517,10 @@ export class AdminController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
+    @Body('directory', EmptystringPipe) directory: string,
   ): Promise<{ location: string; thumbnail?: string }> {
     //upload file to s3
-    const location = await this.adminService.uploadFileToS3(file);
+    const location = await this.adminService.uploadFileToS3(file, directory);
     //generate thumbnail for video mp4
     return {
       location: location,

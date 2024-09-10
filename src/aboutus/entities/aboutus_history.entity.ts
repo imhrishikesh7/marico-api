@@ -29,7 +29,7 @@ export class History {
 
   @Column()
   @Index()
-  year: number;
+  year: string;
 
   @Column({ type: 'text' })
   description: string;
