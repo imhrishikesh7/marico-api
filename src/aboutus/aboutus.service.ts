@@ -97,6 +97,7 @@ export class AboutusService {
   }
 
   async getAwardList(search?: string): Promise<Recognition[]> {
+    const where: any = {};
     if (search != null && search != '') {
       return await this.recognitionRepository.find({
         where: {
@@ -104,7 +105,9 @@ export class AboutusService {
         },
       });
     } else {
-      return await this.recognitionRepository.find({});
+      return await this.recognitionRepository.find({
+        where,
+      });
     }
   }
 
