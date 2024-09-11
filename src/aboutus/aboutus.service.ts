@@ -99,16 +99,11 @@ export class AboutusService {
   async getAwardList(search?: string): Promise<Recognition[]> {
     const where: any = {};
     if (search != null && search != '') {
-      return await this.recognitionRepository.find({
-        where: {
-          award_title: Like('%' + search + '%'),
-        },
-      });
-    } else {
+      where.award_title = Like('%' + search + '%');
+    }
       return await this.recognitionRepository.find({
         where,
       });
-    }
   }
 
   async getRecognition(
