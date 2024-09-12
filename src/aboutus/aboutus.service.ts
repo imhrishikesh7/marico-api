@@ -34,7 +34,7 @@ export class AboutusService {
   async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
     const where: any = {};
     if (region != null && region != '') {
-        where.regions = Like('%' + region + '%');
+      where.regions = Like('%' + region + '%');
     }
     if (role != null && role != '') {
       where.type = Like('%' + role + '%'); // Using In operator for multiple roles
@@ -101,9 +101,9 @@ export class AboutusService {
     if (search != null && search != '') {
       where.award_title = Like('%' + search + '%');
     }
-      return await this.recognitionRepository.find({
-        where,
-      });
+    return await this.recognitionRepository.find({
+      where,
+    });
   }
 
   async getRecognition(
@@ -112,9 +112,9 @@ export class AboutusService {
   ): Promise<Recognition[]> {
     const where: any = {};
 
-      if (region != null && region != '') {
-        where.regions = Like('%' + region + '%');
-      }
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
     if (category != null && category != '') {
       where.category = Like('%' + category + '%');
     }
@@ -191,15 +191,7 @@ export class AboutusService {
   async getHistories(region?: string): Promise<History[]> {
     const where: any = {};
     if (region != null && region != '') {
-      const regionName = await this.regionRepository.findOne({
-        where: {
-          alias: region,
-        },
-      });
-
-      if (regionName != null) {
-        where.regions = Like('%' + regionName.name + '%');
-      }
+      where.regions = Like('%' + region + '%');
     }
     return await this.historyRepository.find({
       where,
