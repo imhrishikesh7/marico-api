@@ -111,17 +111,10 @@ export class AboutusService {
     category?: string,
   ): Promise<Recognition[]> {
     const where: any = {};
-    if (region != null && region != '') {
-      const regionName = await this.regionRepository.findOne({
-        where: {
-          alias: region,
-        },
-      });
 
-      if (regionName != null) {
-        where.regions = Like('%' + regionName.name + '%');
+      if (region != null && region != '') {
+        where.regions = Like('%' + region + '%');
       }
-    }
     if (category != null && category != '') {
       where.category = Like('%' + category + '%');
     }

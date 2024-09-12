@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  Query,
 } from '@nestjs/common';
 import { AboutusService } from './aboutus.service';
 import { AboutusMember } from './entities/aboutus_member.entity';
@@ -38,11 +39,12 @@ export class AboutusController {
   }
 
   @ApiBearerAuth()
-  @Get('marico-recognition?category=:category')
+  @Get('marico-recognition/:category')
   async getRecognition(
     @Param('region') region: string,
     @Param('category') category: string,
   ): Promise<Recognition[]> {
+    console.log(category, 'cat------');
     return await this.aboutusService.getRecognition(region, category);
   }
 }
