@@ -44,7 +44,6 @@ export class AboutusController {
     @Param('region') region: string,
     @Param('category') category: string,
   ): Promise<Recognition[]> {
-    console.log(category, 'cat------');
     return await this.aboutusService.getRecognition(region, category);
   }
 }

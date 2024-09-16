@@ -55,6 +55,20 @@ export class InvestorsService {
     }
   }
 
+  async getSHIDetail(
+    region?: string,
+  ): Promise<InvestorShareHolder[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
+
+    return await this.shareHolderRepository.find({
+      where,
+    });
+  }
+
   async getSHIById(id: number): Promise<InvestorShareHolder | null> {
     return await this.shareHolderRepository.findOne({
       where: {
@@ -122,6 +136,20 @@ export class InvestorsService {
     }
   }
 
+  async getAGMDetail(
+    region?: string,
+  ): Promise<InvestorAGM[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
+
+    return await this.agmRepository.find({
+      where,
+    });
+  }
+
   async getAGMById(id: number): Promise<InvestorAGM | null> {
     return await this.agmRepository.findOne({
       where: {
@@ -184,6 +212,20 @@ export class InvestorsService {
     } else {
       return await this.dividendsRepository.find({});
     }
+  }
+
+  async getDevidendsDetail(
+    region?: string,
+  ): Promise<InvestorDividends[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
+
+    return await this.dividendsRepository.find({
+      where,
+    });
   }
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
