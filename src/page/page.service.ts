@@ -1,101 +1,211 @@
-import { Injectable } from '@nestjs/common';
-import { Pages } from './entities/page.entity';
-import { Like, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { PageContent } from './entities/page_content.entity';
+import { BadRequestException, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Page } from "./entities/page.entity";
+import { LessThanOrEqual, Repository } from "typeorm";
+import { PageContent } from "./entities/page_content.entity";
 
 @Injectable()
 export class PageService {
   constructor(
-    @InjectRepository(Pages)
-    private readonly pageRepository: Repository<Pages>,
-    @InjectRepository(PageContent )
-    private readonly pageContentRepository: Repository<PageContent>,
+    @InjectRepository(Page) private pageRepository: Repository<Page>,
+    @InjectRepository(PageContent) private pageContentRepository: Repository<PageContent>,
   ) {}
 
-  async getPageList(search?: string): Promise<Pages[]> {
-    if (search != null && search != '') {
-      return await this.pageRepository.find({
-        where: {
-          name: Like('%' + search + '%'),
-        },
-      });
-    } else {
-      return await this.pageRepository.find({});
+  //get all pages
+  async findAll(
+    is_active: number,
+    page?: number,
+    limit?: number,
+    search?: string,
+  ): Promise<{
+    pages: Page[];
+    count: number;
+  }> {
+    if (search == undefined) {
+      search = "";
     }
+    if (page == undefined) {
+      page = 1;
+    }
+    if (limit == undefined) {
+      limit = 1000;
+    }
+    const queryBuilder = this.pageRepository.createQueryBuilder("page");
+
+    if (is_active == 1) {
+      queryBuilder.andWhere("page.is_active = :is_active", { is_active: true });
+    } else if (is_active == 0) {
+      queryBuilder.andWhere("page.is_active = :is_active", { is_active: false });
+    }
+
+    if (search.trim() != "") {
+      //break search into words and search for each word in name and meta_title and url
+      const searchWords = search.trim().split(" ");
+      for (let i = 0; i < searchWords.length; i++) {
+        queryBuilder.andWhere(
+          `page.name LIKE :search${i} OR page.meta_title LIKE :search${i} OR page.url LIKE :search${i}`,
+          {
+            [`search${i}`]: `%${searchWords[i]}%`,
+          },
+        );
+      }
+    }
+
+    // Sorting by name in ascending order
+    queryBuilder.orderBy("page.name", "ASC");
+
+    // Pagination with skip and take
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip);
+    queryBuilder.take(limit);
+
+    const [pages, count] = await queryBuilder.getManyAndCount();
+    return {
+      pages: pages,
+      count: count,
+    };
   }
-  
-  async getPageById(id: number): Promise<Pages | null> {
+
+  //get page by id
+  async findOne(id: number): Promise<Page | null> {
     return await this.pageRepository.findOne({
-      where: {
-        id: id,
-      },
+      where: { id: id },
+      relations: ["page_contents"],
+      order: { page_contents: { order: "ASC" } },
     });
   }
 
-  async addUpdatePage(
+  //get page by url
+  async findOneByUrl(url: string, published?: boolean, is_active?: boolean): Promise<Page | null> {
+    if (published == undefined) {
+      published = true;
+    }
+    if (is_active == undefined) {
+      is_active = true;
+    }
+    let publishedWhere = {};
+    if (published) {
+      publishedWhere = {
+        published_at: LessThanOrEqual(new Date()),
+      };
+    }
+    return await this.pageRepository.findOne({
+      where: {
+        url: url,
+        is_active: is_active,
+        ...publishedWhere,
+        page_contents: { is_active: true },
+      },
+      relations: ["page_contents"],
+      order: { page_contents: { order: "ASC" } },
+    });
+  }
+
+  //create or update page
+  async createOrUpdatePage(
     id: number,
     name: string,
     url: string,
-    page_title: string,
-    page_description: string,
-    canonical_url: string,
-    shareimage_json: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
-    indexable: boolean,
-  ): Promise<Pages> {
-    if (id) {
-      const page = await this.getPageById(id);
-      // const sitemap = await this.getPageSitemapById(id);
-      if (page) {
-        page.id = id;
-        page.name = name;
-        page.url = url;
-        // page.page_title = page_title;
-        // page.page_description = page_description;
-        // page.canonical_url = canonical_url;
-        // page.shareimage_json = shareimage_json;
-        // page.indexable = indexable;
-
-        return this.pageRepository.save(page);
-      }
-      throw new Error('page not found');
-    } else {
-      const page = new Pages();
-
-      page.name = name;
-      page.url = url;
-      // page.page_title = page_title;
-      // page.page_description = page_description;
-      // page.canonical_url = canonical_url;
-      // page.shareimage_json = shareimage_json;
-      // page.indexable = indexable;
-      return this.pageRepository.save(page);
-    }
-  }
-  
-  async getPageContent(search?: string): Promise<PageContent[]> {
-    if (search != null && search != '') {
-      return await this.pageContentRepository.find({
-        where: {
-          page_ref: Like('%' + search + '%'),
-        },
-      });
-    } else {
-      return await this.pageContentRepository.find({});
-    }
-  }
-
-  async getContentByPageId(page_ref_id: number): Promise<PageContent | null> {
-    return await this.pageContentRepository.findOne({
-      where: {
-        page_ref_id: page_ref_id,
-      },
+    indexed: boolean,
+    meta_title: string,
+    meta_description: string,
+    meta_image: { url: string; width: number; height: number } | null,
+    canonical_override: string,
+    published_at: Date,
+    is_active: boolean,
+    page_contents: {
+      id: number;
+      component_type: string;
+      content: object;
+      order: number;
+      reference_name: string;
+      is_active: boolean;
+    }[],
+  ): Promise<Page> {
+    //check if page with same url already exists
+    const pageWithSameUrl = await this.pageRepository.findOne({
+      select: ["id"],
+      where: { url: url },
     });
+    if (pageWithSameUrl && pageWithSameUrl.id != id) {
+      throw new BadRequestException("Page with same url already exists");
+    }
+
+    //check if page_contents are valid, component_type cannot be empty
+    for (let i = 0; i < page_contents.length; i++) {
+      if (page_contents[i].component_type == "") {
+        throw new BadRequestException("Component type cannot be empty");
+      }
+    }
+
+    let page: Page;
+    if (id > 0) {
+      const record = await this.pageRepository.findOne({
+        where: { id: id },
+      });
+      if (!record) {
+        throw new BadRequestException("Page not found");
+      }
+      page = record;
+    } else {
+      page = new Page();
+    }
+    page.name = name;
+    page.url = url;
+    page.indexed = indexed;
+    page.meta_title = meta_title;
+    page.meta_description = meta_description;
+    page.meta_image = meta_image;
+    page.canonical_override = canonical_override;
+    page.published_at = published_at;
+    page.is_active = is_active;
+    page = await this.pageRepository.save(page);
+
+    //if page_contents have id = 0, create new page_content
+    //if page_contents have id > 0, update existing page_content
+    for (let i = 0; i < page_contents.length; i++) {
+      if (page_contents[i].id > 0) {
+        //update existing page_content
+        const record = await this.pageContentRepository.findOne({
+          where: { id: page_contents[i].id, page_id: page.id },
+        });
+        if (!record) {
+          throw new BadRequestException("Page content not found");
+        }
+        record.component_type = page_contents[i].component_type;
+        record.content = page_contents[i].content;
+        record.order = page_contents[i].order;
+        record.reference_name = page_contents[i].reference_name;
+        record.is_active = page_contents[i].is_active;
+        await this.pageContentRepository.save(record);
+      } else {
+        //create new page_content
+        const record = new PageContent();
+        record.page_id = page.id;
+        record.component_type = page_contents[i].component_type;
+        record.content = page_contents[i].content;
+
+        //if at any level inside content object, there is a key named = "url" and has adjacent key named = "width" and "height", then it is an image, if url is empty then remove the key
+
+        record.order = page_contents[i].order;
+        record.reference_name = page_contents[i].reference_name;
+        record.is_active = page_contents[i].is_active;
+        const u = await this.pageContentRepository.save(record);
+        page_contents[i].id = u.id;
+      }
+    }
+
+    //delete page_contents that are not in page_contents array
+    await this.pageContentRepository
+      .createQueryBuilder()
+      .delete()
+      .from(PageContent)
+      .where("page_id = :page_id AND id NOT IN (:...ids)", {
+        page_id: page.id,
+        ids: page_contents.map(page_content => page_content.id),
+      })
+      .execute();
+
+    return page;
   }
-   
 }

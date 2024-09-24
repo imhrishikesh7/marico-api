@@ -13,6 +13,9 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { InvestorShareHolder } from './entities/investor_shareholder.entity';
 import { InvestorAGM } from './entities/investor_agm.entity';
 import { InvestorDividends } from './entities/investor_dividend.entity';
+import { Sustainability } from './entities/investor_sustainability.entity';
+import { CorporateGovernance } from './entities/investor_cogevernance.entity';
+import { InformationUpdate } from './entities/investor_iu.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -46,5 +49,27 @@ export class InvestorsController {
     return await this.investorsService.getDevidendsDetail(region);
   }
 
-}
+  @ApiBearerAuth()
+  @Get('documentation/sustainability')
+  async getSustainabilityDetail(
+    @Param('region') region: string,
+  ): Promise<Sustainability[]> {
+    return await this.investorsService.getSustainabilityDetail(region);
+  }
 
+  @ApiBearerAuth()
+  @Get('documentation/cg')
+  async getCGDetail(
+    @Param('region') region: string,
+  ): Promise<CorporateGovernance[]> {
+    return await this.investorsService.getCGDetail(region);
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/iu')
+  async getIUDetail(
+    @Param('region') region: string,
+  ): Promise<InformationUpdate[]> {
+    return await this.investorsService.getIUDetail(region);
+  }
+}

@@ -433,6 +433,20 @@ export class InvestorsService {
     }
   }
 
+  async getSustainabilityDetail(
+    region?: string,
+  ): Promise<Sustainability[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.sustain_regions = Like('%' + region + '%');
+    }
+
+    return await this.sustainabilityRepository.find({
+      where,
+    });
+  }
+
   async getSustainabilityById(id: number): Promise<Sustainability | null> {
     return await this.sustainabilityRepository.findOne({
       where: {
@@ -549,6 +563,20 @@ export class InvestorsService {
     }
   }
 
+  async getCGDetail(
+    region?: string,
+  ): Promise<CorporateGovernance[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.cg_regions = Like('%' + region + '%');
+    }
+
+    return await this.cgRepository.find({
+      where,
+    });
+  }
+
   async getCGById(id: number): Promise<CorporateGovernance | null> {
     return await this.cgRepository.findOne({
       where: {
@@ -604,10 +632,24 @@ export class InvestorsService {
         where: {
           title: Like('%' + search + '%'),
         },
-      });
+      }); 
     } else {
       return await this.iuRepository.find({});
     }
+  }
+
+  async getIUDetail(
+    region?: string,
+  ): Promise<InformationUpdate[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.iu_regions = Like('%' + region + '%');
+    }
+
+    return await this.iuRepository.find({
+      where,
+    });
   }
 
   async getIUById(id: number): Promise<InformationUpdate | null> {
