@@ -486,7 +486,7 @@ export class AdminService {
       region: process.env.AWS_REGION,
     });
     //generate unique file name (slugify original name)
-    const filename = `${Date.now()}-${Utility.slugify(file.originalname)}`;
+    const filename = `${Utility.slugify(file.originalname)}`;
 
     //check if extension is allowed
     const allowedExtensions = [
@@ -516,8 +516,8 @@ export class AdminService {
       //content type
       ContentType: file.mimetype,
     };
+    console.log(params, '====params')
     await s3.upload(params).promise();
-    console.log(process.env.AWS_S3_CDN  + '/' + params.Key, '========imgurl');
     return process.env.AWS_S3_CDN  + '/' + params.Key;
   }
 

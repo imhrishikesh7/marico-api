@@ -17,8 +17,8 @@ export class InvestorShareHolder {
   @Index()
   investors_shi_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  investors_shi_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text'})
+  investors_shi_pdf: string;
 
   @Column('json')
   regions: string[]; 

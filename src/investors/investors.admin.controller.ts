@@ -94,21 +94,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         investors_shi_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         regions: {
           type: 'array',
@@ -136,13 +122,7 @@ export class InvestorsAdminController {
     @Body('title', EmptystringPipe) title: string,
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('investors_shi_title', EmptystringPipe) investors_shi_title: string,
-    @Body('investors_shi_pdf', ImagefileOrNullPipe)
-    investors_shi_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('investors_shi_pdf', EmptystringPipe) investors_shi_pdf: string,
     @Body('regions') regions: string[],
     @Body('investors_shi_year', EmptystringPipe) investors_shi_year: string,
     @Body('investors_shi_category', EmptystringPipe)

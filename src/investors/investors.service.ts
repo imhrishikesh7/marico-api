@@ -55,9 +55,7 @@ export class InvestorsService {
     }
   }
 
-  async getSHIDetail(
-    region?: string,
-  ): Promise<InvestorShareHolder[]> {
+  async getSHIDetail(region?: string): Promise<InvestorShareHolder[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -82,12 +80,7 @@ export class InvestorsService {
     title: string,
     url_title: string,
     investors_shi_title: string,
-    investors_shi_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    investors_shi_pdf: string,
     shiRegions: string[],
     investors_shi_year: string,
     investors_shi_category: string,
@@ -120,6 +113,7 @@ export class InvestorsService {
       shi.investors_shi_year = investors_shi_year;
       shi.investors_shi_category = investors_shi_category;
       shi.sort_order = sort_order;
+      console.log(shi);
       return this.shareHolderRepository.save(shi);
     }
   }
@@ -136,9 +130,7 @@ export class InvestorsService {
     }
   }
 
-  async getAGMDetail(
-    region?: string,
-  ): Promise<InvestorAGM[]> {
+  async getAGMDetail(region?: string): Promise<InvestorAGM[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -214,9 +206,7 @@ export class InvestorsService {
     }
   }
 
-  async getDevidendsDetail(
-    region?: string,
-  ): Promise<InvestorDividends[]> {
+  async getDevidendsDetail(region?: string): Promise<InvestorDividends[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -433,9 +423,7 @@ export class InvestorsService {
     }
   }
 
-  async getSustainabilityDetail(
-    region?: string,
-  ): Promise<Sustainability[]> {
+  async getSustainabilityDetail(region?: string): Promise<Sustainability[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -563,9 +551,7 @@ export class InvestorsService {
     }
   }
 
-  async getCGDetail(
-    region?: string,
-  ): Promise<CorporateGovernance[]> {
+  async getCGDetail(region?: string): Promise<CorporateGovernance[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -632,15 +618,13 @@ export class InvestorsService {
         where: {
           title: Like('%' + search + '%'),
         },
-      }); 
+      });
     } else {
       return await this.iuRepository.find({});
     }
   }
 
-  async getIUDetail(
-    region?: string,
-  ): Promise<InformationUpdate[]> {
+  async getIUDetail(region?: string): Promise<InformationUpdate[]> {
     const where: any = {};
 
     if (region != null && region != '') {

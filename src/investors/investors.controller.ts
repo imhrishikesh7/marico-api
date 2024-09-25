@@ -32,7 +32,36 @@ export class InvestorsController {
   async getSHIDetail(
     @Param('region') region: string,
   ): Promise<InvestorShareHolder[]> {
-    return await this.investorsService.getSHIDetail(region);
+    const shi =  await this.investorsService.getSHIDetail(region);
+
+    const groupedByCategory = shi.reduce((acc: any, item: InvestorShareHolder) => {
+      const category = item.investors_shi_category;
+    
+      // Check if the category already exists in the accumulator
+      if (!acc[category]) {
+        acc[category] = {
+          investors_shi_category: category,
+          pdfs: [],
+        };
+      }
+    
+      // Push the PDF details into the correct category
+      acc[category].pdfs.push({
+        investors_shi_title: item.investors_shi_title,
+        investors_shi_pdf: item.investors_shi_pdf,
+        id: item.id,
+        title: item.title,
+        url_title: item.url_title,
+        sort_order: item.sort_order,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      });
+    
+      return acc;
+    }, {});
+    
+    // Convert the object back into an array
+    return Object.values(groupedByCategory);
   }
 
   @ApiBearerAuth()
