@@ -134,7 +134,7 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      where.agm_regions = Like('%' + region + '%');
     }
 
     return await this.agmRepository.find({
@@ -155,12 +155,7 @@ export class InvestorsService {
     title: string,
     url_title: string,
     agm_documentation_title: string,
-    agm_documentation_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    agm_documentation_pdf: string,
     agmRegions: string[],
     investors_agm_category: string,
     sort_order: number,
@@ -204,18 +199,6 @@ export class InvestorsService {
     } else {
       return await this.dividendsRepository.find({});
     }
-  }
-
-  async getDevidendsDetail(region?: string): Promise<InvestorDividends[]> {
-    const where: any = {};
-
-    if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
-    }
-
-    return await this.dividendsRepository.find({
-      where,
-    });
   }
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {

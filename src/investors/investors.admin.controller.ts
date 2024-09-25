@@ -195,21 +195,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         agm_documentation_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         agm_regions: {
           type: 'array',
@@ -235,13 +221,8 @@ export class InvestorsAdminController {
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('agm_documentation_title', EmptystringPipe)
     agm_documentation_title: string,
-    @Body('agm_documentation_pdf', ImagefileOrNullPipe)
-    agm_documentation_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('agm_documentation_pdf', EmptystringPipe)
+    agm_documentation_pdf:string,
     @Body('agm_regions') agm_regions: string[],
     @Body('investors_agm_category', EmptystringPipe)
     investors_agm_category: string,

@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorAGM {
@@ -17,11 +24,11 @@ export class InvestorAGM {
   @Index()
   agm_documentation_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  agm_documentation_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  agm_documentation_pdf: string;
 
   @Column('json')
-  agm_regions: string[]; 
+  agm_regions: string[];
 
   @Column()
   @Index()

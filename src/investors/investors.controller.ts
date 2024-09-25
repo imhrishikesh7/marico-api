@@ -75,7 +75,7 @@ export class InvestorsController {
   async getDevidendsDetail(
     @Param('region') region: string,
   ): Promise<InvestorDividends[]> {
-    return await this.investorsService.getDevidendsDetail(region);
+    return await this.investorsService.getDividends();
   }
 
   @ApiBearerAuth()
