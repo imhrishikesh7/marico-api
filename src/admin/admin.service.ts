@@ -11,6 +11,7 @@ import menu, { MenuItem } from '../lib/menu';
 import * as AWS from 'aws-sdk';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
+import { dir } from 'console';
 @Injectable()
 export class AdminService {
   constructor(
@@ -504,8 +505,12 @@ export class AdminService {
         throw new BadRequestException('Invalid file type');
       }
     }
-
-    const sanitizedDirectory = directory.replace(/\/+$/, '');
+    let sanitizedDirectory = '';
+    if (directory !== null || directory !== '') {
+      sanitizedDirectory = directory.replace(/\/+$/, '');
+    } else{
+      sanitizedDirectory = 'images/';
+    }
 
     const params = {
       Bucket: process.env.AWS_BUCKET_NAME || '',
@@ -516,9 +521,9 @@ export class AdminService {
       //content type
       ContentType: file.mimetype,
     };
-    console.log(params, '====params')
+    console.log(params, '====params');
     await s3.upload(params).promise();
-    return process.env.AWS_S3_CDN  + '/' + params.Key;
+    return process.env.NEXT_PUBLIC_AWS_S3_DOMAIN + '/' + params.Key;
   }
 
   //generate thumbnail for video file using fluent-ffmpeg and upload to s3
