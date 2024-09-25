@@ -521,9 +521,8 @@ export class AdminService {
       //content type
       ContentType: file.mimetype,
     };
-    console.log(params, '====params');
     await s3.upload(params).promise();
-    return process.env.NEXT_PUBLIC_AWS_S3_DOMAIN + '/' + params.Key;
+    return process.env.AWS_S3_CDN + '/' + params.Key;
   }
 
   //generate thumbnail for video file using fluent-ffmpeg and upload to s3
