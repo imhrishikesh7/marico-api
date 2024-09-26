@@ -119,11 +119,41 @@ export class InvestorsController {
   async getCGDetail(
     @Param('region') region: string,
   ): Promise<CorporateGovernance[]> {
-    return await this.investorsService.getCGDetail(region);
+   const cg = await this.investorsService.getCGDetail(region);
+
+    const groupedByCategory = cg.reduce(
+      (acc: any, item: CorporateGovernance) => {
+        const category = item.documentation_cg_category;
+
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            pdfs: [],
+          };
+        }
+
+        acc[category].pdfs.push({
+          pdf_title: item.documentation_cg_title,
+          pdf: item.documentation_cg_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          regions: item.cg_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+
+        return acc;
+      },
+      {},
+    );
+
+    return Object.values(groupedByCategory);
   }
 
   @ApiBearerAuth()
-  @Get('documentation/iu')
+  @Get('documentation/latest-update')
   async getIUDetail(
     @Param('region') region: string,
   ): Promise<InformationUpdate[]> {

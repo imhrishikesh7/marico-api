@@ -559,12 +559,8 @@ export class InvestorsService {
     title: string,
     url_title: string,
     documentation_cg_title: string,
-    documentation_cg_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    documentation_cg_pdf: string,
+    documentation_cg_category: string,
     cgRegions: string[],
     sort_order: number,
   ): Promise<CorporateGovernance> {
@@ -576,6 +572,7 @@ export class InvestorsService {
         cg.url_title = url_title;
         cg.documentation_cg_title = documentation_cg_title;
         cg.documentation_cg_pdf = documentation_cg_pdf;
+        cg.documentation_cg_category = documentation_cg_category;
         cg.cg_regions = cgRegions;
         cg.sort_order = sort_order;
 
@@ -589,6 +586,7 @@ export class InvestorsService {
       cg.url_title = url_title;
       cg.documentation_cg_title = documentation_cg_title;
       cg.documentation_cg_pdf = documentation_cg_pdf;
+      cg.documentation_cg_category = documentation_cg_category;
       cg.cg_regions = cgRegions;
       cg.sort_order = sort_order;
       return this.cgRepository.save(cg);

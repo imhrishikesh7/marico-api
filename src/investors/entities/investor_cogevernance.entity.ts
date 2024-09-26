@@ -17,8 +17,12 @@ export class CorporateGovernance {
   @Index()
   documentation_cg_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  documentation_cg_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  documentation_cg_pdf: string;
+
+  @Column()
+  @Index()
+  documentation_cg_category: string;
 
   @Column('json')
   cg_regions: string[]; 

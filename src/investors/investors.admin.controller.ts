@@ -774,21 +774,10 @@ export class InvestorsAdminController {
           type: 'string',
         },
         documentation_cg_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
+        },
+        documentation_cg_category: {
+          type: 'string',
         },
         cg_regions: {
           type: 'array',
@@ -811,13 +800,10 @@ export class InvestorsAdminController {
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('documentation_cg_title', EmptystringPipe)
     documentation_cg_title: string,
-    @Body('documentation_cg_pdf', ImagefileOrNullPipe)
-    documentation_cg_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('documentation_cg_pdf', EmptystringPipe)
+    documentation_cg_pdf: string,
+    @Body('documentation_cg_category', EmptystringPipe)
+    documentation_cg_category: string,
     @Body('cg_regions') cg_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ cg: CorporateGovernance }> {
@@ -827,6 +813,7 @@ export class InvestorsAdminController {
       url_title,
       documentation_cg_title,
       documentation_cg_pdf,
+      documentation_cg_category,
       cg_regions,
       sort_order,
     );
