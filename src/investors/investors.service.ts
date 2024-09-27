@@ -368,25 +368,22 @@ export class InvestorsService {
     // Get qupdf data
     const qupdfs = await this.quPdfRepository.find();
 
-    // Map qu to match your desired structure
-    return qu.map((item) => ({
-      category: item.investor_qu_year,
-      subcategories: qupdfs
-        .filter((qupdf) => qupdf.investor_qu_id === item.id)
-        .map((qupdf) => ({
-          subcategory: qupdf.investor_qu,
-          pdfs: qupdfs
-            .filter((pdf) => pdf.investor_qu_id === qupdf.investor_qu_id)
-            .map((pdf) => ({
-              qu_pdfs: pdf.investor_qu_pdf,
-              pdf: pdf.qu_pdf,
-              id: pdf.id,
-              qu_id: pdf.investor_qu_id,
-              sort_order: pdf.sort_order,
-              created_at: pdf.created_at,
-              updated_at: pdf.updated_at,
-            })),
-        })),
+    return qu.map((category) => ({
+      category: category.investor_qu_year,
+      subcategories: ["q1", "q2", "q3", "q4"].map((subcategory) => ({
+        subcategory: subcategory,
+        pdfs: qupdfs
+          .filter((qupdf) => qupdf.investor_qu === subcategory && qupdf.investor_qu_id === category.id)
+          .map((pdf) => ({
+            qu_pdfs: pdf.investor_qu_pdf,
+            pdf: pdf.qu_pdf,
+            id: pdf.id,
+            qu_id: pdf.investor_qu_id,
+            sort_order: pdf.sort_order,
+            created_at: pdf.created_at,
+            updated_at: pdf.updated_at,
+          })),
+      })),
     }));
   }
 
