@@ -673,6 +673,18 @@ export class InvestorsService {
     }
   }
 
+  async getPDDetail(region?: string): Promise<InvestorPlacement[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.pd_regions = Like('%' + region + '%');
+    }
+
+    return await this.pdRepository.find({
+      where,
+    });
+  }
+
   async getPDById(id: number): Promise<InvestorPlacement | null> {
     return await this.pdRepository.findOne({
       where: {

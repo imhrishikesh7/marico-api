@@ -17,6 +17,7 @@ import { Sustainability } from './entities/investor_sustainability.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
 import { InvestorSchedule } from './entities/investor_schedule.entity';
+import { InvestorPlacement } from './entities/investor_placement.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -193,6 +194,14 @@ export class InvestorsController {
     );
 
     return Object.values(groupedByCategory);
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/placement-document')
+  async getPDDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorPlacement[]> {
+    return await this.investorsService.getPDDetail(region);
   }
 
 }
