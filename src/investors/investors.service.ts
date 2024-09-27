@@ -372,21 +372,20 @@ export class InvestorsService {
     return qu.map((item) => ({
       category: item.investor_qu_year,
       subcategories: qupdfs
-        .filter((qupdf) => qupdf.investor_qu_id === item.id) // Assuming qupdf has a relation to qu by `qu_id`
+        .filter((qupdf) => qupdf.investor_qu_id === item.id)
         .map((qupdf) => ({
-          subcategory: qupdf.investor_qu, // Use actual property for subcategory
-          pdfs: [
-            {
-              qu_pdfs: qupdf.investor_qu_pdf,
-              pdf: qupdf.qu_pdf,
-              id: qupdf.id,
-              qu_id: qupdf.investor_qu_id,
-              sort_order: qupdf.sort_order,
-              created_at: qupdf.created_at,
-              updated_at: qupdf.updated_at,
-            },
-            {},
-          ], // Replace with actual PDF objects or data
+          subcategory: qupdf.investor_qu,
+          pdfs: qupdfs
+            .filter((pdf) => pdf.investor_qu_id === qupdf.investor_qu_id)
+            .map((pdf) => ({
+              qu_pdfs: pdf.investor_qu_pdf,
+              pdf: pdf.qu_pdf,
+              id: pdf.id,
+              qu_id: pdf.investor_qu_id,
+              sort_order: pdf.sort_order,
+              created_at: pdf.created_at,
+              updated_at: pdf.updated_at,
+            })),
         })),
     }));
   }
