@@ -359,17 +359,44 @@ export class InvestorsService {
     });
   }
 
+  async getQUALL(): Promise<any[]> {
+    // Get qu array
+    const qu = await this.quRepository.find({
+      order: { qu_year_sort: 'ASC' },
+    });
+
+    // Get qupdf data
+    const qupdfs = await this.quPdfRepository.find();
+
+    // Map qu to match your desired structure
+    return qu.map((item) => ({
+      category: item.investor_qu_year,
+      subcategories: qupdfs
+        .filter((qupdf) => qupdf.investor_qu_id === item.id) // Assuming qupdf has a relation to qu by `qu_id`
+        .map((qupdf) => ({
+          subcategory: qupdf.investor_qu, // Use actual property for subcategory
+          pdfs: [
+            {
+              qu_pdfs: qupdf.investor_qu_pdf,
+              pdf: qupdf.qu_pdf,
+              id: qupdf.id,
+              qu_id: qupdf.investor_qu_id,
+              sort_order: qupdf.sort_order,
+              created_at: qupdf.created_at,
+              updated_at: qupdf.updated_at,
+            },
+            {},
+          ], // Replace with actual PDF objects or data
+        })),
+    }));
+  }
+
   async addUpdateQUPDFs(
     investor_qu_id: number,
     contexText: {
       investor_qu: string;
       investor_qu_pdf: string;
-      qu_pdf: {
-        url: string;
-        width: number;
-        height: number;
-        alt: string;
-      };
+      qu_pdf: string;
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {

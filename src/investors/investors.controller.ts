@@ -121,7 +121,7 @@ export class InvestorsController {
   async getCGDetail(
     @Param('region') region: string,
   ): Promise<CorporateGovernance[]> {
-   const cg = await this.investorsService.getCGDetail(region);
+    const cg = await this.investorsService.getCGDetail(region);
 
     const groupedByCategory = cg.reduce(
       (acc: any, item: CorporateGovernance) => {
@@ -161,7 +161,7 @@ export class InvestorsController {
   ): Promise<InformationUpdate[]> {
     return await this.investorsService.getIUDetail(region);
   }
-  
+
   @ApiBearerAuth()
   @Get('documentation/schedule-of-investors')
   async getScheduleDetail(
@@ -204,4 +204,9 @@ export class InvestorsController {
     return await this.investorsService.getPDDetail(region);
   }
 
+  @ApiBearerAuth()
+  @Get('documentation/quarterly-updates')
+  async getQUDetail(@Param('region') region: string): Promise<any[]> {
+    return await this.investorsService.getQUALL();
+  }
 }

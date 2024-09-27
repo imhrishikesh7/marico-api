@@ -17,8 +17,8 @@ export class QuartelyUpdate {
   @Index()
   investor_qu_pdf: string;
 
-  @Column({ type: 'json', nullable: true })
-  qu_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  qu_pdf: string;
 
   @Column()
   @Index()

@@ -598,12 +598,7 @@ export class InvestorsAdminController {
     contentText: {
       investor_qu: string;
       investor_qu_pdf: string;
-      qu_pdf: {
-        url: string;
-        width: number;
-        height: number;
-        alt: string;
-      };
+      qu_pdf: string;
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {
