@@ -491,12 +491,7 @@ export class InvestorsService {
     id: number,
     title: string,
     url_title: string,
-    schedule_analyst_meet_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    schedule_analyst_meet_pdf: string,
     schedule_analyst_meet_year: string,
   ): Promise<InvestorSchedule> {
     if (id) {

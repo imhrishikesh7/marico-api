@@ -866,21 +866,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         schedule_analyst_meet_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         schedule_analyst_meet_year: {
           type: 'string',
@@ -894,13 +880,8 @@ export class InvestorsAdminController {
     @Body('id', ParseIntPipe) id: number,
     @Body('title', EmptystringPipe) title: string,
     @Body('url_title', EmptystringPipe) url_title: string,
-    @Body('schedule_analyst_meet_pdf', ImagefileOrNullPipe)
-    schedule_analyst_meet_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('schedule_analyst_meet_pdf', EmptystringPipe)
+    schedule_analyst_meet_pdf: string,
     @Body('schedule_analyst_meet_year') schedule_analyst_meet_year: string,
   ): Promise<{ schedule: InvestorSchedule }> {
     const schedule = await this.investorsService.addUpdateSchedule(

@@ -16,6 +16,7 @@ import { InvestorDividends } from './entities/investor_dividend.entity';
 import { Sustainability } from './entities/investor_sustainability.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
+import { InvestorSchedule } from './entities/investor_schedule.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -159,4 +160,39 @@ export class InvestorsController {
   ): Promise<InformationUpdate[]> {
     return await this.investorsService.getIUDetail(region);
   }
+  
+  @ApiBearerAuth()
+  @Get('documentation/schedule-of-investors')
+  async getScheduleDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorSchedule[]> {
+    const schedule = await this.investorsService.getSchedule();
+    const groupedByCategory = schedule.reduce(
+      (acc: any, item: InvestorSchedule) => {
+        const category = item.schedule_analyst_meet_year;
+
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            pdfs: [],
+          };
+        }
+
+        acc[category].pdfs.push({
+          pdf_title: item.title,
+          pdf: item.schedule_analyst_meet_pdf,
+          id: item.id,
+          url_title: item.url_title,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+
+        return acc;
+      },
+      {},
+    );
+
+    return Object.values(groupedByCategory);
+  }
+
 }

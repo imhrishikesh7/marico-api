@@ -13,8 +13,8 @@ export class InvestorSchedule {
   @Index()
   url_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  schedule_analyst_meet_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  schedule_analyst_meet_pdf: string;
   
   @Column()
   @Index()
