@@ -365,26 +365,55 @@ export class InvestorsService {
       order: { qu_year_sort: 'ASC' },
     });
 
-    // Get qupdf data
     const qupdfs = await this.quPdfRepository.find();
 
-    return qu.map((category) => ({
+    const result = qupdfs.reduce<
+      Record<string,{ subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }>
+    >((acc, qupdf) => {
+      const {
+        investor_qu_pdf,
+        investor_qu,
+        qu_pdf,
+        id,
+        investor_qu_id,
+        sort_order,
+        created_at,
+        updated_at,
+      } = qupdf;
+
+      if (!acc[investor_qu]) {
+        acc[investor_qu] = { subcategory: investor_qu, category_id: investor_qu_id, pdfs: [] };
+      }
+
+      acc[investor_qu].pdfs.push({
+        investor_qu_pdf,
+        investor_qu,
+        qu_pdf,
+        id,
+        investor_qu_id,
+        sort_order,
+        created_at,
+        updated_at,
+      });
+
+      return acc;
+    }, {});
+
+    // Convert the accumulated object into an array
+    const subcategoriesArray = Object.values(result);
+
+    const finalResult = qu.map((category) => ({
       category: category.investor_qu_year,
-      subcategories: qupdfs.map((subcategory) => ({
-        subcategory: subcategory.investor_qu,
-        pdfs: qupdfs
-          .filter((qupdf) => qupdf.investor_qu === subcategory.investor_qu && qupdf.investor_qu_id === category.id)
-          .map((pdf) => ({
-            qu_pdfs: pdf.investor_qu_pdf,
-            pdf: pdf.qu_pdf,
-            id: pdf.id,
-            qu_id: pdf.investor_qu_id,
-            sort_order: pdf.sort_order,
-            created_at: pdf.created_at,
-            updated_at: pdf.updated_at,
-          })),
-      })),
+      subcategories: subcategoriesArray
+        .filter((subcategory) => subcategory.category_id === category.id)
+        .map((subcategory) => ({
+          subcategory: subcategory.subcategory,
+          pdfs:subcategory.pdfs
+          .filter((sub) => sub.investor_qu === subcategory.subcategory)
+        })),
     }));
+
+    return finalResult;
   }
 
   async addUpdateQUPDFs(
