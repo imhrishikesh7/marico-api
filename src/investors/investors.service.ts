@@ -370,10 +370,10 @@ export class InvestorsService {
 
     return qu.map((category) => ({
       category: category.investor_qu_year,
-      subcategories: ["q1", "q2", "q3", "q4"].map((subcategory) => ({
-        subcategory: subcategory,
+      subcategories: qupdfs.map((subcategory) => ({
+        subcategory: subcategory.investor_qu,
         pdfs: qupdfs
-          .filter((qupdf) => qupdf.investor_qu === subcategory && qupdf.investor_qu_id === category.id)
+          .filter((qupdf) => qupdf.investor_qu === subcategory.investor_qu && qupdf.investor_qu_id === category.id)
           .map((pdf) => ({
             qu_pdfs: pdf.investor_qu_pdf,
             pdf: pdf.qu_pdf,
