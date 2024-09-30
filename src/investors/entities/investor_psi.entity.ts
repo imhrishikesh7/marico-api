@@ -17,8 +17,8 @@ export class InvestorPSI {
   @Index()
   documentation_psi_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  psi_documentation_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  psi_documentation_pdf: string;
   
   @Column('json')
   psi_regions: string[]; 
