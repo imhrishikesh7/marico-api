@@ -222,7 +222,7 @@ export class InvestorsAdminController {
     @Body('agm_documentation_title', EmptystringPipe)
     agm_documentation_title: string,
     @Body('agm_documentation_pdf', EmptystringPipe)
-    agm_documentation_pdf:string,
+    agm_documentation_pdf: string,
     @Body('agm_regions') agm_regions: string[],
     @Body('investors_agm_category', EmptystringPipe)
     investors_agm_category: string,
@@ -562,36 +562,36 @@ export class InvestorsAdminController {
   @ApiBearerAuth()
   @ApiBody({
     schema: {
-      "type": "object",
-      "properties": {
-        "investor_qu_id": {
-          "type": "integer"
+      type: 'object',
+      properties: {
+        investor_qu_id: {
+          type: 'integer',
         },
-        "contentText": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "investor_qu": {
-                "type": "string"
+        contentText: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              investor_qu: {
+                type: 'string',
               },
-              "investor_qu_pdf": {
-                "type": "string"
+              investor_qu_pdf: {
+                type: 'string',
               },
-              "title": {
-                "type": "string"
+              title: {
+                type: 'string',
               },
-              "qu_pdf": {
-                "type": "string"
+              qu_pdf: {
+                type: 'string',
               },
-              "sort_order": {
-                "type": "integer"
-              }
+              sort_order: {
+                type: 'integer',
+              },
             },
-          }
-        }
+          },
+        },
       },
-    },    
+    },
   })
   @Roles(['INVESTOR'])
   @Post('qu/pdfs/add-update')
@@ -601,7 +601,7 @@ export class InvestorsAdminController {
     contentText: {
       investor_qu: string;
       investor_qu_pdf: string;
-      title:string;
+      title: string;
       qu_pdf: string;
       sort_order: number;
     }[],
@@ -1004,13 +1004,16 @@ export class InvestorsAdminController {
   @Get('placement/:id')
   async getPDById(@Param('id', ParseIntPipe) id: number): Promise<{
     pd: InvestorPlacement | null;
+    pds: InvestorPlacement[];
     regions: Region[] | null;
   }> {
     const toReturn = {
       pd: await this.investorsService.getPDById(id),
+      pds: await this.investorsService.getPD(),
       regions: await this.regionService.getRegionList(),
     } as {
       pd: InvestorPlacement | null;
+      pds: InvestorPlacement[];
       regions: Region[] | null;
     };
     return toReturn;
