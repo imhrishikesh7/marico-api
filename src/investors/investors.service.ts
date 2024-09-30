@@ -368,11 +368,15 @@ export class InvestorsService {
     const qupdfs = await this.quPdfRepository.find();
 
     const result = qupdfs.reduce<
-      Record<string,{ subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }>
+      Record<
+        string,
+        { subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }
+      >
     >((acc, qupdf) => {
       const {
         investor_qu_pdf,
         investor_qu,
+        title,
         qu_pdf,
         id,
         investor_qu_id,
@@ -382,12 +386,17 @@ export class InvestorsService {
       } = qupdf;
 
       if (!acc[investor_qu]) {
-        acc[investor_qu] = { subcategory: investor_qu, category_id: investor_qu_id, pdfs: [] };
+        acc[investor_qu] = {
+          subcategory: investor_qu,
+          category_id: investor_qu_id,
+          pdfs: [],
+        };
       }
 
       acc[investor_qu].pdfs.push({
         investor_qu_pdf,
         investor_qu,
+        title,
         qu_pdf,
         id,
         investor_qu_id,
@@ -408,8 +417,19 @@ export class InvestorsService {
         .filter((subcategory) => subcategory.category_id === category.id)
         .map((subcategory) => ({
           subcategory: subcategory.subcategory,
-          pdfs:subcategory.pdfs
-          .filter((sub) => sub.investor_qu === subcategory.subcategory)
+          pdfs: subcategory.pdfs
+            .filter((sub) => sub.investor_qu === subcategory.subcategory)
+            .map((sub) => ({
+              investor_qu_pdf: sub.investor_qu_pdf,
+              investor_qu: sub.investor_qu,
+              pdf_title: sub.title,
+              pdf: sub.qu_pdf,
+              id: sub.id,
+              investor_qu_id: sub.investor_qu_id,
+              sort_order: sub.sort_order,
+              created_at: sub.created_at,
+              updated_at: sub.updated_at,
+            })),
         })),
     }));
 
@@ -421,6 +441,7 @@ export class InvestorsService {
     contexText: {
       investor_qu: string;
       investor_qu_pdf: string;
+      title: string;
       qu_pdf: string;
       sort_order: number;
     }[],
@@ -439,6 +460,7 @@ export class InvestorsService {
       qu_pdfs.investor_qu_id = investor_qu_id;
       qu_pdfs.investor_qu = pdf.investor_qu;
       qu_pdfs.investor_qu_pdf = pdf.investor_qu_pdf;
+      qu_pdfs.title = pdf.title;
       qu_pdfs.qu_pdf = pdf.qu_pdf;
       qu_pdfs.sort_order = pdf.sort_order;
       return qu_pdfs;
@@ -862,7 +884,7 @@ export class InvestorsService {
       return await this.psiRepository.find({});
     }
   }
-  
+
   async getPSIDetail(region?: string): Promise<InvestorPSI[]> {
     const where: any = {};
 

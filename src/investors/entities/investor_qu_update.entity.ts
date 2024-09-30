@@ -17,6 +17,10 @@ export class QuartelyUpdate {
   @Index()
   investor_qu_pdf: string;
 
+  @Column()
+  @Index()
+  title: string;
+
   @Column({ type: 'text' })
   qu_pdf: string;
 

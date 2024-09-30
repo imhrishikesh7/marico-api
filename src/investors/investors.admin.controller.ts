@@ -562,33 +562,36 @@ export class InvestorsAdminController {
   @ApiBearerAuth()
   @ApiBody({
     schema: {
-      type: 'object',
-      properties: {
-        product_id: {
-          type: 'number',
+      "type": "object",
+      "properties": {
+        "investor_qu_id": {
+          "type": "integer"
         },
-        images: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              url: {
-                type: 'string',
+        "contentText": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "investor_qu": {
+                "type": "string"
               },
-              alt: {
-                type: 'string',
+              "investor_qu_pdf": {
+                "type": "string"
               },
-              width: {
-                type: 'number',
+              "title": {
+                "type": "string"
               },
-              height: {
-                type: 'number',
+              "qu_pdf": {
+                "type": "string"
               },
+              "sort_order": {
+                "type": "integer"
+              }
             },
-          },
-        },
+          }
+        }
       },
-    },
+    },    
   })
   @Roles(['INVESTOR'])
   @Post('qu/pdfs/add-update')
@@ -598,6 +601,7 @@ export class InvestorsAdminController {
     contentText: {
       investor_qu: string;
       investor_qu_pdf: string;
+      title:string;
       qu_pdf: string;
       sort_order: number;
     }[],
