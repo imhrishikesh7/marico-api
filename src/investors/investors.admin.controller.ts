@@ -944,21 +944,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         iu_documentation_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         iu_regions: {
           type: 'array',
@@ -981,13 +967,8 @@ export class InvestorsAdminController {
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('documentation_iu_title', EmptystringPipe)
     documentation_iu_title: string,
-    @Body('iu_documentation_pdf', ImagefileOrNullPipe)
-    iu_documentation_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('iu_documentation_pdf', EmptystringPipe)
+    iu_documentation_pdf: string,
     @Body('iu_regions') iu_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ iu: InformationUpdate }> {
@@ -1055,21 +1036,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         pd_documentation_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         pd_regions: {
           type: 'array',
@@ -1092,13 +1059,8 @@ export class InvestorsAdminController {
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('documentation_pd_title', EmptystringPipe)
     documentation_pd_title: string,
-    @Body('pd_documentation_pdf', ImagefileOrNullPipe)
-    pd_documentation_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('pd_documentation_pdf', EmptystringPipe)
+    pd_documentation_pdf: string,
     @Body('pd_regions') pd_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ pd: InvestorPlacement }> {
@@ -1252,21 +1214,7 @@ export class InvestorsAdminController {
           type: 'string',
         },
         psi_documentation_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+          type: 'string',
         },
         psi_regions: {
           type: 'array',

@@ -699,12 +699,7 @@ export class InvestorsService {
     title: string,
     url_title: string,
     documentation_iu_title: string,
-    iu_documentation_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    iu_documentation_pdf: string,
     iuRegions: string[],
     sort_order: number,
   ): Promise<InformationUpdate> {
@@ -772,12 +767,7 @@ export class InvestorsService {
     title: string,
     url_title: string,
     documentation_pd_title: string,
-    pd_documentation_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    pd_documentation_pdf: string,
     pdRegions: string[],
     sort_order: number,
   ): Promise<InvestorPlacement> {

@@ -17,8 +17,8 @@ export class InformationUpdate {
   @Index()
   documentation_iu_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  iu_documentation_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  iu_documentation_pdf: string;
 
   @Column('json')
   iu_regions: string[]; 

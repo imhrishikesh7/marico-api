@@ -17,8 +17,8 @@ export class InvestorPlacement {
   @Index()
   documentation_pd_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  pd_documentation_pdf: { url: string; alt: string; width: number; height: number} | null;
+  @Column({ type: 'text' })
+  pd_documentation_pdf: string;
 
   @Column('json')
   pd_regions: string[]; 
