@@ -120,7 +120,7 @@ const menu: MenuItem[] = [
       },
       {
         name: 'Price Sensitive Information',
-        url: '/investors/contact',
+        url: '/investors/psi',
         role: ['INVESTOR_PSI'],
       },
     ],
