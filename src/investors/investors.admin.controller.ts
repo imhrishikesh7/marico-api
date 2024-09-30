@@ -1288,13 +1288,8 @@ export class InvestorsAdminController {
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('documentation_psi_title', EmptystringPipe)
     documentation_psi_title: string,
-    @Body('psi_documentation_pdf', ImagefileOrNullPipe)
-    psi_documentation_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('psi_documentation_pdf', EmptystringPipe)
+    psi_documentation_pdf: string,
     @Body('psi_regions') psi_regions: string[],
     @Body('psi_category', EmptystringPipe)
     psi_category: string,

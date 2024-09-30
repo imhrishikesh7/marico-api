@@ -18,6 +18,8 @@ import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
 import { InvestorSchedule } from './entities/investor_schedule.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
+import { InvestorContact } from './entities/investor_contact.entity';
+import { InvestorPSI } from './entities/investor_psi.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -208,5 +210,44 @@ export class InvestorsController {
   @Get('documentation/quarterly-updates')
   async getQUDetail(@Param('region') region: string): Promise<any[]> {
     return await this.investorsService.getQUALL();
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/investor-contact')
+  async getICDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorContact[]> {
+    return await this.investorsService.getICDetail();
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/price-sensitive-information')
+  async getPSIDetail(@Param('region') region: string): Promise<InvestorPSI[]> {
+    const psi = await this.investorsService.getPSIDetail();
+    const groupedByCategory = psi.reduce((acc: any, item: InvestorPSI) => {
+      const category = item.psi_category;
+
+      if (!acc[category]) {
+        acc[category] = {
+          category: category,
+          pdfs: [],
+        };
+      }
+
+      acc[category].pdfs.push({
+        pdf_title: item.documentation_psi_title,
+        pdf: item.psi_documentation_pdf,
+        id: item.id,
+        title: item.title,
+        url_title: item.url_title,
+        sort_order: item.sort_order,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      });
+
+      return acc;
+    }, {});
+
+    return Object.values(groupedByCategory);
   }
 }

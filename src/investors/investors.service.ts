@@ -798,6 +798,18 @@ export class InvestorsService {
     }
   }
 
+  async getICDetail(region?: string): Promise<InvestorContact[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.ic_regions = Like('%' + region + '%');
+    }
+
+    return await this.icRepository.find({
+      where,
+    });
+  }
+
   async getICById(id: number): Promise<InvestorContact | null> {
     return await this.icRepository.findOne({
       where: {
@@ -850,6 +862,18 @@ export class InvestorsService {
       return await this.psiRepository.find({});
     }
   }
+  
+  async getPSIDetail(region?: string): Promise<InvestorPSI[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.psi_regions = Like('%' + region + '%');
+    }
+
+    return await this.psiRepository.find({
+      where,
+    });
+  }
 
   async getPSIById(id: number): Promise<InvestorPSI | null> {
     return await this.psiRepository.findOne({
@@ -864,12 +888,7 @@ export class InvestorsService {
     title: string,
     url_title: string,
     documentation_psi_title: string,
-    psi_documentation_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    psi_documentation_pdf: string,
     psiregions: string[],
     psi_category: string,
     sort_order: number,
