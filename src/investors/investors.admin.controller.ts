@@ -124,7 +124,7 @@ export class InvestorsAdminController {
     @Body('investors_shi_title', EmptystringPipe) investors_shi_title: string,
     @Body('investors_shi_pdf', EmptystringPipe) investors_shi_pdf: string,
     @Body('regions') regions: string[],
-    @Body('investors_shi_year', EmptystringPipe) investors_shi_year: string,
+    @Body('investors_shi_year') investors_shi_year: string,
     @Body('investors_shi_category', EmptystringPipe)
     investors_shi_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
