@@ -62,9 +62,78 @@ export class InvestorsService {
       where.regions = Like('%' + region + '%');
     }
 
-    return await this.shareHolderRepository.find({
+    const shi = await this.shareHolderRepository.find({
       where,
     });
+
+    const groupedByCategory = shi.reduce(
+      (acc: any, item: InvestorShareHolder) => {
+        const category = item.investors_shi_category;
+        const subcategory = item.investors_shi_year;
+    
+        // If the category doesn't exist, initialize it
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            subcategories: subcategory ? [] : undefined,
+            pdfs: subcategory ? undefined : [],
+          };
+        }
+    
+        if (subcategory) {
+          const subcategoryIndex = acc[category].subcategories.findIndex(
+            (sub: any) => sub.subcategory === subcategory
+          );
+    
+          if (subcategoryIndex === -1) {
+            acc[category].subcategories.push({
+              subcategory: subcategory,
+              pdfs: [],
+            });
+          }
+    
+          const sub = acc[category].subcategories.find(
+            (sub: any) => sub.subcategory === subcategory
+          );
+    
+          sub.pdfs.push({
+            pdf_title: item.investors_shi_title,
+            pdf: item.investors_shi_pdf,
+            id: item.id,
+            title: item.title,
+            url_title: item.url_title,
+            regions: item.regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        } else {
+          acc[category].pdfs.push({
+            pdf_title: item.investors_shi_title,
+            pdf: item.investors_shi_pdf,
+            id: item.id,
+            title: item.title,
+            url_title: item.url_title,
+            regions: item.regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        }
+    
+        return acc;
+      },
+      {}
+    );
+    
+    const result = Object.values(groupedByCategory).map((item: any) => {
+      if (!item.subcategories) {
+        delete item.subcategories;
+      }
+      return item;
+    });
+    
+    return result;
   }
 
   async getSHIById(id: number): Promise<InvestorShareHolder | null> {
