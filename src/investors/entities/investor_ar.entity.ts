@@ -14,7 +14,7 @@ export class InvestorAR {
 
   @Column()
   @Index()
-  ar_documentation_year: string | null ;
+  ar_documentation_year: string ;
 
   @Column()
   @Index()
