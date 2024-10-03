@@ -29,7 +29,7 @@ export class InvestorAR {
 
   @Column('json')
   ar_regions: string[];
-
+  
   @Column()
   @Index()
   investors_ar_category: string;

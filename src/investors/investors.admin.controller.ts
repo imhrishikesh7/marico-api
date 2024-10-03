@@ -34,6 +34,7 @@ import { InformationUpdate } from './entities/investor_iu.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
+import { InvestorAR } from './entities/investor_ar.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
@@ -1262,6 +1263,108 @@ export class InvestorsAdminController {
     );
     return {
       psi,
+    };
+  }
+
+  
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('ar')
+  async getAR(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorAR[]> {
+    return await this.investorsService.getAR(search || undefined);
+  }
+
+  @Get('ar/:id')
+  async getARById(@Param('id', ParseIntPipe) id: number): Promise<{
+    annual_report: InvestorAR | null;
+    annual_reports: InvestorAR[] | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      annual_report: await this.investorsService.getARById(id),
+      annual_reports: await this.investorsService.getAR(),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      annual_report: InvestorAR | null;
+      annual_reports: InvestorAR[] | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        ar_documentation_year: {
+          type: 'string',
+        },
+        ar_documentation_title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        ar_documentation_pdf: {
+          type: 'string',
+        },
+        ar_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        investors_ar_category: {
+          type: 'string',
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('ar/add-update')
+  async addUpdateAR(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('ar_documentation_year') ar_documentation_year: string,
+    @Body('ar_documentation_title')
+    ar_documentation_title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('ar_documentation_pdf', EmptystringPipe)
+    ar_documentation_pdf: string,
+    @Body('ar_regions') ar_regions: string[],
+    @Body('investors_ar_category', EmptystringPipe)
+    investors_ar_category: string,
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ annual_report: InvestorAR }> {
+    const annual_report = await this.investorsService.addUpdateAR(
+      id,
+      ar_documentation_year,
+      url_title,
+      ar_documentation_title,
+      ar_documentation_pdf,
+      ar_regions,
+      investors_ar_category,
+      sort_order,
+    );
+    return {
+      annual_report,
     };
   }
 }

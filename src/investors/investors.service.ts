@@ -13,6 +13,7 @@ import { InformationUpdate } from './entities/investor_iu.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
+import { InvestorAR } from './entities/investor_ar.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -41,6 +42,8 @@ export class InvestorsService {
     private readonly icRepository: Repository<InvestorContact>,
     @InjectRepository(InvestorPSI)
     private readonly psiRepository: Repository<InvestorPSI>,
+    @InjectRepository(InvestorAR)
+    private readonly arRepository: Repository<InvestorAR>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -182,7 +185,6 @@ export class InvestorsService {
       shi.investors_shi_year = investors_shi_year;
       shi.investors_shi_category = investors_shi_category;
       shi.sort_order = sort_order;
-      console.log(shi);
       return this.shareHolderRepository.save(shi);
     }
   }
@@ -269,6 +271,48 @@ export class InvestorsService {
       return await this.dividendsRepository.find({});
     }
   }
+
+  // async getDividendsDetail(region?: string): Promise<InvestorDividends[]> {
+  //   const where: any = {};
+
+  //   if (region != null && region != '') {
+  //     where.agm_regions = Like('%' + region + '%');
+  //   }
+
+  //   const dividends = await this.dividendsRepository.find({
+  //     where,
+  //   });
+
+  //   const groupedByCategory = dividends.reduce(
+  //     (acc: any, item: InvestorDividends) => {
+  //       const category = item.investors_dividends_category;
+
+  //       if (!acc[category]) {
+  //         acc[category] = {
+  //           category: category,
+  //           pdfs: [],
+  //         };
+  //       }
+
+  //       acc[category].pdfs.push({
+  //         pdf_title: item.investors_shi_title,
+  //         pdf: item.investors_shi_pdf,
+  //         id: item.id,
+  //         title: item.title,
+  //         url_title: item.url_title,
+  //         regions: item.regions,
+  //         sort_order: item.sort_order,
+  //         created_at: item.created_at,
+  //         updated_at: item.updated_at,
+  //       });
+
+  //       return acc;
+  //     },
+  //     {},
+  //   );
+
+  //   return Object.values(groupedByCategory);
+  // }
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
     return await this.dividendsRepository.findOne({
@@ -1000,6 +1044,143 @@ export class InvestorsService {
       psi.psi_category = psi_category;
       psi.sort_order = sort_order;
       return this.psiRepository.save(psi);
+    }
+  }
+
+  async getAR(search?: string): Promise<InvestorAR[]> {
+    if (search != null && search != '') {
+      return await this.arRepository.find({
+        where: {
+          ar_documentation_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.arRepository.find({});
+    }
+  }
+
+  async getARDetail(region?: string): Promise<InvestorAR[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.ar_regions = Like('%' + region + '%');
+    }
+
+    const AR = await this.arRepository.find({
+      where,
+    });
+    const groupedByCategory = AR.reduce(
+      (acc: any, item: InvestorAR) => {
+        const category = item.ar_documentation_year !== '' ? item.ar_documentation_year: item.investors_ar_category;
+        const subcategory = item.ar_documentation_year !== '' ? item.investors_ar_category : undefined;
+    
+        // If the category doesn't exist, initialize it
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            subcategories: subcategory ? [] : undefined,
+            pdfs: subcategory ? undefined : [],
+          };
+        }
+    
+        if (subcategory) {
+          const subcategoryIndex = acc[category].subcategories.findIndex(
+            (sub: any) => sub.subcategory === subcategory
+          );
+    
+          if (subcategoryIndex === -1) {
+            acc[category].subcategories.push({
+              subcategory: subcategory,
+              pdfs: [],
+            });
+          }
+    
+          const sub = acc[category].subcategories.find(
+            (sub: any) => sub.subcategory === subcategory
+          );
+    
+          sub.pdfs.push({
+            pdf_title: item.ar_documentation_title,
+            pdf: item.ar_documentation_pdf,
+            id: item.id,
+            url_title: item.url_title,
+            regions: item.ar_regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        } else {
+          acc[category].pdfs.push({
+            pdf_title: item.ar_documentation_title,
+            pdf: item.ar_documentation_pdf,
+            id: item.id,
+            url_title: item.url_title,
+            regions: item.ar_regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        }
+    
+        return acc;
+      },
+      {}
+    );
+    
+    const result = Object.values(groupedByCategory).map((item: any) => {
+      if (!item.subcategories) {
+        delete item.subcategories;
+      }
+      return item;
+    });
+    
+    return result;
+  }
+
+  async getARById(id: number): Promise<InvestorAR | null> {
+    return await this.arRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateAR(
+    id: number,
+    ar_documentation_year: string,
+    ar_documentation_title: string,
+    url_title: string,
+    ar_documentation_pdf: string,
+    arRegions: string[],
+    investors_ar_category: string,
+    sort_order: number,
+  ): Promise<InvestorAR> {
+    if (id) {
+      const ar = await this.getARById(id);
+      if (ar) {
+        ar.id = id;
+        ar.ar_documentation_year = ar_documentation_year;
+        ar.ar_documentation_title = ar_documentation_title;
+        ar.url_title = url_title;
+        ar.ar_documentation_pdf = ar_documentation_pdf;
+        ar.ar_regions = arRegions;
+        ar.investors_ar_category = investors_ar_category;
+        ar.sort_order = sort_order;
+
+        return this.arRepository.save(ar);
+      }
+      throw new Error('ar not found');
+    } else {
+      const ar = new InvestorAR();
+
+      ar.ar_documentation_year = ar_documentation_year;
+      ar.ar_documentation_title = ar_documentation_title;
+      ar.url_title = url_title;
+      ar.ar_documentation_pdf = ar_documentation_pdf;
+      ar.ar_regions = arRegions;
+      ar.investors_ar_category = investors_ar_category;
+      ar.sort_order = sort_order;
+      return this.arRepository.save(ar);
     }
   }
 }

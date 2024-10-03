@@ -20,6 +20,7 @@ import { InvestorSchedule } from './entities/investor_schedule.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
+import { InvestorAR } from './entities/investor_ar.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -219,5 +220,13 @@ export class InvestorsController {
     }, {});
 
     return Object.values(groupedByCategory);
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/annual-reports')
+  async getARDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorAR[]> {
+    return await this.investorsService.getARDetail(region);
   }
 }
