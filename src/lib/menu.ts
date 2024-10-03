@@ -69,6 +69,11 @@ const menu: MenuItem[] = [
     role: ['INVESTOR'],
     sub: [
       {
+        name: 'Annual Reports',
+        url: '/investors/ar',
+        role: ['INVESTOR_AR'],
+      },
+      {
         name: 'ShareHolder Info',
         url: '/investors/shi',
         role: ['INVESTOR_SHI'],
