@@ -14,70 +14,37 @@ export class InvestorDividends {
 
   @Column()
   @Index()
-  title: string;
+  investors_dividend_category: string;
+
+  @Column()
+  @Index()
+  investors_dividend_subcategory: string;
+
+  @Column()
+  @Index()
+  pdf_title: string;
 
   @Column()
   @Index()
   url_title: string;
 
-  @Column({ type: 'json', nullable: true })
-  dividend_history: {
-    url: string;
-    alt: string;
-    width: number;
-    height: number;
-  } | null;
-
   @Column({ type: 'text' })
-  history_writeup: string;
-
-  @Column({ type: 'json', nullable: true })
-  unclaimed_interim_dividends: {
-    url: string;
-    alt: string;
-    width: number;
-    height: number;
-  } | null;
-
-  @Column({ type: 'text' })
-  unclaimed_interim_dividends_writeup: string;
+  pdf: string;
 
   @Column()
   @Index()
-  unclaimed_interim_dividends_year: string;
-
-  @Column({ type: 'json', nullable: true })
-  unclaimed_dividends: {
-    url: string;
-    alt: string;
-    width: number;
-    height: number;
-  } | null;
-
-  @Column({ type: 'text' })
-  unclaimed_dividends_writeup: string;
+  writeup: string;
 
   @Column()
   @Index()
-  unclaimed_dividends_year: string;
+  dividends_year: string;
 
-  @Column({ type: 'json', nullable: true })
-  transfer_shares_to_IEPF: {
-    url: string;
-    alt: string;
-    width: number;
-    height: number;
-  } | null;
-
-  @Column({ type: 'text' })
-  transfer_shares_to_IEPF_writeup: string;
+  @Column('json')
+  dividend_regions: string[];
 
   @Column()
   @Index()
-  transfer_shares_to_IEPF_year: string;
-
-  @Column({ type: 'json', nullable: true })
-  forms_pdf: { url: string; alt: string; width: number; height: number } | null;
+  sort_order: number;
 
   @CreateDateColumn()
   @Index()

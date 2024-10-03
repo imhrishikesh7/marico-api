@@ -281,117 +281,36 @@ export class InvestorsAdminController {
         id: {
           type: 'number',
         },
-        title: {
+        investors_dividend_category: {
+          type: 'string',
+        },
+        investors_dividend_subcategory: {
+          type: 'string',
+        },
+        pdf_title: {
           type: 'string',
         },
         url_title: {
           type: 'string',
         },
-        dividend_history: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
+        pdf: {
+          type: 'string',
+        },
+        writeup: {
+          type: 'string',
+        },
+        dividends_year: {
+          type: 'string',
+        },
+        dividend_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
           },
         },
-        history_writeup: {
-          type: 'string',
-        },
-        unclaimed_interim_dividends: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
-        },
-        unclaimed_interim_dividends_writeup: {
-          type: 'string',
-        },
-        unclaimed_interim_dividends_year: {
-          type: 'string',
-        },
-        unclaimed_dividends: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
-        },
-        unclaimed_dividends_writeup: {
-          type: 'string',
-        },
-        unclaimed_dividends_year: {
-          type: 'string',
-        },
-        transfer_shares_to_IEPF: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
-        },
-        transfer_shares_to_IEPF_writeup: {
-          type: 'string',
-        },
-        transfer_shares_to_IEPF_year: {
-          type: 'string',
-        },
-        forms_pdf: {
-          type: 'object',
-          properties: {
-            url: {
-              type: 'string',
-            },
-            width: {
-              type: 'number',
-            },
-            height: {
-              type: 'number',
-            },
-            alt: {
-              type: 'string',
-            },
-          },
+        sort_order: {
+          type: 'number',
         },
       },
     },
@@ -400,74 +319,28 @@ export class InvestorsAdminController {
   @Post('dividends/add-update')
   async addUpdateDividends(
     @Body('id', ParseIntPipe) id: number,
-    @Body('title', EmptystringPipe) title: string,
+    @Body('investors_dividend_category', EmptystringPipe) investors_dividend_category: string,
+    @Body('investors_dividend_subcategory') investors_dividend_subcategory: string,
+    @Body('pdf_title', EmptystringPipe) pdf_title: string,
     @Body('url_title', EmptystringPipe) url_title: string,
-    @Body('dividend_history', ImagefileOrNullPipe)
-    dividend_history: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
-    @Body('history_writeup', EmptystringPipe)
-    history_writeup: string,
-    @Body('unclaimed_interim_dividends', ImagefileOrNullPipe)
-    unclaimed_interim_dividends: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
-    @Body('unclaimed_interim_dividends_writeup', EmptystringPipe)
-    unclaimed_interim_dividends_writeup: string,
-    @Body('unclaimed_interim_dividends_year', EmptystringPipe)
-    unclaimed_interim_dividends_year: string,
-    @Body('unclaimed_dividends', ImagefileOrNullPipe)
-    unclaimed_dividends: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
-    @Body('unclaimed_dividends_writeup', EmptystringPipe)
-    unclaimed_dividends_writeup: string,
-    @Body('unclaimed_dividends_year', EmptystringPipe)
-    unclaimed_dividends_year: string,
-    @Body('transfer_shares_to_IEPF', ImagefileOrNullPipe)
-    transfer_shares_to_IEPF: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
-    @Body('transfer_shares_to_IEPF_writeup', EmptystringPipe)
-    transfer_shares_to_IEPF_writeup: string,
-    @Body('transfer_shares_to_IEPF_year', EmptystringPipe)
-    transfer_shares_to_IEPF_year: string,
-    @Body('forms_pdf', ImagefileOrNullPipe)
-    forms_pdf: {
-      url: string;
-      alt: string;
-      width: number;
-      height: number;
-    } | null,
+    @Body('pdf', EmptystringPipe) pdf: string,
+    @Body('writeup') writeup: string,
+    @Body('dividends_year') dividends_year: string,
+    @Body('dividend_regions') dividend_regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+   
   ): Promise<{ dividend: InvestorDividends }> {
     const dividend = await this.investorsService.addUpdateDividends(
       id,
-      title,
+      investors_dividend_category,
+      investors_dividend_subcategory,
+      pdf_title,
       url_title,
-      dividend_history,
-      history_writeup,
-      unclaimed_interim_dividends,
-      unclaimed_interim_dividends_writeup,
-      unclaimed_interim_dividends_year,
-      unclaimed_dividends,
-      unclaimed_dividends_writeup,
-      unclaimed_dividends_year,
-      transfer_shares_to_IEPF,
-      transfer_shares_to_IEPF_writeup,
-      transfer_shares_to_IEPF_year,
-      forms_pdf,
+      pdf,
+      writeup,
+      dividends_year,
+      dividend_regions,
+      sort_order,
     );
     return {
       dividend,

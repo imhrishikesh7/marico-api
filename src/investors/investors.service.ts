@@ -73,7 +73,7 @@ export class InvestorsService {
       (acc: any, item: InvestorShareHolder) => {
         const category = item.investors_shi_category;
         const subcategory = item.investors_shi_year;
-    
+
         // If the category doesn't exist, initialize it
         if (!acc[category]) {
           acc[category] = {
@@ -82,23 +82,23 @@ export class InvestorsService {
             pdfs: subcategory ? undefined : [],
           };
         }
-    
+
         if (subcategory) {
           const subcategoryIndex = acc[category].subcategories.findIndex(
-            (sub: any) => sub.subcategory === subcategory
+            (sub: any) => sub.subcategory === subcategory,
           );
-    
+
           if (subcategoryIndex === -1) {
             acc[category].subcategories.push({
               subcategory: subcategory,
               pdfs: [],
             });
           }
-    
+
           const sub = acc[category].subcategories.find(
-            (sub: any) => sub.subcategory === subcategory
+            (sub: any) => sub.subcategory === subcategory,
           );
-    
+
           sub.pdfs.push({
             pdf_title: item.investors_shi_title,
             pdf: item.investors_shi_pdf,
@@ -123,19 +123,19 @@ export class InvestorsService {
             updated_at: item.updated_at,
           });
         }
-    
+
         return acc;
       },
-      {}
+      {},
     );
-    
+
     const result = Object.values(groupedByCategory).map((item: any) => {
       if (!item.subcategories) {
         delete item.subcategories;
       }
       return item;
     });
-    
+
     return result;
   }
 
@@ -264,7 +264,7 @@ export class InvestorsService {
     if (search != null && search != '') {
       return await this.dividendsRepository.find({
         where: {
-          url_title: Like('%' + search + '%'),
+          pdf_title: Like('%' + search + '%'),
         },
       });
     } else {
@@ -324,67 +324,30 @@ export class InvestorsService {
 
   async addUpdateDividends(
     id: number,
-    title: string,
+    investors_dividend_category: string,
+    investors_dividend_subcategory: string,
+    pdf_title: string,
     url_title: string,
-    dividend_history: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
-    history_writeup: string,
-    unclaimed_interim_dividends: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
-    unclaimed_interim_dividends_writeup: string,
-    unclaimed_interim_dividends_year: string,
-    unclaimed_dividends: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
-    unclaimed_dividends_writeup: string,
-    unclaimed_dividends_year: string,
-    transfer_shares_to_IEPF: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
-    transfer_shares_to_IEPF_writeup: string,
-    transfer_shares_to_IEPF_year: string,
-    forms_pdf: {
-      url: string;
-      width: number;
-      height: number;
-      alt: string;
-    } | null,
+    pdf: string,
+    writeup: string,
+    dividends_year: string,
+    dividendRegions: string[],
+    sort_order: number,
   ): Promise<InvestorDividends> {
     if (id) {
       const dividend = await this.getDividendsById(id);
       if (dividend) {
         dividend.id = id;
-        dividend.title = title;
+        dividend.investors_dividend_category = investors_dividend_category;
+        dividend.investors_dividend_subcategory =
+          investors_dividend_subcategory;
+        dividend.pdf_title = pdf_title;
         dividend.url_title = url_title;
-        dividend.dividend_history = dividend_history;
-        dividend.history_writeup = history_writeup;
-        dividend.unclaimed_interim_dividends = unclaimed_interim_dividends;
-        dividend.unclaimed_interim_dividends_writeup =
-          unclaimed_interim_dividends_writeup;
-        dividend.unclaimed_interim_dividends_year =
-          unclaimed_interim_dividends_year;
-        dividend.unclaimed_dividends = unclaimed_dividends;
-        dividend.unclaimed_dividends_writeup = unclaimed_dividends_writeup;
-        dividend.unclaimed_dividends_year = unclaimed_dividends_year;
-        dividend.transfer_shares_to_IEPF = transfer_shares_to_IEPF;
-        dividend.transfer_shares_to_IEPF_writeup =
-          transfer_shares_to_IEPF_writeup;
-        dividend.transfer_shares_to_IEPF_year = transfer_shares_to_IEPF_year;
-        dividend.forms_pdf = forms_pdf;
+        dividend.pdf = pdf;
+        dividend.writeup = writeup;
+        dividend.dividends_year = dividends_year;
+        dividend.dividend_regions = dividendRegions;
+        dividend.sort_order = sort_order;
 
         return this.dividendsRepository.save(dividend);
       }
@@ -392,24 +355,15 @@ export class InvestorsService {
     } else {
       const dividend = new InvestorDividends();
 
-      dividend.id = id;
-      dividend.title = title;
+      dividend.investors_dividend_category = investors_dividend_category;
+      dividend.investors_dividend_subcategory = investors_dividend_subcategory;
+      dividend.pdf_title = pdf_title;
       dividend.url_title = url_title;
-      dividend.dividend_history = dividend_history;
-      dividend.history_writeup = history_writeup;
-      dividend.unclaimed_interim_dividends = unclaimed_interim_dividends;
-      dividend.unclaimed_interim_dividends_writeup =
-        unclaimed_interim_dividends_writeup;
-      dividend.unclaimed_interim_dividends_year =
-        unclaimed_interim_dividends_year;
-      dividend.unclaimed_dividends = unclaimed_dividends;
-      dividend.unclaimed_dividends_writeup = unclaimed_dividends_writeup;
-      dividend.unclaimed_dividends_year = unclaimed_dividends_year;
-      dividend.transfer_shares_to_IEPF = transfer_shares_to_IEPF;
-      dividend.transfer_shares_to_IEPF_writeup =
-        transfer_shares_to_IEPF_writeup;
-      dividend.transfer_shares_to_IEPF_year = transfer_shares_to_IEPF_year;
-      dividend.forms_pdf = forms_pdf;
+      dividend.pdf = pdf;
+      dividend.writeup = writeup;
+      dividend.dividends_year = dividends_year;
+      dividend.dividend_regions = dividendRegions;
+      dividend.sort_order = sort_order;
       return this.dividendsRepository.save(dividend);
     }
   }
@@ -1069,71 +1023,74 @@ export class InvestorsService {
     const AR = await this.arRepository.find({
       where,
     });
-    const groupedByCategory = AR.reduce(
-      (acc: any, item: InvestorAR) => {
-        const category = item.ar_documentation_year !== '' ? item.ar_documentation_year: item.investors_ar_category;
-        const subcategory = item.ar_documentation_year !== '' ? item.investors_ar_category : undefined;
-    
-        // If the category doesn't exist, initialize it
-        if (!acc[category]) {
-          acc[category] = {
-            category: category,
-            subcategories: subcategory ? [] : undefined,
-            pdfs: subcategory ? undefined : [],
-          };
-        }
-    
-        if (subcategory) {
-          const subcategoryIndex = acc[category].subcategories.findIndex(
-            (sub: any) => sub.subcategory === subcategory
-          );
-    
-          if (subcategoryIndex === -1) {
-            acc[category].subcategories.push({
-              subcategory: subcategory,
-              pdfs: [],
-            });
-          }
-    
-          const sub = acc[category].subcategories.find(
-            (sub: any) => sub.subcategory === subcategory
-          );
-    
-          sub.pdfs.push({
-            pdf_title: item.ar_documentation_title,
-            pdf: item.ar_documentation_pdf,
-            id: item.id,
-            url_title: item.url_title,
-            regions: item.ar_regions,
-            sort_order: item.sort_order,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          });
-        } else {
-          acc[category].pdfs.push({
-            pdf_title: item.ar_documentation_title,
-            pdf: item.ar_documentation_pdf,
-            id: item.id,
-            url_title: item.url_title,
-            regions: item.ar_regions,
-            sort_order: item.sort_order,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
+    const groupedByCategory = AR.reduce((acc: any, item: InvestorAR) => {
+      const category =
+        item.ar_documentation_year !== ''
+          ? item.ar_documentation_year
+          : item.investors_ar_category;
+      const subcategory =
+        item.ar_documentation_year !== ''
+          ? item.investors_ar_category
+          : undefined;
+
+      // If the category doesn't exist, initialize it
+      if (!acc[category]) {
+        acc[category] = {
+          category: category,
+          subcategories: subcategory ? [] : undefined,
+          pdfs: subcategory ? undefined : [],
+        };
+      }
+
+      if (subcategory) {
+        const subcategoryIndex = acc[category].subcategories.findIndex(
+          (sub: any) => sub.subcategory === subcategory,
+        );
+
+        if (subcategoryIndex === -1) {
+          acc[category].subcategories.push({
+            subcategory: subcategory,
+            pdfs: [],
           });
         }
-    
-        return acc;
-      },
-      {}
-    );
-    
+
+        const sub = acc[category].subcategories.find(
+          (sub: any) => sub.subcategory === subcategory,
+        );
+
+        sub.pdfs.push({
+          pdf_title: item.ar_documentation_title,
+          pdf: item.ar_documentation_pdf,
+          id: item.id,
+          url_title: item.url_title,
+          regions: item.ar_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      } else {
+        acc[category].pdfs.push({
+          pdf_title: item.ar_documentation_title,
+          pdf: item.ar_documentation_pdf,
+          id: item.id,
+          url_title: item.url_title,
+          regions: item.ar_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      }
+
+      return acc;
+    }, {});
+
     const result = Object.values(groupedByCategory).map((item: any) => {
       if (!item.subcategories) {
         delete item.subcategories;
       }
       return item;
     });
-    
+
     return result;
   }
 
