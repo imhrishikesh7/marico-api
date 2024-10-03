@@ -15,6 +15,7 @@ import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
+import { InvestorAR } from './entities/investor_ar.entity';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CorporateGovernance } from './entities/investor_cogevernance.entity';
       InvestorPlacement,
       InvestorContact,
       InvestorPSI,
+      InvestorAR,
       Region,
     ]),
   ],
