@@ -1356,8 +1356,8 @@ export class InvestorsAdminController {
     const annual_report = await this.investorsService.addUpdateAR(
       id,
       ar_documentation_year,
-      url_title,
       ar_documentation_title,
+      url_title,
       ar_documentation_pdf,
       ar_regions,
       investors_ar_category,
