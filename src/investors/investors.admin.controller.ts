@@ -261,12 +261,18 @@ export class InvestorsAdminController {
 
   @Get('dividends/:id')
   async getDividendsById(@Param('id', ParseIntPipe) id: number): Promise<{
-    dividends: InvestorDividends | null;
+    dividend: InvestorDividends | null;
+    dividends: InvestorDividends[] | null;
+    regions: Region[] | null;
   }> {
     const toReturn = {
-      dividends: await this.investorsService.getDividendsById(id),
+      dividend: await this.investorsService.getDividendsById(id),
+      dividends: await this.investorsService.getDividends(),
+      regions: await this.regionService.getRegionList(),
     } as {
-      dividends: InvestorDividends | null;
+      dividend: InvestorDividends | null;
+      dividends: InvestorDividends[] | null;
+      regions: Region[] | null;
     };
     return toReturn;
   }
@@ -319,8 +325,10 @@ export class InvestorsAdminController {
   @Post('dividends/add-update')
   async addUpdateDividends(
     @Body('id', ParseIntPipe) id: number,
-    @Body('investors_dividend_category', EmptystringPipe) investors_dividend_category: string,
-    @Body('investors_dividend_subcategory') investors_dividend_subcategory: string,
+    @Body('investors_dividend_category', EmptystringPipe)
+    investors_dividend_category: string,
+    @Body('investors_dividend_subcategory')
+    investors_dividend_subcategory: string,
     @Body('pdf_title', EmptystringPipe) pdf_title: string,
     @Body('url_title', EmptystringPipe) url_title: string,
     @Body('pdf', EmptystringPipe) pdf: string,
@@ -328,7 +336,6 @@ export class InvestorsAdminController {
     @Body('dividends_year') dividends_year: string,
     @Body('dividend_regions') dividend_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
-   
   ): Promise<{ dividend: InvestorDividends }> {
     const dividend = await this.investorsService.addUpdateDividends(
       id,
@@ -1139,7 +1146,6 @@ export class InvestorsAdminController {
     };
   }
 
-  
   @AdminOnly()
   @ApiBearerAuth()
   @ApiQuery({
