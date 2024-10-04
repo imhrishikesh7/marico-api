@@ -112,17 +112,6 @@ export class BrandsService {
 
   async getBrandList(search?: string | null): Promise<Brand[]> {
     const where: any = {};
-    // if (region != null && region != '') {
-    //   const regionName = await this.regionRepository.findOne({
-    //     where: {
-    //       alias: region,
-    //     },
-    //   });
-
-    //   if (regionName != null) {
-    //     where.region = Like('%' + regionName.name + '%');
-    //   }
-    // }
     if (search != null && search != '') {
       where.title = search;
     }
@@ -131,6 +120,15 @@ export class BrandsService {
     });
   }
 
+  async getBrandDetail(search?: string | null): Promise<Brand[]> {
+    const where: any = {};
+    if (search != null && search != '') {
+        where.regions = Like('%' + search + '%');
+    }
+    return await this.brandRepository.find({
+      where,
+    });
+  }
   async getBrandsDropdown(): Promise<Brand[]> {
     return await this.brandRepository.find({
       select: ['id', 'title'],
