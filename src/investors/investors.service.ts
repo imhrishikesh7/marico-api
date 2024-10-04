@@ -272,47 +272,136 @@ export class InvestorsService {
     }
   }
 
-  // async getDividendsDetail(region?: string): Promise<InvestorDividends[]> {
-  //   const where: any = {};
+  async getDividendsDetail(region?: string): Promise<any[]> {
+    const where: any = {};
 
-  //   if (region != null && region != '') {
-  //     where.agm_regions = Like('%' + region + '%');
-  //   }
+    // Filter by region if provided
+    if (region) {
+      where.dividend_regions = Like(`%${region}%`);
+    }
 
-  //   const dividends = await this.dividendsRepository.find({
-  //     where,
-  //   });
+    // Fetch dividends from repository
+    const dividends = await this.dividendsRepository.find({ where });
 
-  //   const groupedByCategory = dividends.reduce(
-  //     (acc: any, item: InvestorDividends) => {
-  //       const category = item.investors_dividends_category;
+    // Group the data
+    const groupedData = dividends.reduce(
+      (acc: any, item: InvestorDividends) => {
+        const category = item.investors_dividend_category;
+        const subcategory =
+          item.investors_dividend_subcategory !== ''
+            ? item.investors_dividend_subcategory
+            : item.dividends_year;
+        const supersubcategory =
+          item.investors_dividend_subcategory !== ''
+            ? item.dividends_year
+            : undefined;
 
-  //       if (!acc[category]) {
-  //         acc[category] = {
-  //           category: category,
-  //           pdfs: [],
-  //         };
-  //       }
+        // Find or create category
+        let categoryObj = acc.find((c: any) => c.category === category);
+        if (!categoryObj) {
+          categoryObj = {
+            category,
+            subcategories: [],
+            pdfs: [],
+          };
+          acc.push(categoryObj);
+        }
 
-  //       acc[category].pdfs.push({
-  //         pdf_title: item.investors_shi_title,
-  //         pdf: item.investors_shi_pdf,
-  //         id: item.id,
-  //         title: item.title,
-  //         url_title: item.url_title,
-  //         regions: item.regions,
-  //         sort_order: item.sort_order,
-  //         created_at: item.created_at,
-  //         updated_at: item.updated_at,
-  //       });
+        // If subcategory exists
+        if (subcategory) {
+          let subcategoryObj = categoryObj.subcategories.find(
+            (sub: any) => sub.subcategory === subcategory,
+          );
+          if (!subcategoryObj) {
+            subcategoryObj = {
+              subcategory,
+              supersubcategories: [],
+              pdfs: [],
+            };
+            categoryObj.subcategories.push(subcategoryObj);
+          }
 
-  //       return acc;
-  //     },
-  //     {},
-  //   );
+          // If supersubcategory exists
+          if (supersubcategory) {
+            let supersubcategoryObj = subcategoryObj.supersubcategories.find(
+              (superSub: any) => superSub.supersubcategory === supersubcategory,
+            );
+            if (!supersubcategoryObj) {
+              supersubcategoryObj = {
+                supersubcategory,
+                pdfs: [],
+              };
+              subcategoryObj.supersubcategories.push(supersubcategoryObj);
+            }
 
-  //   return Object.values(groupedByCategory);
-  // }
+            // Push PDFs into supersubcategory
+            supersubcategoryObj.pdfs.push({
+              id: item.id,
+              pdf_title: item.pdf_title,
+              url_title: item.url_title,
+              pdf: item.pdf,
+              writeup: item.writeup,
+              dividends_year: item.dividends_year,
+              dividend_regions: item.dividend_regions,
+              sort_order: item.sort_order,
+              created_at: item.created_at,
+              updated_at: item.updated_at,
+            });
+          } else {
+            // Push PDFs into subcategory directly if no supersubcategory
+            subcategoryObj.pdfs.push({
+              id: item.id,
+              pdf_title: item.pdf_title,
+              url_title: item.url_title,
+              pdf: item.pdf,
+              writeup: item.writeup,
+              dividends_year: item.dividends_year,
+              dividend_regions: item.dividend_regions,
+              sort_order: item.sort_order,
+              created_at: item.created_at,
+              updated_at: item.updated_at,
+            });
+          }
+        } else {
+          // If no subcategory, push PDFs directly into the category
+          categoryObj.pdfs.push({
+            id: item.id,
+            pdf_title: item.pdf_title,
+            url_title: item.url_title,
+            pdf: item.pdf,
+            writeup: item.writeup,
+            dividends_year: item.dividends_year,
+            dividend_regions: item.dividend_regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        }
+
+        return acc;
+      },
+      [],
+    );
+
+    return groupedData.map((category: any) => {
+      if (category.subcategories.length === 0) {
+        delete category.subcategories;
+      } else {
+        category.subcategories = category.subcategories.map((subcat: any) => {
+          if (subcat.supersubcategories.length === 0) {
+            delete subcat.supersubcategories;
+            delete category.pdfs;
+          }else{
+            delete category.pdfs;
+            delete subcat.pdfs;
+          }
+
+          return subcat;
+        });
+      }
+      return category;
+    });
+  }
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
     return await this.dividendsRepository.findOne({
