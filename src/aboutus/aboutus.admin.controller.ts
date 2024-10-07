@@ -375,9 +375,9 @@ export class AboutusAdminController {
         year: {
           type: 'string',
         },
-        description: {
-          type: 'string',
-        },
+        // description: {
+        //   type: 'string',
+        // },
         regions: {
           type: 'array',
           items: {
@@ -406,7 +406,7 @@ export class AboutusAdminController {
     } | null,
     @Body('history_title', EmptystringPipe) history_title: string,
     @Body('year', EmptystringPipe) year: string,
-    @Body('description', EmptystringPipe) description: string,
+    // @Body('description', EmptystringPipe) description: string,
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ history: History }> {
@@ -417,7 +417,7 @@ export class AboutusAdminController {
       thumbnail,
       history_title,
       year,
-      description,
+      // description,
       regions,
       sort_order,
     );

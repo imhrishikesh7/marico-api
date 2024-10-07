@@ -18,9 +18,10 @@ import { InvestorsModule } from './investors/investors.module';
 import { InvestorsAdminController } from './investors/investors.admin.controller';
 import { PageModule } from './page/page.module';
 import { PageAdminController } from './page/page.admin.controller';
+import { MediaModule } from './media/media.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule],
+  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule, MediaModule],
   controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController, PageAdminController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },

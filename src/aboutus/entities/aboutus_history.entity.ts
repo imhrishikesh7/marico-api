@@ -31,8 +31,8 @@ export class History {
   @Index()
   year: string;
 
-  @Column({ type: 'text' })
-  description: string;
+  // @Column({ type: 'text' })
+  // description: string;
 
   @Column('json')
   regions: string[];

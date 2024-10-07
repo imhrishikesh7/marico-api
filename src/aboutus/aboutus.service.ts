@@ -218,7 +218,7 @@ export class AboutusService {
     } | null,
     history_title: string,
     year: string,
-    description: string,
+    // description: string,
     historyRegions: string[],
     sort_order: number,
   ): Promise<History> {
@@ -231,7 +231,7 @@ export class AboutusService {
         history.thumbnail = thumbnail;
         history.history_title = history_title;
         history.year = year;
-        history.description = description;
+        // history.description = description;
         history.regions = historyRegions;
         history.sort_order = sort_order;
 
@@ -246,7 +246,7 @@ export class AboutusService {
       history.thumbnail = thumbnail;
       history.history_title = history_title;
       history.year = year;
-      history.description = description;
+      // history.description = description;
       history.regions = historyRegions;
       history.sort_order = sort_order;
       return this.historyRepository.save(history);
