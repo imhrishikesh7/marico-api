@@ -35,11 +35,6 @@ const permissions: Permission[] = [
     name: 'Region',
   },
   {
-    key: 'REGION',
-    level: 2,
-    name: 'Region > Ecommerce Links',
-  },
-  {
     key: 'ABOUT_US',
     level: 1,
     name: 'About Us > MemberList',
@@ -133,6 +128,11 @@ const permissions: Permission[] = [
     key: 'INVESTORS',
     level: 2,
     name: 'Investors > Price Sensitive Information',
+  },
+  {
+    key: 'MEDIA',
+    level: 1,
+    name: 'Media',
   },
 ];
 

@@ -14,13 +14,7 @@ const menu: MenuItem[] = [
   {
     name: 'Region',
     role: ['REGION'],
-    sub: [
-      {
-        name: 'Region',
-        url: '/region',
-        role: ['REGION'],
-      },
-    ],
+    url: '/region',
   },
   {
     name: 'About Us',
@@ -129,6 +123,11 @@ const menu: MenuItem[] = [
         role: ['INVESTOR_PSI'],
       },
     ],
+  },
+  {
+    name: 'Media',
+    role: ['MEDIA'],
+    url: '/media',
   },
   {
     name: 'Admin',

@@ -95,14 +95,12 @@ export class Masking {
 
 export class Utility {
   public static slugify(str: string): string {
-    const extension = str.split('.').pop();
+    // const extension = str.split('.').pop();
     return (
       str
         .toLowerCase() // convert to lowercase
         .replace(/[^a-z0-9]+/g, '-') // replace non-alphanumeric characters with a hyphen
-        .replace(/^-+|-+$/g, '') +
-      '.' +
-      extension
+        .replace(/^-+|-+$/g, '')
     ); // remove leading and trailing hyphens
   }
 }

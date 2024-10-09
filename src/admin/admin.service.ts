@@ -487,8 +487,8 @@ export class AdminService {
       region: process.env.AWS_REGION,
     });
     //generate unique file name (slugify original name)
-    const filename = `${Utility.slugify(file.originalname)}`;
-
+    let file_name = file.originalname.split('.');
+    const filename = `${Utility.slugify(file_name[0])}.${file_name[1]}`;
     //check if extension is allowed
     const allowedExtensions = [
       'jpg',
@@ -498,8 +498,9 @@ export class AdminService {
       'pdf',
       'csv',
       'svg',
+      'gif',
     ];
-    const extension = filename.split('.').pop();
+    const extension = file_name[1];
     if (extension) {
       if (!allowedExtensions.includes(extension)) {
         throw new BadRequestException('Invalid file type');
@@ -508,7 +509,7 @@ export class AdminService {
     let sanitizedDirectory = '';
     if (directory !== null || directory !== '') {
       sanitizedDirectory = directory.replace(/\/+$/, '');
-    } else{
+    } else {
       sanitizedDirectory = 'images/';
     }
 

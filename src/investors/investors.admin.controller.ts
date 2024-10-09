@@ -1246,4 +1246,5 @@ export class InvestorsAdminController {
       annual_report,
     };
   }
+  
 }
