@@ -14,19 +14,33 @@ export class MediaService {
     if (search != null && search != '') {
       return await this.mediaRepository.find({
         where: {
-            media_title: Like('%' + search + '%'),
+          media_title: Like('%' + search + '%'),
         },
       });
     } else {
       return await this.mediaRepository.find({});
     }
   }
-  
+
   async getMediaById(id: number): Promise<Media | null> {
     return await this.mediaRepository.findOne({
       where: {
         id: id,
       },
+    });
+  }
+  async getMediaByCategory(
+    region?: string,
+    category?: string,
+  ): Promise<Media[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.cg_regions = Like('%' + region + '%');
+    }
+    where.category = Like('%' + category + '%');
+    return await this.mediaRepository.find({
+      where,
     });
   }
 
@@ -39,26 +53,26 @@ export class MediaService {
     media_pdf: string,
     year: string,
     mediaRegions: string[],
-    release_date: string,
+    release_date: Date,
     external_link: string,
     small_image: {
-        url: string;
-        width: number;
-        height: number;
-        alt: string;
-      } | null,
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
     thumbnail: {
-        url: string;
-        width: number;
-        height: number;
-        alt: string;
-      } | null,
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
     marico_img: {
-        url: string;
-        width: number;
-        height: number;
-        alt: string;
-      } | null,
+      url: string;
+      width: number;
+      height: number;
+      alt: string;
+    } | null,
     sort_order: number,
     is_latest: boolean,
   ): Promise<Media> {
@@ -92,11 +106,10 @@ export class MediaService {
       media.description = description;
       media.media_pdf = media_pdf;
       media.year = year;
-        media.release_date = release_date;
+      media.release_date = release_date;
       media.media_regions = mediaRegions;
       media.sort_order = sort_order;
       return this.mediaRepository.save(media);
     }
   }
-
 }

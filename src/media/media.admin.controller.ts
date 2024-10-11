@@ -22,6 +22,7 @@ import { Roles } from 'src/admin/roles.decorator';
 import { Media } from './entities/media.entity';
 import { Region } from 'src/regions/entities/region.entity';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
+import { ParseDateTimePipe } from 'src/validations/parsedatetime/parsedatetime.pipe';
 @Controller('admin/media')
 export class MediaAdminController {
   constructor(
@@ -156,7 +157,7 @@ export class MediaAdminController {
     @Body('media_pdf') media_pdf: string,
     @Body('year', EmptystringPipe) year: string,
     @Body('mediaRegions') mediaRegions: string[],
-    @Body('release_date', EmptystringPipe) release_date: string,
+    @Body('release_date', ParseDateTimePipe) release_date: Date,
     @Body('external_link') external_link: string,
     @Body('small_image') small_image: {
       url: string;
