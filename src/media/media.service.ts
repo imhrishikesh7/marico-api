@@ -109,6 +109,7 @@ export class MediaService {
       media.release_date = release_date;
       media.media_regions = mediaRegions;
       media.sort_order = sort_order;
+      media.is_latest = is_latest;
       return this.mediaRepository.save(media);
     }
   }

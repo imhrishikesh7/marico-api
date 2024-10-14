@@ -73,7 +73,7 @@ export class Media {
   @Index()
   sort_order: number;
 
-  @Column()
+  @Column({default: true})
   @Index()
   is_latest: boolean;
 
