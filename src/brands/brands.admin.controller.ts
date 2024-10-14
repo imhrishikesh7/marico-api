@@ -28,6 +28,7 @@ import { AboutusService } from 'src/aboutus/aboutus.service';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
+import { StringArrayOrNullPipe } from 'src/validations/stringarrayornull/stringarrayornull.pipe';
 
 @Controller('admin/brands')
 export class BrandsAdminController {
@@ -83,6 +84,7 @@ export class BrandsAdminController {
     };
     return toReturn;
   }
+
   //add new member
   @AdminOnly()
   @ApiBearerAuth()
@@ -242,9 +244,8 @@ export class BrandsAdminController {
     @Body('overview', EmptystringPipe) overview: string,
     @Body('tvc_relation') tvc_relation: string[],
     @Body('print_ad_relation') print_ad_relation: string[],
-    @Body('award_relation') award_relation: string[],
+    @Body('award_relation', StringArrayOrNullPipe) award_relation: string[],
     @Body('sub_brand_relation') sub_brand_relation: string[],
-    @Body('description', EmptystringPipe) description: string,
     @Body('is_featured', SwitchPipe) is_featured: boolean,
     @Body('thumbnail1', ImagefileOrNullPipe)
     thumbnail1: {
@@ -276,8 +277,9 @@ export class BrandsAdminController {
     } | null,
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
-    @Body('shop_now_url', EmptystringPipe) shop_now_url: string,
+    @Body('shop_now_url') shop_now_url: string,
   ): Promise<{ brand: Brand }> {
+    console.log(award_relation,'award_relation');
     const brand = await this.brandService.addUpdateBrand(
       id,
       title,

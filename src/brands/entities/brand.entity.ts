@@ -79,7 +79,12 @@ export class Brand {
   } | null;
 
   @Column({ type: 'json', nullable: true })
-  thumbnail4: { url: string; alt: string; width: number; height: number } | null;
+  thumbnail4: {
+    url: string;
+    alt: string;
+    width: number;
+    height: number;
+  } | null;
 
   @Column('json')
   regions: string[];

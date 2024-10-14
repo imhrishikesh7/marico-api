@@ -205,7 +205,7 @@ export class BrandsService {
       height: number;
       alt: string;
     } | null,
-    regions: string[],
+    brandRegions: string[],
     sort_order: number,
     shop_now_url: string,
   ): Promise<Brand> {
@@ -233,7 +233,7 @@ export class BrandsService {
         brand.thumbnail2 = thumbnail2;
         brand.thumbnail3 = thumbnail3;
         brand.thumbnail4 = thumbnail4;
-        brand.regions = regions;
+        brand.regions = brandRegions;
         brand.sort_order = sort_order;
         brand.shop_now_url = shop_now_url;
         return this.brandRepository.save(brand);
@@ -259,7 +259,7 @@ export class BrandsService {
       brand.thumbnail2 = thumbnail2;
       brand.thumbnail3 = thumbnail3;
       brand.thumbnail4 = thumbnail4;
-      brand.regions = regions;
+      brand.regions = brandRegions;
       brand.sort_order = sort_order;
       brand.shop_now_url = shop_now_url;
       return this.brandRepository.save(brand);
