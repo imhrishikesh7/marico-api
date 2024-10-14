@@ -37,9 +37,7 @@ export class Media {
   @Column('json')
   media_regions: string[];
 
-  @Column({
-    type: "timestamp",
-  })
+  @Column()
   release_date: Date;
 
   @Column({ type: 'text', nullable: true })
