@@ -147,7 +147,7 @@ export class MediaAdminController {
     },
   })
   @Roles(['MEDIA'])
-  @Post('media/add-update')
+  @Post('add-update')
   async addUpdateMedia(
     @Body('id', ParseIntPipe) id: number,
     @Body('category', EmptystringPipe) category: string,
