@@ -36,7 +36,7 @@ export class MediaService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.cg_regions = Like('%' + region + '%');
+      where.media_regions = Like('%' + region + '%');
     }
     where.category = Like('%' + category + '%');
     return await this.mediaRepository.find({
