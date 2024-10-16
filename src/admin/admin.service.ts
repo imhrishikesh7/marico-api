@@ -499,6 +499,8 @@ export class AdminService {
       'csv',
       'svg',
       'gif',
+      'docx',
+      'doc',
     ];
     const extension = file_name[1];
     if (extension) {
