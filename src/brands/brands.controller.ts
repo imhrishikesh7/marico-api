@@ -9,9 +9,20 @@ export class BrandsController {
 
   @ApiBearerAuth()
   @Get('')
-  async getARDetail(
+  async getBrandDetail(
     @Param('region') region: string,
   ): Promise<Brand[]> {
     return await this.brandsService.getBrandDetail(region);
   }
+
+  @ApiBearerAuth()
+  @Get('/:alias')
+  async getBrandByAlias(
+    @Param('region') region: string,
+    @Param('alias') alias: string,
+  ): Promise<Brand | null> {
+    return await this.brandsService.getBrandByAlias(region,alias);
+  }
+
+  
 }

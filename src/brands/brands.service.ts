@@ -41,7 +41,7 @@ export class BrandsService {
   }
 
   async getTvcDropdown(): Promise<Tvc[]> {
-   return await this.tvcRepository.find({
+    return await this.tvcRepository.find({
       order: {
         sort_order: 'ASC',
       },
@@ -123,12 +123,13 @@ export class BrandsService {
   async getBrandDetail(search?: string | null): Promise<Brand[]> {
     const where: any = {};
     if (search != null && search != '') {
-        where.regions = Like('%' + search + '%');
+      where.regions = Like('%' + search + '%');
     }
     return await this.brandRepository.find({
       where,
     });
   }
+
   async getBrandsDropdown(): Promise<Brand[]> {
     return await this.brandRepository.find({
       select: ['id', 'title'],
@@ -164,6 +165,22 @@ export class BrandsService {
       where: {
         id: id,
       },
+    });
+  }
+
+  async getBrandByAlias(
+    region?: string,
+    alias?: string,
+  ): Promise<Brand | null> {
+    const where: any = {};
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
+    if (alias != null && alias != '') {
+      where.url_title = Like('%' + alias + '%');
+    }
+    return await this.brandRepository.findOne({
+      where,
     });
   }
 
@@ -289,12 +306,12 @@ export class BrandsService {
 
   async getPrintAdDropDown(): Promise<PrintAd[]> {
     return await this.printAdRepository.find({
-       order: {
-         sort_order: 'ASC',
-       },
-     });
-   }
-  
+      order: {
+        sort_order: 'ASC',
+      },
+    });
+  }
+
   async getPrintAdById(id: number): Promise<PrintAd | null> {
     return await this.printAdRepository.findOne({
       where: {
