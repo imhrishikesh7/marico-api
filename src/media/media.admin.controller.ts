@@ -93,7 +93,7 @@ export class MediaAdminController {
         year: {
           type: 'string',
         },
-        mediaRegions: {
+        media_regions: {
           type: 'array',
           items: {
             type: 'string',
@@ -156,7 +156,7 @@ export class MediaAdminController {
     @Body('description') description: string,
     @Body('media_pdf') media_pdf: string,
     @Body('year', EmptystringPipe) year: string,
-    @Body('mediaRegions') mediaRegions: string[],
+    @Body('media_regions') media_regions: string[],
     @Body('release_date', ParseDateTimePipe) release_date: Date,
     @Body('external_link') external_link: string,
     @Body('small_image') small_image: {
@@ -188,7 +188,7 @@ export class MediaAdminController {
       description,
       media_pdf,
       year,
-      mediaRegions,
+      media_regions,
       release_date,
       external_link,
       small_image,
