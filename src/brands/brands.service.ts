@@ -120,14 +120,33 @@ export class BrandsService {
     });
   }
 
+  // async getBrandDetail(search?: string | null): Promise<Brand[]> {
+  //   const where: any = {};
+  //   if (search != null && search != '') {
+  //     where.regions = Like('%' + search + '%');
+  //   }
+  //   where.brand_type = Like('main-brand or standalone');
+  //   return await this.brandRepository.find({
+  //     where,
+  //   });
+  // }
+
   async getBrandDetail(search?: string | null): Promise<Brand[]> {
-    const where: any = {};
-    if (search != null && search != '') {
-      where.regions = Like('%' + search + '%');
+    const query = this.brandRepository.createQueryBuilder('brand');
+  
+    // Add condition for 'regions' using LIKE if 'search' is provided
+    if (search && search.trim() !== '') {
+      query.andWhere('brand.regions LIKE :search', { search: `%${search}%` });
     }
-    return await this.brandRepository.find({
-      where,
+  
+    // Add OR condition for 'brand_type' being either 'main-brand' or 'standalone'
+    query.andWhere('brand.brand_type = :mainBrand OR brand.brand_type = :standalone', {
+      mainBrand: 'main-brand',
+      standalone: 'standalone',
     });
+  
+    // Execute the query and return the results
+    return await query.getMany();
   }
 
   async getBrandsDropdown(): Promise<Brand[]> {
