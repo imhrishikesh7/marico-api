@@ -85,6 +85,7 @@ export class MediaService {
         media.url_title = url_title;
         media.description = description;
         media.media_pdf = media_pdf;
+        media.year = year;
         media.media_regions = mediaRegions;
         media.release_date = release_date;
         media.external_link = external_link;
@@ -105,9 +106,14 @@ export class MediaService {
       media.url_title = url_title;
       media.description = description;
       media.media_pdf = media_pdf;
-      media.year = year;
-      media.release_date = release_date;
       media.media_regions = mediaRegions;
+      media.year = year;
+      media.media_regions = mediaRegions;
+      media.release_date = release_date;
+      media.external_link = external_link;
+      media.small_image = small_image;
+      media.thumbnail = thumbnail;
+      media.marico_img = marico_img;
       media.sort_order = sort_order;
       media.is_latest = is_latest;
       return this.mediaRepository.save(media);
