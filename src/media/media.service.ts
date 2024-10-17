@@ -106,7 +106,6 @@ export class MediaService {
       media.url_title = url_title;
       media.description = description;
       media.media_pdf = media_pdf;
-      media.media_regions = mediaRegions;
       media.year = year;
       media.media_regions = mediaRegions;
       media.release_date = release_date;
