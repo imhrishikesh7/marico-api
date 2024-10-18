@@ -174,7 +174,7 @@ export class BrandsService {
     if (search != null && search != '') {
       where.title = search;
     }
-    where.brand_type = 'sub-brand';
+    where.brand_type = Like('sub-brand');
     return await this.brandRepository.find({
       where,
     });
@@ -380,7 +380,6 @@ export class BrandsService {
     } else {
       const printAd = new PrintAd();
 
-      // make alias using name
       printAd.title = title;
       printAd.url_title = url_title;
       printAd.print_ad_title = print_ad_title;
