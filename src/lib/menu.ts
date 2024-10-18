@@ -124,10 +124,26 @@ const menu: MenuItem[] = [
       },
     ],
   },
+  // {
+  //   name: 'Pages',
+  //   role: ['PAGE'],
+  //   url: '/pages',
+  // },
   {
     name: 'Media',
     role: ['MEDIA'],
     url: '/media',
+  },
+  {
+    name: 'Features',
+    role: ['FEATURES'],
+    sub: [
+      {
+        name: 'Title Category',
+        url: '/features/category_title',
+        role: ['FEATURES'],
+      },
+    ],
   },
   {
     name: 'Admin',

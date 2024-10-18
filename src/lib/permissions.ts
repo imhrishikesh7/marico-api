@@ -130,9 +130,24 @@ const permissions: Permission[] = [
     name: 'Investors > Price Sensitive Information',
   },
   {
+    key: 'PAGE',
+    level: 1,
+    name: 'Pages',
+  },
+  {
     key: 'MEDIA',
     level: 1,
     name: 'Media',
+  },
+  {
+    key: 'FEATURES',
+    level: 1,
+    name: 'Features > Title Category',
+  },
+  {
+    key: 'FEATURES',
+    level: 2,
+    name: 'Features > Image Uploader',
   },
 ];
 

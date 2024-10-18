@@ -20,10 +20,12 @@ import { PageModule } from './page/page.module';
 import { PageAdminController } from './page/page.admin.controller';
 import { MediaModule } from './media/media.module';
 import { MediaAdminController } from './media/media.admin.controller';
+import { FeaturesModule } from './features/features.module';
+import { FeaturesAdminController } from './features/features.admin.controller';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule, MediaModule],
-  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController, PageAdminController, MediaAdminController],
+  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule, MediaModule, FeaturesModule],
+  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController, PageAdminController, MediaAdminController,FeaturesAdminController],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
