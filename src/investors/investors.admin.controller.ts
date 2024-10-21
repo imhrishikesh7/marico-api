@@ -751,6 +751,13 @@ export class InvestorsAdminController {
         schedule_analyst_meet_year: {
           type: 'string',
         },
+        region: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
       },
     },
   })
@@ -763,6 +770,7 @@ export class InvestorsAdminController {
     @Body('schedule_analyst_meet_pdf', EmptystringPipe)
     schedule_analyst_meet_pdf: string,
     @Body('schedule_analyst_meet_year') schedule_analyst_meet_year: string,
+    @Body('region') region: string[],
   ): Promise<{ schedule: InvestorSchedule }> {
     const schedule = await this.investorsService.addUpdateSchedule(
       id,
@@ -770,6 +778,7 @@ export class InvestorsAdminController {
       url_title,
       schedule_analyst_meet_pdf,
       schedule_analyst_meet_year,
+      region,
     );
     return {
       schedule,
@@ -1246,5 +1255,4 @@ export class InvestorsAdminController {
       annual_report,
     };
   }
-  
 }

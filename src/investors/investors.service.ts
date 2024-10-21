@@ -723,6 +723,7 @@ export class InvestorsService {
     url_title: string,
     schedule_analyst_meet_pdf: string,
     schedule_analyst_meet_year: string,
+    scheduleRegion: string[],
   ): Promise<InvestorSchedule> {
     if (id) {
       const schedule = await this.getScheduleById(id);
@@ -732,6 +733,7 @@ export class InvestorsService {
         schedule.url_title = url_title;
         schedule.schedule_analyst_meet_pdf = schedule_analyst_meet_pdf;
         schedule.schedule_analyst_meet_year = schedule_analyst_meet_year;
+        schedule.region = scheduleRegion;
 
         return this.scheduleRepository.save(schedule);
       }
@@ -743,6 +745,8 @@ export class InvestorsService {
       schedule.url_title = url_title;
       schedule.schedule_analyst_meet_pdf = schedule_analyst_meet_pdf;
       schedule.schedule_analyst_meet_year = schedule_analyst_meet_year;
+      schedule.region = scheduleRegion;
+
       return this.scheduleRepository.save(schedule);
     }
   }

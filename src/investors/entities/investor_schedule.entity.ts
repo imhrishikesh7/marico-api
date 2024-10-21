@@ -20,6 +20,9 @@ export class InvestorSchedule {
   @Index()
   schedule_analyst_meet_year: string;
 
+  @Column('json')
+  region: string[]
+
   @CreateDateColumn()
   @Index()
   created_at: Date;
