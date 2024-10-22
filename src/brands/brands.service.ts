@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import { Region } from 'src/regions/entities/region.entity';
 import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
@@ -133,18 +133,21 @@ export class BrandsService {
 
   async getBrandDetail(search?: string | null): Promise<Brand[]> {
     const query = this.brandRepository.createQueryBuilder('brand');
-  
+
     // Add condition for 'regions' using LIKE if 'search' is provided
     if (search && search.trim() !== '') {
       query.andWhere('brand.regions LIKE :search', { search: `%${search}%` });
     }
-  
+
     // Add OR condition for 'brand_type' being either 'main-brand' or 'standalone'
-    query.andWhere('brand.brand_type = :mainBrand OR brand.brand_type = :standalone', {
-      mainBrand: 'main-brand',
-      standalone: 'standalone',
-    });
-  
+    query.andWhere(
+      'brand.brand_type = :mainBrand OR brand.brand_type = :standalone',
+      {
+        mainBrand: 'main-brand',
+        standalone: 'standalone',
+      },
+    );
+
     // Execute the query and return the results
     return await query.getMany();
   }
@@ -190,17 +193,48 @@ export class BrandsService {
   async getBrandByAlias(
     region?: string,
     alias?: string,
-  ): Promise<Brand | null> {
-    const where: any = {};
-    if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+  ): Promise<{ brand: Brand | null; subBrands?: Brand[] }> {
+    const where: { regions?: any; url_title?: any } = {};
+
+    if (region) {
+      where.regions = Like(`%${region}%`);
     }
-    if (alias != null && alias != '') {
-      where.url_title = Like('%' + alias + '%');
+
+    if (alias) {
+      where.url_title = Like(`%${alias}%`);
     }
-    return await this.brandRepository.findOne({
+
+    const toReturn: { brand: Brand | null; subBrands?: Brand[] } = {
+      brand: null,
+    };
+
+    // Fetch the main brand
+    const brand = await this.brandRepository.findOne({
       where,
     });
+
+    // Declare subBrands outside the if-block
+    let subBrands: Brand[] = [];
+
+    if (brand) {
+      // Fetch the sub-brands related to the main brand
+      subBrands = await this.brandRepository.find({
+        where: {
+          brand_type: Like('sub-brand'),
+          brand_url_title: In(brand.sub_brand_relation),
+        },
+      });
+    }
+
+    // Set the main brand in the return object
+    toReturn.brand = brand;
+
+    // Set subBrands if there are any
+    if (subBrands.length > 0) {
+      toReturn.subBrands = subBrands;
+    }
+
+    return toReturn;
   }
 
   async addUpdateBrand(

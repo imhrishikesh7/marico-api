@@ -20,7 +20,7 @@ export class BrandsController {
   async getBrandByAlias(
     @Param('region') region: string,
     @Param('alias') alias: string,
-  ): Promise<Brand | null> {
+  ): Promise<{ brand: Brand | null; subBrands?: Brand[] }> {
     return await this.brandsService.getBrandByAlias(region,alias);
   }
 
