@@ -131,22 +131,22 @@ export class BrandsService {
   //   });
   // }
 
-  async getBrandDetail(search?: string | null): Promise<Brand[]> {
+  async getBrandDetail(alias: string): Promise<Brand[]> {
     const query = this.brandRepository.createQueryBuilder('brand');
 
-    // Add condition for 'regions' using LIKE if 'search' is provided
-    if (search && search.trim() !== '') {
-      query.andWhere('brand.regions LIKE :search', { search: `%${search}%` });
-    }
-
-    // Add OR condition for 'brand_type' being either 'main-brand' or 'standalone'
-    query.andWhere(
-      'brand.brand_type = :mainBrand OR brand.brand_type = :standalone',
+    // Add condition for 'brand_type' being either 'main-brand' or 'standalone'
+    query.where(
+      '(brand.brand_type = :mainBrand OR brand.brand_type = :standalone)',
       {
         mainBrand: 'main-brand',
         standalone: 'standalone',
       },
     );
+
+    // Add condition for 'regions' using LIKE for the provided alias
+    if (alias && alias.trim() !== '') {
+      query.andWhere('brand.regions LIKE :alias', { alias: `%${alias}%` });
+    }
 
     // Execute the query and return the results
     return await query.getMany();
