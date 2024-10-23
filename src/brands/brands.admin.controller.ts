@@ -358,7 +358,6 @@ export class BrandsAdminController {
     tvcs: Tvc[] | null;
     regions: Region[] | null;
   }> {
-    console.log(id, '==idd');
     const tvcs = await this.brandService.getTvcDropdown();
     const toReturn = {
       tvc: await this.brandService.getTVCById(id),
