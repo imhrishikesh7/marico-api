@@ -365,11 +365,14 @@ export class InvestorsAdminController {
   @Get('qu/:id')
   async getQUById(@Param('id', ParseIntPipe) id: number): Promise<{
     qu: InvestorQUMaster | null;
+    regions: Region[] | null;
   }> {
     const toReturn = {
       qu: await this.investorsService.getQUById(id),
+      regions: await this.regionService.getRegionList(),
     } as {
       qu: InvestorQUMaster | null;
+      regions: Region[] | null;
     };
     return toReturn;
   }
@@ -720,11 +723,14 @@ export class InvestorsAdminController {
   @Get('schedule/:id')
   async getScheduleById(@Param('id', ParseIntPipe) id: number): Promise<{
     schedule: InvestorSchedule | null;
+    regions: Region[] | null;
   }> {
     const toReturn = {
       schedule: await this.investorsService.getScheduleById(id),
+      regions: await this.regionService.getRegionList(),
     } as {
       schedule: InvestorSchedule | null;
+      regions: Region[] | null;
     };
     return toReturn;
   }
