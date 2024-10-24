@@ -140,7 +140,7 @@ export class InvestorsController {
   async getScheduleDetail(
     @Param('region') region: string,
   ): Promise<InvestorSchedule[]> {
-    const schedule = await this.investorsService.getSchedule();
+    const schedule = await this.investorsService.getScheduleDetail();
     const groupedByCategory = schedule.reduce(
       (acc: any, item: InvestorSchedule) => {
         const category = item.schedule_analyst_meet_year;

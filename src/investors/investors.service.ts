@@ -67,6 +67,9 @@ export class InvestorsService {
 
     const shi = await this.shareHolderRepository.find({
       where,
+      order: {
+        investors_shi_year: 'DESC',
+      },
     });
 
     const groupedByCategory = shi.reduce(
@@ -281,7 +284,12 @@ export class InvestorsService {
     }
 
     // Fetch dividends from repository
-    const dividends = await this.dividendsRepository.find({ where });
+    const dividends = await this.dividendsRepository.find({
+      where,
+      order: {
+        dividends_year: 'DESC',
+      },
+    });
 
     // Group the data
     const groupedData = dividends.reduce(
@@ -391,7 +399,7 @@ export class InvestorsService {
           if (subcat.supersubcategories.length === 0) {
             delete subcat.supersubcategories;
             delete category.pdfs;
-          }else{
+          } else {
             delete category.pdfs;
             delete subcat.pdfs;
           }
@@ -518,16 +526,16 @@ export class InvestorsService {
   async getQUALL(qu_region?: string): Promise<any[]> {
     // Get quarterly updates array sorted by year
     const qu = await this.quRepository.find({
-      order: { qu_year_sort: 'ASC' },
+      order: { investor_qu_year: 'DESC' },
     });
-  
+
     // Get all the qu PDF records, optionally filtered by region if provided
     const qupdfs = await this.quPdfRepository.find({
       where: {
         ...(qu_region && { qu_region: Like(`%${qu_region}%`) }), // Filter by region if provided
       },
     });
-  
+
     // Reduce qupdfs to a result object categorized by investor_qu
     const result = qupdfs.reduce<
       Record<
@@ -547,7 +555,7 @@ export class InvestorsService {
         created_at,
         updated_at,
       } = qupdf;
-  
+
       // Initialize the object for each investor_qu if it doesn't exist
       if (!acc[investor_qu]) {
         acc[investor_qu] = {
@@ -556,7 +564,7 @@ export class InvestorsService {
           pdfs: [],
         };
       }
-  
+
       // Push the current pdf information into the corresponding subcategory
       acc[investor_qu].pdfs.push({
         investor_qu_pdf,
@@ -570,20 +578,20 @@ export class InvestorsService {
         created_at,
         updated_at,
       });
-  
+
       return acc;
     }, {});
-  
+
     // Convert the accumulated result object into an array of subcategories
     const subcategoriesArray = Object.values(result);
-  
+
     // Use a Map to track unique categories
     const categoryMap = new Map<string, any>();
-  
+
     // Map through the `qu` array to create the final result
     qu.forEach((category) => {
       const categoryYear = category.investor_qu_year;
-  
+
       if (!categoryMap.has(categoryYear)) {
         categoryMap.set(categoryYear, {
           category: categoryYear,
@@ -598,7 +606,7 @@ export class InvestorsService {
                 pdf: sub.qu_pdf,
                 id: sub.id,
                 investor_qu_id: sub.investor_qu_id,
-                qu_region:sub.qu_region,
+                qu_region: sub.qu_region,
                 sort_order: sub.sort_order,
                 created_at: sub.created_at,
                 updated_at: sub.updated_at,
@@ -607,13 +615,12 @@ export class InvestorsService {
         });
       }
     });
-  
+
     // Convert Map back to an array to get the unique result
     const finalResult = Array.from(categoryMap.values());
-  
+
     return finalResult;
   }
-  
 
   async addUpdateQUPDFs(
     investor_qu_id: number,
@@ -622,7 +629,7 @@ export class InvestorsService {
       investor_qu_pdf: string;
       title: string;
       qu_pdf: string;
-      qu_region:string[];
+      qu_region: string[];
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {
@@ -732,6 +739,20 @@ export class InvestorsService {
     } else {
       return await this.scheduleRepository.find({});
     }
+  }
+
+  async getScheduleDetail(region?: string): Promise<InvestorSchedule[]> {
+    const where: any = {};
+    if (region != null && region != '') {
+      where.region = Like('%' + region + '%');
+    }
+
+    return await this.scheduleRepository.find({
+      where,
+      order: {
+        schedule_analyst_meet_year: 'DESC',
+      },
+    });
   }
 
   async getScheduleById(id: number): Promise<InvestorSchedule | null> {
@@ -1140,6 +1161,9 @@ export class InvestorsService {
 
     const AR = await this.arRepository.find({
       where,
+      order: {
+        ar_documentation_year: 'DESC',
+      },
     });
     const groupedByCategory = AR.reduce((acc: any, item: InvestorAR) => {
       const category =
