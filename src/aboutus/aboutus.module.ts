@@ -12,17 +12,10 @@ import { PageContent } from 'src/page/entities/page_content.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      AboutusMember,
-      Recognition,
-      History,
-      Region,
-      Page,
-      PageContent,
-    ]),
+    TypeOrmModule.forFeature([AboutusMember, Recognition, History, Region]),
   ],
   controllers: [AboutusController],
-  providers: [AboutusService, PageService],
-  exports: [AboutusService, PageService],
+  providers: [AboutusService],
+  exports: [AboutusService],
 })
 export class AboutusModule {}

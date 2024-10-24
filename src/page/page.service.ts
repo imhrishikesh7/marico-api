@@ -83,6 +83,7 @@ export class PageService {
     url: string,
     published?: boolean,
     is_active?: boolean,
+    region?: string,
   ): Promise<Page | null> {
     if (published == undefined) {
       published = true;
@@ -101,7 +102,7 @@ export class PageService {
         url: url,
         is_active: is_active,
         ...publishedWhere,
-        page_contents: { is_active: true },
+        page_contents: { is_active: true, region: region },
       },
       relations: ['page_contents'],
       order: { page_contents: { order: 'ASC' } },
@@ -129,7 +130,7 @@ export class PageService {
       title: string;
       link: string;
       short_description: string;
-      description:string;
+      description: string;
       region: string[];
       order: number;
       is_active: boolean;
