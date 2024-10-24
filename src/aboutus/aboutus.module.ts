@@ -8,6 +8,7 @@ import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
 import { Page } from 'src/page/entities/page.entity';
 import { PageService } from 'src/page/page.service';
+import { PageContent } from 'src/page/entities/page_content.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PageService } from 'src/page/page.service';
       History,
       Region,
       Page,
+      PageContent,
     ]),
   ],
   controllers: [AboutusController],
