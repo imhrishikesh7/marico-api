@@ -92,7 +92,7 @@ export class PageAdminController {
   @ApiBearerAuth()
   @AdminOnly()
   @Roles(['PAGES'])
-  @Get(':id')
+  @Get('/:id')
   async findOne(@Param('id') id: number): Promise<{
     page: Page | null;
     regions: Region[];
@@ -206,7 +206,7 @@ export class PageAdminController {
   async createOrUpdatePage(
     @Body('id', ParseIntPipe) id: number,
     @Body('name', EmptystringPipe) name: string,
-    @Body('url', SlugPipe) url: string,
+    @Body('url', EmptystringPipe) url: string,
     // @Body("indexed", SwitchPipe) indexed: boolean,
     // @Body("meta_title", EmptystringPipe) meta_title: string,
     // @Body("meta_description", EmptystringPipe) meta_description: string,
