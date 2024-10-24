@@ -24,6 +24,9 @@ export class QuartelyUpdate {
   @Column({ type: 'text' })
   qu_pdf: string;
 
+  @Column('json')
+  region: string[];
+  
   @Column()
   @Index()
   sort_order: number;
@@ -35,4 +38,5 @@ export class QuartelyUpdate {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
+
 }

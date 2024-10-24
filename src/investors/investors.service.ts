@@ -515,14 +515,20 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(): Promise<any[]> {
-    // Get qu array
+  async getQUALL(region?: string): Promise<any[]> {
+    // Get quarterly updates array sorted by year
     const qu = await this.quRepository.find({
       order: { qu_year_sort: 'ASC' },
     });
-
-    const qupdfs = await this.quPdfRepository.find();
-
+  
+    // Get all the qu PDF records, optionally filtered by region if provided
+    const qupdfs = await this.quPdfRepository.find({
+      where: {
+        ...(region && { region: Like(`%${region}%`) }), // Filter by region if provided
+      },
+    });
+  
+    // Reduce qupdfs to a result object categorized by investor_qu
     const result = qupdfs.reduce<
       Record<
         string,
@@ -536,11 +542,13 @@ export class InvestorsService {
         qu_pdf,
         id,
         investor_qu_id,
+        region,
         sort_order,
         created_at,
         updated_at,
       } = qupdf;
-
+  
+      // Initialize the object for each investor_qu if it doesn't exist
       if (!acc[investor_qu]) {
         acc[investor_qu] = {
           subcategory: investor_qu,
@@ -548,7 +556,8 @@ export class InvestorsService {
           pdfs: [],
         };
       }
-
+  
+      // Push the current pdf information into the corresponding subcategory
       acc[investor_qu].pdfs.push({
         investor_qu_pdf,
         investor_qu,
@@ -556,41 +565,55 @@ export class InvestorsService {
         qu_pdf,
         id,
         investor_qu_id,
+        region,
         sort_order,
         created_at,
         updated_at,
       });
-
+  
       return acc;
     }, {});
-
-    // Convert the accumulated object into an array
+  
+    // Convert the accumulated result object into an array of subcategories
     const subcategoriesArray = Object.values(result);
-
-    const finalResult = qu.map((category) => ({
-      category: category.investor_qu_year,
-      subcategories: subcategoriesArray
-        .filter((subcategory) => subcategory.category_id === category.id)
-        .map((subcategory) => ({
-          subcategory: subcategory.subcategory,
-          pdfs: subcategory.pdfs
-            .filter((sub) => sub.investor_qu === subcategory.subcategory)
-            .map((sub) => ({
-              investor_qu_pdf: sub.investor_qu_pdf,
-              investor_qu: sub.investor_qu,
-              pdf_title: sub.title,
-              pdf: sub.qu_pdf,
-              id: sub.id,
-              investor_qu_id: sub.investor_qu_id,
-              sort_order: sub.sort_order,
-              created_at: sub.created_at,
-              updated_at: sub.updated_at,
+  
+    // Use a Map to track unique categories
+    const categoryMap = new Map<string, any>();
+  
+    // Map through the `qu` array to create the final result
+    qu.forEach((category) => {
+      const categoryYear = category.investor_qu_year;
+  
+      if (!categoryMap.has(categoryYear)) {
+        categoryMap.set(categoryYear, {
+          category: categoryYear,
+          subcategories: subcategoriesArray
+            .filter((subcategory) => subcategory.category_id === category.id)
+            .map((subcategory) => ({
+              subcategory: subcategory.subcategory,
+              pdfs: subcategory.pdfs.map((sub) => ({
+                investor_qu_pdf: sub.investor_qu_pdf,
+                investor_qu: sub.investor_qu,
+                pdf_title: sub.title,
+                pdf: sub.qu_pdf,
+                id: sub.id,
+                investor_qu_id: sub.investor_qu_id,
+                region:sub.region,
+                sort_order: sub.sort_order,
+                created_at: sub.created_at,
+                updated_at: sub.updated_at,
+              })),
             })),
-        })),
-    }));
-
+        });
+      }
+    });
+  
+    // Convert Map back to an array to get the unique result
+    const finalResult = Array.from(categoryMap.values());
+  
     return finalResult;
   }
+  
 
   async addUpdateQUPDFs(
     investor_qu_id: number,
@@ -599,6 +622,7 @@ export class InvestorsService {
       investor_qu_pdf: string;
       title: string;
       qu_pdf: string;
+      region:string[];
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {
@@ -618,6 +642,7 @@ export class InvestorsService {
       qu_pdfs.investor_qu_pdf = pdf.investor_qu_pdf;
       qu_pdfs.title = pdf.title;
       qu_pdfs.qu_pdf = pdf.qu_pdf;
+      qu_pdfs.region = pdf.region;
       qu_pdfs.sort_order = pdf.sort_order;
       return qu_pdfs;
     });

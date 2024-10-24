@@ -430,13 +430,16 @@ export class InvestorsAdminController {
   ): Promise<{
     qu_pdf: QuartelyUpdate[];
     qu: InvestorQUMaster | null;
+    regions: Region[] | null;
   }> {
     const toReturn = {
       qu_pdf: await this.investorsService.getQUPDFById(investor_qu_id),
       qu: await this.investorsService.getQUById(investor_qu_id),
+      regions: await this.regionService.getRegionList(),
     } as {
       qu_pdf: QuartelyUpdate[];
       qu: InvestorQUMaster | null;
+      regions: Region[] | null;
     };
     return toReturn;
   }
@@ -468,6 +471,13 @@ export class InvestorsAdminController {
               qu_pdf: {
                 type: 'string',
               },
+              region: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                  example: 'UK',
+                },
+              },
               sort_order: {
                 type: 'integer',
               },
@@ -487,6 +497,7 @@ export class InvestorsAdminController {
       investor_qu_pdf: string;
       title: string;
       qu_pdf: string;
+      region: string[];
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {
