@@ -6,9 +6,18 @@ import { AboutusMember } from './entities/aboutus_member.entity';
 import { Region } from 'src/regions/entities/region.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
+import { Page } from 'src/page/entities/page.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AboutusMember, Recognition, History, Region])],
+  imports: [
+    TypeOrmModule.forFeature([
+      AboutusMember,
+      Recognition,
+      History,
+      Region,
+      Page,
+    ]),
+  ],
   controllers: [AboutusController],
   providers: [AboutusService],
   exports: [AboutusService],
