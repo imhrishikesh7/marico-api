@@ -25,7 +25,7 @@ export class QuartelyUpdate {
   qu_pdf: string;
 
   @Column('json')
-  region: string[];
+  qu_region: string[];
   
   @Column()
   @Index()

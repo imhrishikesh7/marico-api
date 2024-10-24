@@ -471,7 +471,7 @@ export class InvestorsAdminController {
               qu_pdf: {
                 type: 'string',
               },
-              region: {
+              qu_region: {
                 type: 'array',
                 items: {
                   type: 'string',
@@ -497,7 +497,7 @@ export class InvestorsAdminController {
       investor_qu_pdf: string;
       title: string;
       qu_pdf: string;
-      region: string[];
+      qu_region: string[];
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {

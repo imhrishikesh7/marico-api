@@ -515,7 +515,7 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(region?: string): Promise<any[]> {
+  async getQUALL(qu_region?: string): Promise<any[]> {
     // Get quarterly updates array sorted by year
     const qu = await this.quRepository.find({
       order: { qu_year_sort: 'ASC' },
@@ -524,7 +524,7 @@ export class InvestorsService {
     // Get all the qu PDF records, optionally filtered by region if provided
     const qupdfs = await this.quPdfRepository.find({
       where: {
-        ...(region && { region: Like(`%${region}%`) }), // Filter by region if provided
+        ...(qu_region && { qu_region: Like(`%${qu_region}%`) }), // Filter by region if provided
       },
     });
   
@@ -542,7 +542,7 @@ export class InvestorsService {
         qu_pdf,
         id,
         investor_qu_id,
-        region,
+        qu_region,
         sort_order,
         created_at,
         updated_at,
@@ -565,7 +565,7 @@ export class InvestorsService {
         qu_pdf,
         id,
         investor_qu_id,
-        region,
+        qu_region,
         sort_order,
         created_at,
         updated_at,
@@ -598,7 +598,7 @@ export class InvestorsService {
                 pdf: sub.qu_pdf,
                 id: sub.id,
                 investor_qu_id: sub.investor_qu_id,
-                region:sub.region,
+                qu_region:sub.qu_region,
                 sort_order: sub.sort_order,
                 created_at: sub.created_at,
                 updated_at: sub.updated_at,
@@ -622,7 +622,7 @@ export class InvestorsService {
       investor_qu_pdf: string;
       title: string;
       qu_pdf: string;
-      region:string[];
+      qu_region:string[];
       sort_order: number;
     }[],
   ): Promise<QuartelyUpdate[]> {
@@ -642,7 +642,7 @@ export class InvestorsService {
       qu_pdfs.investor_qu_pdf = pdf.investor_qu_pdf;
       qu_pdfs.title = pdf.title;
       qu_pdfs.qu_pdf = pdf.qu_pdf;
-      qu_pdfs.region = pdf.region;
+      qu_pdfs.qu_region = pdf.qu_region;
       qu_pdfs.sort_order = pdf.sort_order;
       return qu_pdfs;
     });
