@@ -35,6 +35,7 @@ export class AboutusController {
       'about-us/board-of-directors',
       true,
       true,
+      region,
     );
 
     return {
