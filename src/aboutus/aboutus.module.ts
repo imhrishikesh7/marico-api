@@ -7,6 +7,7 @@ import { Region } from 'src/regions/entities/region.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
 import { Page } from 'src/page/entities/page.entity';
+import { PageService } from 'src/page/page.service';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { Page } from 'src/page/entities/page.entity';
     ]),
   ],
   controllers: [AboutusController],
-  providers: [AboutusService],
-  exports: [AboutusService],
+  providers: [AboutusService, PageService],
+  exports: [AboutusService, PageService],
 })
 export class AboutusModule {}
