@@ -124,11 +124,11 @@ const menu: MenuItem[] = [
       },
     ],
   },
-  // {
-  //   name: 'Pages',
-  //   role: ['PAGE'],
-  //   url: '/pages',
-  // },
+  {
+    name: 'Pages',
+    role: ['PAGE'],
+    url: '/pages',
+  },
   {
     name: 'Media',
     role: ['MEDIA'],

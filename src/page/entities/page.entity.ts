@@ -28,6 +28,7 @@ import {
   } from "typeorm";
   import { PageContent } from "./page_content.entity";
 
+  export const PageTypes = ["page"];
   
   @Entity()
   export class Page {
@@ -41,20 +42,25 @@ import {
     @Column()
     url: string;
   
-    @Column()
-    indexed: boolean;
+    @Column("enum", {
+      enum: PageTypes,
+    })
+    page_type: string;
+    
+    // @Column()
+    // indexed: boolean;
   
-    @Column()
-    meta_title: string;
+    // @Column()
+    // meta_title: string;
   
-    @Column("text")
-    meta_description: string;
+    // @Column("text")
+    // meta_description: string;
   
-    @Column({ type: "json", nullable: true })
-    meta_image: { url: string; width: number; height: number } | null;
+    // @Column({ type: "json", nullable: true })
+    // meta_image: { url: string; width: number; height: number } | null;
   
-    @Column()
-    canonical_override: string;
+    // @Column()
+    // canonical_override: string;
   
     @Column({
       type: "timestamp",
