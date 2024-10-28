@@ -523,25 +523,19 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(qu_region?: string): Promise<any[]> {
-    // Get quarterly updates array sorted by year
+  async getQUALL(qu_region?: string): Promise<any> {
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
-
-    // Get all the qu PDF records, optionally filtered by region if provided
+  
     const qupdfs = await this.quPdfRepository.find({
       where: {
-        ...(qu_region && { qu_region: Like(`%${qu_region}%`) }), // Filter by region if provided
+        ...(qu_region && { qu_region: Like(`%${qu_region}%`) }),
       },
     });
-
-    // Reduce qupdfs to a result object categorized by investor_qu
-    const result = qupdfs.reduce<
-      Record<
-        string,
-        { subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }
-      >
+  
+    const pdfByQuarter = qupdfs.reduce<
+      Record<string, { subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }>
     >((acc, qupdf) => {
       const {
         investor_qu_pdf,
@@ -555,8 +549,7 @@ export class InvestorsService {
         created_at,
         updated_at,
       } = qupdf;
-
-      // Initialize the object for each investor_qu if it doesn't exist
+  
       if (!acc[investor_qu]) {
         acc[investor_qu] = {
           subcategory: investor_qu,
@@ -564,8 +557,7 @@ export class InvestorsService {
           pdfs: [],
         };
       }
-
-      // Push the current pdf information into the corresponding subcategory
+  
       acc[investor_qu].pdfs.push({
         investor_qu_pdf,
         investor_qu,
@@ -578,50 +570,55 @@ export class InvestorsService {
         created_at,
         updated_at,
       });
-
+  
       return acc;
     }, {});
-
-    // Convert the accumulated result object into an array of subcategories
-    const subcategoriesArray = Object.values(result);
-
-    // Use a Map to track unique categories
-    const categoryMap = new Map<string, any>();
-
-    // Map through the `qu` array to create the final result
+  
+    const subcategoriesArray = Object.values(pdfByQuarter);
+  
+    const yearCategoryMap = new Map<string, any>();
+  
     qu.forEach((category) => {
-      const categoryYear = category.investor_qu_year;
-
-      if (!categoryMap.has(categoryYear)) {
-        categoryMap.set(categoryYear, {
-          category: categoryYear,
-          subcategories: subcategoriesArray
-            .filter((subcategory) => subcategory.category_id === category.id)
-            .map((subcategory) => ({
-              subcategory: subcategory.subcategory,
-              pdfs: subcategory.pdfs.map((sub) => ({
-                investor_qu_pdf: sub.investor_qu_pdf,
-                investor_qu: sub.investor_qu,
-                pdf_title: sub.title,
-                pdf: sub.qu_pdf,
-                id: sub.id,
-                investor_qu_id: sub.investor_qu_id,
-                qu_region: sub.qu_region,
-                sort_order: sub.sort_order,
-                created_at: sub.created_at,
-                updated_at: sub.updated_at,
-              })),
-            })),
+      const year = category.investor_qu_year;
+  
+      if (!yearCategoryMap.has(year)) {
+        yearCategoryMap.set(year, {
+          category: year,
+          subcategories: [],
         });
       }
+  
+      const yearCategory = yearCategoryMap.get(year);
+      const relatedSubcategories = subcategoriesArray
+        .filter((subcategory) => subcategory.category_id === category.id)
+        .map((subcategory) => ({
+          subcategory: subcategory.subcategory,
+          pdfs: subcategory.pdfs.map((pdf) => ({
+            investor_qu_pdf: pdf.investor_qu_pdf,
+            investor_qu: pdf.investor_qu,
+            pdf_title: pdf.title,
+            pdf: pdf.qu_pdf,
+            id: pdf.id,
+            investor_qu_id: pdf.investor_qu_id,
+            qu_region: pdf.qu_region,
+            sort_order: pdf.sort_order,
+            created_at: pdf.created_at,
+            updated_at: pdf.updated_at,
+          })),
+        }));
+  
+      yearCategory.subcategories.push(...relatedSubcategories);
     });
-
-    // Convert Map back to an array to get the unique result
-    const finalResult = Array.from(categoryMap.values());
-
-    return finalResult;
+  
+    const finalResult = Array.from(yearCategoryMap.values());
+  
+    return {
+      data: finalResult,
+      success: true,
+      message: "Request successful",
+    };
   }
-
+  
   async addUpdateQUPDFs(
     investor_qu_id: number,
     contexText: {
