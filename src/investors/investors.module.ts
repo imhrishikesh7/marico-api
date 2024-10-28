@@ -16,6 +16,7 @@ import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
+import { TitleCategory } from 'src/features/entities/feature.entity';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { InvestorAR } from './entities/investor_ar.entity';
       InvestorPSI,
       InvestorAR,
       Region,
+      TitleCategory,
     ]),
   ],
   controllers: [InvestorsController],

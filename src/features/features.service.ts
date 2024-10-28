@@ -29,10 +29,12 @@ export class FeaturesService {
     });
   }
 
-  async getTitleCategoryDropdownBySubmenu(sub_menu: string): Promise<TitleCategory | null> {
-    return await this.titleCategoryRepository.findOne({
+  async getTitleCategoryDropdownBySubmenu(
+    sub_menu: string,
+  ): Promise<TitleCategory[] | null> {
+    return await this.titleCategoryRepository.find({
       where: {
-        sub_menu: sub_menu,
+        sub_menu: Like('%' + sub_menu + '%'),
       },
     });
   }
