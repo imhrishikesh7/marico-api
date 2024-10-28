@@ -29,6 +29,14 @@ export class FeaturesService {
     });
   }
 
+  async getTitleCategoryDropdownBySubmenu(sub_menu: string): Promise<TitleCategory | null> {
+    return await this.titleCategoryRepository.findOne({
+      where: {
+        sub_menu: sub_menu,
+      },
+    });
+  }
+
   async addUpdateTitleCategory(
     id: number,
     menu: string,

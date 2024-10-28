@@ -35,11 +35,14 @@ import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
+import { FeaturesService } from 'src/features/features.service';
+import { TitleCategory } from 'src/features/entities/feature.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
   constructor(
     private readonly investorsService: InvestorsService,
+    private readonly featuresService: FeaturesService,
     private readonly regionService: RegionsService,
     private readonly adminService: AdminService,
     @Inject(REQUEST) private readonly request: AdminRequest,
@@ -64,13 +67,17 @@ export class InvestorsAdminController {
   async getSHIById(@Param('id', ParseIntPipe) id: number): Promise<{
     shi: InvestorShareHolder | null;
     regions: Region[] | null;
+    categoryMenu: TitleCategory[] | null;
   }> {
     const toReturn = {
       shi: await this.investorsService.getSHIById(id),
       regions: await this.regionService.getRegionList(),
+      categoryMenu:
+        await this.featuresService.getTitleCategoryDropdownBySubmenu('shi'),
     } as {
       shi: InvestorShareHolder | null;
       regions: Region[] | null;
+      categoryMenu: TitleCategory[] | null;
     };
     return toReturn;
   }
@@ -165,13 +172,17 @@ export class InvestorsAdminController {
   async getAGMById(@Param('id', ParseIntPipe) id: number): Promise<{
     agm: InvestorAGM | null;
     regions: Region[] | null;
+    categoryMenu: TitleCategory[] | null;
   }> {
     const toReturn = {
       agm: await this.investorsService.getAGMById(id),
       regions: await this.regionService.getRegionList(),
+      categoryMenu:
+        await this.featuresService.getTitleCategoryDropdownBySubmenu('agm'),
     } as {
       agm: InvestorAGM | null;
       regions: Region[] | null;
+      categoryMenu: TitleCategory[] | null;
     };
     return toReturn;
   }
