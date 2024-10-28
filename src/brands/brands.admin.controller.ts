@@ -279,7 +279,6 @@ export class BrandsAdminController {
     @Body('sort_order', ParseIntPipe) sort_order: number,
     @Body('shop_now_url') shop_now_url: string,
   ): Promise<{ brand: Brand }> {
-    console.log(award_relation,'award_relation');
     const brand = await this.brandService.addUpdateBrand(
       id,
       title,
@@ -358,10 +357,9 @@ export class BrandsAdminController {
     tvcs: Tvc[] | null;
     regions: Region[] | null;
   }> {
-    const tvcs = await this.brandService.getTvcDropdown();
     const toReturn = {
       tvc: await this.brandService.getTVCById(id),
-      tvcs: tvcs,
+      tvcs: await this.brandService.getTVCList(),
       regions: await this.regionService.getRegionList(),
     } as {
       tvc: Tvc | null;
@@ -460,7 +458,6 @@ export class BrandsAdminController {
       sort_order,
       thumbnail,
     );
-
     await this.adminService.addAdminActivity(
       this.request.admin,
       `Created brand ${tvc.tvc_title}`,

@@ -52,7 +52,7 @@ export class MediaService {
     description: string,
     media_pdf: string,
     year: string,
-    mediaRegions: string[],
+    media_regions: string[],
     release_date: Date,
     external_link: string,
     small_image: {
@@ -86,7 +86,7 @@ export class MediaService {
         media.description = description;
         media.media_pdf = media_pdf;
         media.year = year;
-        media.media_regions = mediaRegions;
+        media.media_regions = media_regions;
         media.release_date = release_date;
         media.external_link = external_link;
         media.small_image = small_image;
@@ -107,7 +107,7 @@ export class MediaService {
       media.description = description;
       media.media_pdf = media_pdf;
       media.year = year;
-      media.media_regions = mediaRegions;
+      media.media_regions = media_regions;
       media.release_date = release_date;
       media.external_link = external_link;
       media.small_image = small_image;
