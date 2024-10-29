@@ -524,7 +524,6 @@ export class InvestorsService {
   }
 
   async getQUALL(qu_region?: string): Promise<any> {
-    // Assuming qu and qupdfs are the data from the repository
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
@@ -544,18 +543,17 @@ export class InvestorsService {
       qu_region: string[];
       sort_order: number;
     };
-    
+
     type Subcategory = {
       subcategory: string;
       pdfs: PDF[];
     };
-    
+
     type Category = {
       category: string;
       subcategories: Subcategory[];
     };
-    
-    // Convert QuartelyUpdate entities to PDF objects
+
     const pdfs: PDF[] = qupdfs.map((pdf) => ({
       investor_qu_id: pdf.investor_qu_id,
       investor_qu: pdf.investor_qu,
@@ -563,15 +561,12 @@ export class InvestorsService {
       pdf_title: pdf.title,
       pdf: pdf.qu_pdf,
       qu_region: pdf.qu_region,
-      sort_order: pdf.sort_order, // Example function to determine quarter
+      sort_order: pdf.sort_order,
     }));
 
-    
-    // Use reduce to structure data with explicit typing
     const structuredData = qu.reduce<Category[]>((acc, currQu) => {
       const { investor_qu_year, id } = currQu;
-    
-      // Find existing category or create a new one
+
       let category = acc.find((c) => c.category === investor_qu_year);
       if (!category) {
         category = {
@@ -585,25 +580,22 @@ export class InvestorsService {
         };
         acc.push(category);
       }
-    
-      // Find PDFs that match the current `qu` ID
+
       const pdfsForQu = pdfs.filter((pdf) => pdf.investor_qu_id === id);
-    
-      // Add PDFs to the correct subcategory based on `quarter`
+
       pdfsForQu.forEach((pdf) => {
         const quarterIndex = `${pdf.investor_qu}`;
         const subcategory = category!.subcategories.find(
-          (subcat) => subcat.subcategory === quarterIndex
+          (subcat) => subcat.subcategory === quarterIndex,
         );
-    
+
         if (subcategory) {
           subcategory.pdfs.push(pdf);
         }
       });
-    
+
       return acc;
     }, []);
-    
 
     return structuredData;
   }

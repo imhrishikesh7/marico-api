@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Page } from './entities/page.entity';
-import { LessThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { PageContent } from './entities/page_content.entity';
 
 @Injectable()
@@ -102,7 +102,7 @@ export class PageService {
         url: url,
         is_active: is_active,
         ...publishedWhere,
-        page_contents: { is_active: true, region: region },
+        page_contents: { is_active: true, region: Like('%' + region + '%') },
       },
       relations: ['page_contents'],
       order: { page_contents: { order: 'ASC' } },
