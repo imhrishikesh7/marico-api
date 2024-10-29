@@ -524,101 +524,90 @@ export class InvestorsService {
   }
 
   async getQUALL(qu_region?: string): Promise<any> {
+    // Assuming qu and qupdfs are the data from the repository
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
-  
+
     const qupdfs = await this.quPdfRepository.find({
       where: {
         ...(qu_region && { qu_region: Like(`%${qu_region}%`) }),
       },
     });
-  
-    const pdfByQuarter = qupdfs.reduce<
-      Record<string, { subcategory: string; category_id: number; pdfs: QuartelyUpdate[] }>
-    >((acc, qupdf) => {
-      const {
-        investor_qu_pdf,
-        investor_qu,
-        title,
-        qu_pdf,
-        id,
-        investor_qu_id,
-        qu_region,
-        sort_order,
-        created_at,
-        updated_at,
-      } = qupdf;
-  
-      if (!acc[investor_qu]) {
-        acc[investor_qu] = {
-          subcategory: investor_qu,
-          category_id: investor_qu_id,
-          pdfs: [],
-        };
-      }
-  
-      acc[investor_qu].pdfs.push({
-        investor_qu_pdf,
-        investor_qu,
-        title,
-        qu_pdf,
-        id,
-        investor_qu_id,
-        qu_region,
-        sort_order,
-        created_at,
-        updated_at,
-      });
-  
-      return acc;
-    }, {});
-  
-    const subcategoriesArray = Object.values(pdfByQuarter);
-  
-    const yearCategoryMap = new Map<string, any>();
-  
-    qu.forEach((category) => {
-      const year = category.investor_qu_year;
-  
-      if (!yearCategoryMap.has(year)) {
-        yearCategoryMap.set(year, {
-          category: year,
-          subcategories: [],
-        });
-      }
-  
-      const yearCategory = yearCategoryMap.get(year);
-      const relatedSubcategories = subcategoriesArray
-        .filter((subcategory) => subcategory.category_id === category.id)
-        .map((subcategory) => ({
-          subcategory: subcategory.subcategory,
-          pdfs: subcategory.pdfs.map((pdf) => ({
-            investor_qu_pdf: pdf.investor_qu_pdf,
-            investor_qu: pdf.investor_qu,
-            pdf_title: pdf.title,
-            pdf: pdf.qu_pdf,
-            id: pdf.id,
-            investor_qu_id: pdf.investor_qu_id,
-            qu_region: pdf.qu_region,
-            sort_order: pdf.sort_order,
-            created_at: pdf.created_at,
-            updated_at: pdf.updated_at,
-          })),
-        }));
-  
-      yearCategory.subcategories.push(...relatedSubcategories);
-    });
-  
-    const finalResult = Array.from(yearCategoryMap.values());
-  
-    return {
-      data: finalResult,
-      success: true,
-      message: "Request successful",
+
+    type PDF = {
+      investor_qu_id: number;
+      investor_qu: string;
+      investor_qu_pdf: string;
+      title: string;
+      qu_pdf: string;
+      qu_region: string[];
+      sort_order: number;
     };
+    
+    type Subcategory = {
+      subcategory: string;
+      pdfs: PDF[];
+    };
+    
+    type Category = {
+      category: string;
+      subcategories: Subcategory[];
+    };
+    
+    // Convert QuartelyUpdate entities to PDF objects
+    const pdfs: PDF[] = qupdfs.map((pdf) => ({
+      investor_qu_id: pdf.investor_qu_id,
+      investor_qu: pdf.investor_qu,
+      investor_qu_pdf: pdf.investor_qu_pdf,
+      title: pdf.title,
+      qu_pdf: pdf.qu_pdf,
+      qu_region: pdf.qu_region,
+      sort_order: pdf.sort_order, // Example function to determine quarter
+    }));
+
+    
+    // Use reduce to structure data with explicit typing
+    const structuredData = qu.reduce<Category[]>((acc, currQu) => {
+      const { investor_qu_year, id } = currQu;
+    
+      // Find existing category or create a new one
+      let category = acc.find((c) => c.category === investor_qu_year);
+      if (!category) {
+        category = {
+          category: investor_qu_year,
+          subcategories: [
+            { subcategory: 'q1', pdfs: [] },
+            { subcategory: 'q2', pdfs: [] },
+            { subcategory: 'q3', pdfs: [] },
+            { subcategory: 'q4', pdfs: [] },
+          ],
+        };
+        acc.push(category);
+      }
+    
+      // Find PDFs that match the current `qu` ID
+      const pdfsForQu = pdfs.filter((pdf) => pdf.investor_qu_id === id);
+    
+      // Add PDFs to the correct subcategory based on `quarter`
+      pdfsForQu.forEach((pdf) => {
+        const quarterIndex = `${pdf.investor_qu}`;
+        const subcategory = category!.subcategories.find(
+          (subcat) => subcat.subcategory === quarterIndex
+        );
+    
+        if (subcategory) {
+          subcategory.pdfs.push(pdf);
+        }
+      });
+    
+      return acc;
+    }, []);
+    
+
+    return structuredData;
   }
-  
+
   async addUpdateQUPDFs(
     investor_qu_id: number,
     contexText: {
