@@ -540,7 +540,7 @@ export class InvestorsService {
       investor_qu: string;
       investor_qu_pdf: string;
       title: string;
-      qu_pdf: string;
+      pdf: string;
       qu_region: string[];
       sort_order: number;
     };
@@ -561,7 +561,7 @@ export class InvestorsService {
       investor_qu: pdf.investor_qu,
       investor_qu_pdf: pdf.investor_qu_pdf,
       title: pdf.title,
-      qu_pdf: pdf.qu_pdf,
+      pdf: pdf.qu_pdf,
       qu_region: pdf.qu_region,
       sort_order: pdf.sort_order, // Example function to determine quarter
     }));
