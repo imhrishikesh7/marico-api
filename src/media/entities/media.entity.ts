@@ -40,7 +40,7 @@ export class Media {
   @Column()
   release_date: Date;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'text'})
   external_link: string;
 
   @Column({ type: 'json', nullable: true })
