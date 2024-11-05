@@ -8,33 +8,31 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class TitleCategory {
+export class InvestorDR {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   @Index()
-  menu: string;
+  dr_documentation_year: string ;
 
   @Column()
   @Index()
-  sub_menu: string;
+  dr_documentation_title: string;
 
   @Column()
   @Index()
-  category_title: string;
+  url_title: string;
 
-  @Column({default: true })
-  @Index()
-  is_active: boolean;
+  @Column({ type: 'text' })
+  dr_documentation_pdf: string;
 
-  @Column()
-  @Index()
-  qr_title: string;
+  @Column('json')
+  dr_regions: string[];
 
   @Column()
   @Index()
-  qr_link: string;
+  sort_order: number;
 
   @CreateDateColumn()
   @Index()

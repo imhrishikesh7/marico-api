@@ -14,6 +14,7 @@ import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
+import { InvestorDR } from './entities/investor_dr.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -44,6 +45,8 @@ export class InvestorsService {
     private readonly psiRepository: Repository<InvestorPSI>,
     @InjectRepository(InvestorAR)
     private readonly arRepository: Repository<InvestorAR>,
+    @InjectRepository(InvestorDR)
+    private readonly drRepository: Repository<InvestorDR>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -1258,6 +1261,108 @@ export class InvestorsService {
       ar.investors_ar_category = investors_ar_category;
       ar.sort_order = sort_order;
       return this.arRepository.save(ar);
+    }
+  }
+
+  async getDR(search?: string): Promise<InvestorDR[]> {
+    if (search != null && search != '') {
+      return await this.drRepository.find({
+        where: {
+          dr_documentation_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.drRepository.find({});
+    }
+  }
+
+  async getDRDetail(region?: string): Promise<InvestorDR[]> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.dr_regions = Like('%' + region + '%');
+    }
+
+    const DR = await this.drRepository.find({
+      where,
+      order: {
+        dr_documentation_year: 'DESC',
+      },
+    });
+    const groupedByCategory = DR.reduce((acc: any, item: InvestorDR) => {
+      const category =
+        item.dr_documentation_year;
+
+      // If the category doesn't exist, initialize it
+      if (!acc[category]) {
+        acc[category] = {
+          category: category,
+          pdfs: [],
+        };
+      }
+
+        acc[category].pdfs.push({
+          pdf_title: item.dr_documentation_title,
+          pdf: item.dr_documentation_pdf,
+          id: item.id,
+          url_title: item.url_title,
+          regions: item.dr_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+
+      return acc;
+    }, {});
+
+    const result = Object.values(groupedByCategory).map((item: any) => {
+      return item;
+    });
+
+    return result;
+  }
+
+  async getDRById(id: number): Promise<InvestorDR | null> {
+    return await this.drRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateDR(
+    id: number,
+    dr_documentation_year: string,
+    dr_documentation_title: string,
+    url_title: string,
+    dr_documentation_pdf: string,
+    drRegions: string[],
+    sort_order: number,
+  ): Promise<InvestorDR> {
+    if (id) {
+      const ar = await this.getDRById(id);
+      if (ar) {
+        ar.id = id;
+        ar.dr_documentation_year = dr_documentation_year;
+        ar.dr_documentation_title = dr_documentation_title;
+        ar.url_title = url_title;
+        ar.dr_documentation_pdf = dr_documentation_pdf;
+        ar.dr_regions = drRegions;
+        ar.sort_order = sort_order;
+
+        return this.drRepository.save(ar);
+      }
+      throw new Error('ar not found');
+    } else {
+      const ar = new InvestorDR();
+
+      ar.dr_documentation_year = dr_documentation_year;
+      ar.dr_documentation_title = dr_documentation_title;
+      ar.url_title = url_title;
+      ar.dr_documentation_pdf = dr_documentation_pdf;
+      ar.dr_regions = drRegions;
+      ar.sort_order = sort_order;
+      return this.drRepository.save(ar);
     }
   }
 }

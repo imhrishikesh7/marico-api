@@ -45,6 +45,8 @@ export class FeaturesService {
     sub_menu: string,
     category_title: string,
     is_active: boolean,
+    qr_title?: string,
+    qr_link?: string,
   ): Promise<TitleCategory> {
     if (id) {
       const head = await this.getTitleCategoryById(id);
@@ -54,6 +56,8 @@ export class FeaturesService {
         head.sub_menu = sub_menu;
         head.category_title = category_title;
         head.is_active = is_active;
+        head.qr_title = qr_title ? qr_title : '';
+        head.qr_link = qr_link ? qr_link : '';
 
         return this.titleCategoryRepository.save(head);
       }
@@ -65,6 +69,9 @@ export class FeaturesService {
       head.sub_menu = sub_menu;
       head.category_title = category_title;
       head.is_active = is_active;
+      head.qr_title = qr_title ? qr_title : '';
+      head.qr_link = qr_link ? qr_link : '';
+
       return this.titleCategoryRepository.save(head);
     }
   }

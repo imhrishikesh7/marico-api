@@ -37,6 +37,7 @@ import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
 import { FeaturesService } from 'src/features/features.service';
 import { TitleCategory } from 'src/features/entities/feature.entity';
+import { InvestorDR } from './entities/investor_dr.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
@@ -1281,6 +1282,101 @@ export class InvestorsAdminController {
     );
     return {
       annual_report,
+    };
+  }
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('dr')
+  async getDR(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorDR[]> {
+    return await this.investorsService.getDR(search || undefined);
+  }
+
+  @Get('dr/:id')
+  async getDRById(@Param('id', ParseIntPipe) id: number): Promise<{
+    director_report: InvestorDR | null;
+    director_reports: InvestorDR[] | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      director_report: await this.investorsService.getDRById(id),
+      director_reports: await this.investorsService.getDR(),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      director_report: InvestorDR | null;
+      director_reports: InvestorDR[] | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        dr_documentation_year: {
+          type: 'string',
+        },
+        dr_documentation_title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        dr_documentation_pdf: {
+          type: 'string',
+        },
+        dr_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('dr/add-update')
+  async addUpdateDR(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('dr_documentation_year') dr_documentation_year: string,
+    @Body('dr_documentation_title')
+    dr_documentation_title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('dr_documentation_pdf', EmptystringPipe)
+    dr_documentation_pdf: string,
+    @Body('dr_regions') dr_regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ director_report: InvestorDR }> {
+    const director_report = await this.investorsService.addUpdateDR(
+      id,
+      dr_documentation_year,
+      dr_documentation_title,
+      url_title,
+      dr_documentation_pdf,
+      dr_regions,
+      sort_order,
+    );
+    return {
+      director_report,
     };
   }
 }

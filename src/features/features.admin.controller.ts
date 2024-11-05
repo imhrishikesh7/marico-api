@@ -48,7 +48,7 @@ export class FeaturesAdminController {
     };
     return toReturn;
   }
-  
+
   @AdminOnly()
   @ApiBearerAuth()
   @ApiBody({
@@ -70,6 +70,14 @@ export class FeaturesAdminController {
         is_active: {
           type: 'boolean',
         },
+        qr_title: {
+          type: 'string',
+          nullable: true,
+        },
+        qr_link: {
+          type: 'string',
+          nullable: true,
+        },
       },
     },
   })
@@ -81,6 +89,8 @@ export class FeaturesAdminController {
     @Body('sub_menu', EmptystringPipe) sub_menu: string,
     @Body('category_title', EmptystringPipe) category_title: string,
     @Body('is_active', SwitchPipe) is_active: boolean,
+    @Body('qr_title', EmptystringPipe) qr_title?: string,
+    @Body('qr_link', EmptystringPipe) qr_link?: string,
   ): Promise<{ head: TitleCategory }> {
     const head = await this.featuresService.addUpdateTitleCategory(
       id,
@@ -88,6 +98,8 @@ export class FeaturesAdminController {
       sub_menu,
       category_title,
       is_active,
+      qr_title,
+      qr_link,
     );
     return {
       head,
