@@ -68,6 +68,11 @@ const menu: MenuItem[] = [
         role: ['INVESTOR_AR'],
       },
       {
+        name: 'Latest Director Reports',
+        url: '/investors/dr',
+        role: ['INVESTOR_DR'],
+      },
+      {
         name: 'ShareHolder Info',
         url: '/investors/shi',
         role: ['INVESTOR_SHI'],
