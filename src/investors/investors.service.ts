@@ -15,6 +15,7 @@ import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
+import { InvestorMI } from './entities/investor_mi.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -47,6 +48,8 @@ export class InvestorsService {
     private readonly arRepository: Repository<InvestorAR>,
     @InjectRepository(InvestorDR)
     private readonly drRepository: Repository<InvestorDR>,
+    @InjectRepository(InvestorMI)
+    private readonly miRepository: Repository<InvestorMI>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -1290,8 +1293,7 @@ export class InvestorsService {
       },
     });
     const groupedByCategory = DR.reduce((acc: any, item: InvestorDR) => {
-      const category =
-        item.dr_documentation_year;
+      const category = item.dr_documentation_year;
 
       // If the category doesn't exist, initialize it
       if (!acc[category]) {
@@ -1301,16 +1303,16 @@ export class InvestorsService {
         };
       }
 
-        acc[category].pdfs.push({
-          pdf_title: item.dr_documentation_title,
-          pdf: item.dr_documentation_pdf,
-          id: item.id,
-          url_title: item.url_title,
-          regions: item.dr_regions,
-          sort_order: item.sort_order,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
-        });
+      acc[category].pdfs.push({
+        pdf_title: item.dr_documentation_title,
+        pdf: item.dr_documentation_pdf,
+        id: item.id,
+        url_title: item.url_title,
+        regions: item.dr_regions,
+        sort_order: item.sort_order,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      });
 
       return acc;
     }, {});
@@ -1340,29 +1342,82 @@ export class InvestorsService {
     sort_order: number,
   ): Promise<InvestorDR> {
     if (id) {
-      const ar = await this.getDRById(id);
-      if (ar) {
-        ar.id = id;
-        ar.dr_documentation_year = dr_documentation_year;
-        ar.dr_documentation_title = dr_documentation_title;
-        ar.url_title = url_title;
-        ar.dr_documentation_pdf = dr_documentation_pdf;
-        ar.dr_regions = drRegions;
-        ar.sort_order = sort_order;
+      const dr = await this.getDRById(id);
+      if (dr) {
+        dr.id = id;
+        dr.dr_documentation_year = dr_documentation_year;
+        dr.dr_documentation_title = dr_documentation_title;
+        dr.url_title = url_title;
+        dr.dr_documentation_pdf = dr_documentation_pdf;
+        dr.dr_regions = drRegions;
+        dr.sort_order = sort_order;
 
-        return this.drRepository.save(ar);
+        return this.drRepository.save(dr);
       }
       throw new Error('ar not found');
     } else {
-      const ar = new InvestorDR();
+      const dr = new InvestorDR();
 
-      ar.dr_documentation_year = dr_documentation_year;
-      ar.dr_documentation_title = dr_documentation_title;
-      ar.url_title = url_title;
-      ar.dr_documentation_pdf = dr_documentation_pdf;
-      ar.dr_regions = drRegions;
-      ar.sort_order = sort_order;
-      return this.drRepository.save(ar);
+      dr.dr_documentation_year = dr_documentation_year;
+      dr.dr_documentation_title = dr_documentation_title;
+      dr.url_title = url_title;
+      dr.dr_documentation_pdf = dr_documentation_pdf;
+      dr.dr_regions = drRegions;
+      dr.sort_order = sort_order;
+      return this.drRepository.save(dr);
+    }
+  }
+
+  async getMI(search?: string): Promise<InvestorMI[]> {
+    if (search != null && search != '') {
+      return await this.miRepository.find({
+        where: {
+          mi_documentation_title: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.miRepository.find({});
+    }
+  }
+
+  async getMIById(id: number): Promise<InvestorMI | null> {
+    return await this.miRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateMI(
+    id: number,
+    mi_documentation_title: string,
+    url_title: string,
+    mi_documentation_pdf: string,
+    miRegions: string[],
+    sort_order: number,
+  ): Promise<InvestorMI> {
+    if (id) {
+      const mi = await this.getMIById(id);
+      if (mi) {
+        mi.id = id;
+        mi.mi_documentation_title = mi_documentation_title;
+        mi.url_title = url_title;
+        mi.mi_documentation_pdf = mi_documentation_pdf;
+        mi.mi_regions = miRegions;
+        mi.sort_order = sort_order;
+
+        return this.drRepository.save(mi);
+      }
+      throw new Error('mi not found');
+    } else {
+      const mi = new InvestorMI();
+
+      mi.mi_documentation_title = mi_documentation_title;
+      mi.url_title = url_title;
+      mi.mi_documentation_pdf = mi_documentation_pdf;
+      mi.mi_regions = miRegions;
+      mi.sort_order = sort_order;
+      return this.drRepository.save(mi);
     }
   }
 }

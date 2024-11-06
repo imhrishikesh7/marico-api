@@ -38,6 +38,7 @@ import { InvestorAR } from './entities/investor_ar.entity';
 import { FeaturesService } from 'src/features/features.service';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
+import { InvestorMI } from './entities/investor_mi.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
@@ -1377,6 +1378,97 @@ export class InvestorsAdminController {
     );
     return {
       director_report,
+    };
+  }
+  
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('principles_disclosure')
+  async getMI(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorMI[]> {
+    return await this.investorsService.getMI(search || undefined);
+  }
+
+  @Get('principles_disclosure/:id')
+  async getMIById(@Param('id', ParseIntPipe) id: number): Promise<{
+    disclosure: InvestorMI | null;
+    disclosures: InvestorMI[] | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      disclosure: await this.investorsService.getMIById(id),
+      disclosures: await this.investorsService.getMI(),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      disclosure: InvestorMI | null;
+      disclosures: InvestorMI[] | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        mi_documentation_title: {
+          type: 'string',
+        },
+        url_title: {
+          type: 'string',
+        },
+        mi_documentation_pdf: {
+          type: 'string',
+        },
+        mi_regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        sort_order: {
+          type: 'number',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('principles_disclosure/add-update')
+  async addUpdateMI(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('mi_documentation_title')
+    mi_documentation_title: string,
+    @Body('url_title', EmptystringPipe) url_title: string,
+    @Body('mi_documentation_pdf', EmptystringPipe)
+    mi_documentation_pdf: string,
+    @Body('mi_regions') mi_regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+  ): Promise<{ disclosure: InvestorMI }> {
+    const disclosure = await this.investorsService.addUpdateMI(
+      id,
+      mi_documentation_title,
+      url_title,
+      mi_documentation_pdf,
+      mi_regions,
+      sort_order,
+    );
+    return {
+      disclosure,
     };
   }
 }
