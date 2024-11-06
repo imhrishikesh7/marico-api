@@ -73,6 +73,11 @@ const menu: MenuItem[] = [
         role: ['INVESTOR_DR'],
       },
       {
+        name: 'Principles on Disclosure of PSI & MI',
+        url: '/investors/principles_disclosure',
+        role: ['INVESTOR_MI'],
+      },
+      {
         name: 'ShareHolder Info',
         url: '/investors/shi',
         role: ['INVESTOR_SHI'],

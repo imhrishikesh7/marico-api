@@ -82,6 +82,11 @@ const permissions: Permission[] = [
   {
     key: 'INVESTORS',
     level: 2,
+    name: 'Investors > Principles on Disclosure of PSI & MI',
+  },
+  {
+    key: 'INVESTORS',
+    level: 2,
     name: 'Investors > ShareHolder Info',
   },
   {
