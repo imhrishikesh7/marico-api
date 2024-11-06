@@ -18,6 +18,7 @@ import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
+import { InvestorMI } from './entities/investor_mi.entity';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { InvestorDR } from './entities/investor_dr.entity';
       Region,
       TitleCategory,
       InvestorDR,
+      InvestorMI,
     ]),
   ],
   controllers: [InvestorsController],
