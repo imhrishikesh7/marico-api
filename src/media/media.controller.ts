@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MediaService } from './media.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Media } from './entities/media.entity';
@@ -12,8 +20,8 @@ export class MediaController {
   async getMediaByCategory(
     @Param('region') region: string,
     @Param('category') category: string,
+    @Param('year') year: string,
   ): Promise<Media[]> {
-    return await this.mediaService.getMediaByCategory(region, category);
+    return await this.mediaService.getMediaByCategory(region, category, year);
   }
-
 }
