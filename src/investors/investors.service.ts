@@ -529,14 +529,14 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(qu_region?: string): Promise<any> {
+  async getQUALL(region?: string): Promise<any> {
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
 
     const qupdfs = await this.quPdfRepository.find({
       where: {
-        ...(qu_region && { qu_region: Like(`%${qu_region}%`) }),
+        ...(region && { qu_region: Like(`%${region}%`) }),
       },
     });
 
@@ -1380,6 +1380,37 @@ export class InvestorsService {
     }
   }
 
+  async getMIDetail(region?: string): Promise<any[]> {
+
+    interface ProcessedMI {
+      pdf: string;
+      pdf_title: string;
+      region: string[];
+      sort_order: number;
+      url_title: string;
+      id: number;
+    }
+    
+    const where: any = {};
+    if (region) {
+      where.mi_regions = Like(`%${region}%`);
+    }
+  
+    const mi = await this.miRepository.find({ where });
+  
+    const processedMIs: ProcessedMI[] = mi.map(mi => ({
+      pdf: mi.mi_documentation_pdf,
+      pdf_title: mi.mi_documentation_title,
+      region: mi.mi_regions,
+      sort_order: mi.sort_order,
+      url_title: mi.url_title,
+      id: mi.id,
+    }));
+    
+    return processedMIs;
+  }
+  
+
   async getMIById(id: number): Promise<InvestorMI | null> {
     return await this.miRepository.findOne({
       where: {
@@ -1406,7 +1437,7 @@ export class InvestorsService {
         mi.mi_regions = miRegions;
         mi.sort_order = sort_order;
 
-        return this.drRepository.save(mi);
+        return this.miRepository.save(mi);
       }
       throw new Error('mi not found');
     } else {
@@ -1417,7 +1448,7 @@ export class InvestorsService {
       mi.mi_documentation_pdf = mi_documentation_pdf;
       mi.mi_regions = miRegions;
       mi.sort_order = sort_order;
-      return this.drRepository.save(mi);
+      return this.miRepository.save(mi);
     }
   }
 }

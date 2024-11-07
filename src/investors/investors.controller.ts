@@ -21,6 +21,8 @@ import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
+import { InvestorMI } from './entities/investor_mi.entity';
+import { InvestorDR } from './entities/investor_dr.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -229,4 +231,21 @@ export class InvestorsController {
   ): Promise<InvestorAR[]> {
     return await this.investorsService.getARDetail(region);
   }
+
+  @ApiBearerAuth()
+  @Get('documentation/latest-director-report')
+  async getDRDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorDR[]> {
+    return await this.investorsService.getDRDetail(region);
+  }
+
+  @ApiBearerAuth()
+  @Get('documentation/investor-principles-disclosure')
+  async getMIDetail(
+    @Param('region') region: string,
+  ): Promise<InvestorMI[]> {
+    return await this.investorsService.getMIDetail(region);
+  }
+
 }
