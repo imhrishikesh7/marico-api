@@ -6,9 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { MediaService } from './media.service';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Media } from './entities/media.entity';
 
 @Controller(':region/media')
@@ -17,10 +18,15 @@ export class MediaController {
 
   @ApiBearerAuth()
   @Get(':category')
+  @ApiQuery({
+    name: 'year',
+    required: false,
+    description: 'An optional parameter',
+  })
   async getMediaByCategory(
     @Param('region') region: string,
     @Param('category') category: string,
-    @Param('year') year: string,
+    @Query('year') year?: string,
   ): Promise<Media[]> {
     return await this.mediaService.getMediaByCategory(region, category, year);
   }

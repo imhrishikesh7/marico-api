@@ -32,15 +32,15 @@ export class MediaService {
   async getMediaByCategory(
     region?: string,
     category?: string,
-    year?: string,
+    yearfliter?: string,
   ): Promise<Media[]> {
     const where: any = {};
 
     if (region != null && region != '') {
       where.media_regions = Like('%' + region + '%');
     }
-    if (year != null && year != '') {
-      where.year = Like('%' + year + '%');
+    if (yearfliter != null && yearfliter != '') {
+      where.year = Like('%' + yearfliter + '%');
     }
     where.category = Like('%' + category + '%');
     return await this.mediaRepository.find({
