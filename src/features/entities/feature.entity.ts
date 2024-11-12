@@ -24,7 +24,7 @@ export class TitleCategory {
   @Index()
   category_title: string;
 
-  @Column({default: true })
+  @Column({ default: true })
   @Index()
   is_active: boolean;
 
@@ -32,9 +32,8 @@ export class TitleCategory {
   @Index()
   qr_title: string;
 
-  @Column()
-  @Index()
-  qr_link: string;
+  @Column({ type: 'json', nullable: true })
+  qr_code: { url: string; alt: string; width: number; height: number } | null;
 
   @CreateDateColumn()
   @Index()

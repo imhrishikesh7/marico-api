@@ -74,8 +74,19 @@ export class FeaturesAdminController {
           type: 'string',
           nullable: true,
         },
-        qr_link: {
-          type: 'string',
+        qr_code: {
+          type: 'object',
+          properties: {
+            url: {
+              type: 'string',
+            },
+            width: {
+              type: 'number',
+            },
+            height: {
+              type: 'number',
+            },
+          },
           nullable: true,
         },
       },
@@ -90,7 +101,12 @@ export class FeaturesAdminController {
     @Body('category_title', EmptystringPipe) category_title: string,
     @Body('is_active', SwitchPipe) is_active: boolean,
     @Body('qr_title', EmptystringPipe) qr_title?: string,
-    @Body('qr_link', EmptystringPipe) qr_link?: string,
+    @Body('qr_code') qr_code?: {
+      url: string;
+      alt: string;
+      width: number;
+      height: number;
+    } | null,
   ): Promise<{ head: TitleCategory }> {
     const head = await this.featuresService.addUpdateTitleCategory(
       id,
@@ -99,7 +115,7 @@ export class FeaturesAdminController {
       category_title,
       is_active,
       qr_title,
-      qr_link,
+      qr_code,
     );
     return {
       head,
