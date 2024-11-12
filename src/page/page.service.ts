@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Page } from './entities/page.entity';
 import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { PageContent } from './entities/page_content.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Injectable()
 export class PageService {
@@ -10,6 +11,8 @@ export class PageService {
     @InjectRepository(Page) private pageRepository: Repository<Page>,
     @InjectRepository(PageContent)
     private pageContentRepository: Repository<PageContent>,
+    @InjectRepository(Sitemap)
+    private seoRepository: Repository<Sitemap>,
   ) {}
 
   //get all pages
@@ -114,11 +117,6 @@ export class PageService {
     id: number,
     name: string,
     url: string,
-    // indexed: boolean,
-    // meta_title: string,
-    // meta_description: string,
-    // meta_image: { url: string; width: number; height: number } | null,
-    // canonical_override: string,
     published_at: Date,
     is_active: boolean,
     page_contents: {
@@ -135,6 +133,13 @@ export class PageService {
       order: number;
       is_active: boolean;
     }[],
+    seo: {
+      meta_title: string;
+      meta_description: string;
+      canonical_url: string;
+      meta_image: { url: string; width: number; height: number } | null;
+      indexed: boolean;
+    },
   ): Promise<Page> {
     //check if page with same url already exists
     const pageWithSameUrl = await this.pageRepository.findOne({
@@ -153,6 +158,7 @@ export class PageService {
     }
 
     let page: Page;
+    let site: Sitemap | null = null;
     if (id > 0) {
       const record = await this.pageRepository.findOne({
         where: { id: id },
@@ -161,19 +167,31 @@ export class PageService {
         throw new BadRequestException('Page not found');
       }
       page = record;
+      const seoRecord = await this.seoRepository.findOne({
+        where: {ref_id: id},
+      });
+      if (seoRecord) {
+        site= seoRecord;
+      }
     } else {
       page = new Page();
+      site = new Sitemap();
     }
     page.name = name;
     page.url = url;
-    // page.indexed = indexed;
-    // page.meta_title = meta_title;
-    // page.meta_description = meta_description;
-    // page.meta_image = meta_image;
-    // page.canonical_override = canonical_override;
     page.published_at = published_at;
     page.is_active = is_active;
     page = await this.pageRepository.save(page);
+    if (site) {
+      site.indexed = seo.indexed;
+      site.meta_title = seo.meta_title;
+      site.meta_description = seo.meta_description;
+      site.meta_image = seo.meta_image;
+      site.canonical_url = seo.canonical_url;
+      site.ref = 'page';
+      site.ref_id = id;
+      await this.seoRepository.save(site);
+    }
 
     for (let i = 0; i < page_contents.length; i++) {
       if (page_contents[i].id > 0) {

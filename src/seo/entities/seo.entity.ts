@@ -1,46 +1,42 @@
 import {
-  Column,
-  CreateDateColumn,
   Entity,
-  Index,
+  Column,
   PrimaryGeneratedColumn,
+  Index,
+  CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-export class InvestorAR {
+export class Sitemap {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   @Index()
-  ar_documentation_year: string;
+  ref: string;
 
   @Column()
   @Index()
-  ar_documentation_title: string;
+  ref_id: number;
 
   @Column()
   @Index()
-  url_title: string;
+  meta_title: string;
 
-  @Column({ type: 'text' })
-  ar_documentation_pdf: string;
-
-  @Column('json')
-  ar_regions: string[];
+  @Column()
+  meta_description: string;
 
   @Column()
   @Index()
-  investors_ar_category: string;
+  canonical_url: string;
 
-  @Column()
-  @Index()
-  sort_order: number;
+  @Column({ type: 'json', nullable: true })
+  meta_image: { url: string; width: number; height: number } | null;
 
-  @Column()
+  @Column({ type: 'boolean', default: false })
   @Index()
-  is_active: boolean;
+  indexed: boolean;
 
   @CreateDateColumn()
   @Index()

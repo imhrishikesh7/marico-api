@@ -228,6 +228,12 @@ export class BrandsAdminController {
         shop_now_url: {
           type: 'string',
         },
+        show_in_front: {
+          type: 'boolean',
+        },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -278,6 +284,8 @@ export class BrandsAdminController {
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
     @Body('shop_now_url') shop_now_url: string,
+    @Body('show_in_front') show_in_front: boolean,
+    @Body('is_active') is_active: boolean,
   ): Promise<{ brand: Brand }> {
     const brand = await this.brandService.addUpdateBrand(
       id,
@@ -300,6 +308,8 @@ export class BrandsAdminController {
       regions,
       sort_order,
       shop_now_url,
+      show_in_front,
+      is_active,
     );
 
     await this.adminService.addAdminActivity(
@@ -328,6 +338,8 @@ export class BrandsAdminController {
         regions,
         sort_order,
         shop_now_url,
+        show_in_front,
+        is_active,
       },
     );
 

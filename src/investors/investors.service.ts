@@ -239,6 +239,7 @@ export class InvestorsService {
     agmRegions: string[],
     investors_agm_category: string,
     sort_order: number,
+    is_active:boolean,
   ): Promise<InvestorAGM> {
     if (id) {
       const agm = await this.getAGMById(id);
@@ -251,6 +252,7 @@ export class InvestorsService {
         agm.agm_regions = agmRegions;
         agm.investors_agm_category = investors_agm_category;
         agm.sort_order = sort_order;
+        agm.is_active = is_active;
 
         return this.agmRepository.save(agm);
       }
@@ -265,6 +267,8 @@ export class InvestorsService {
       agm.agm_regions = agmRegions;
       agm.investors_agm_category = investors_agm_category;
       agm.sort_order = sort_order;
+      agm.is_active = is_active;
+
       return this.agmRepository.save(agm);
     }
   }
@@ -436,6 +440,7 @@ export class InvestorsService {
     dividends_year: string,
     dividendRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorDividends> {
     if (id) {
       const dividend = await this.getDividendsById(id);
@@ -451,6 +456,7 @@ export class InvestorsService {
         dividend.dividends_year = dividends_year;
         dividend.dividend_regions = dividendRegions;
         dividend.sort_order = sort_order;
+        dividend.is_active = is_active;
 
         return this.dividendsRepository.save(dividend);
       }
@@ -467,6 +473,7 @@ export class InvestorsService {
       dividend.dividends_year = dividends_year;
       dividend.dividend_regions = dividendRegions;
       dividend.sort_order = sort_order;
+      dividend.is_active = is_active;
       return this.dividendsRepository.save(dividend);
     }
   }
@@ -822,6 +829,7 @@ export class InvestorsService {
     documentation_cg_category: string,
     cgRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<CorporateGovernance> {
     if (id) {
       const cg = await this.getCGById(id);
@@ -834,6 +842,7 @@ export class InvestorsService {
         cg.documentation_cg_category = documentation_cg_category;
         cg.cg_regions = cgRegions;
         cg.sort_order = sort_order;
+        cg.is_active = is_active;
 
         return this.cgRepository.save(cg);
       }
@@ -848,6 +857,7 @@ export class InvestorsService {
       cg.documentation_cg_category = documentation_cg_category;
       cg.cg_regions = cgRegions;
       cg.sort_order = sort_order;
+      cg.is_active = is_active;
       return this.cgRepository.save(cg);
     }
   }
@@ -1237,6 +1247,7 @@ export class InvestorsService {
     arRegions: string[],
     investors_ar_category: string,
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorAR> {
     if (id) {
       const ar = await this.getARById(id);
@@ -1249,6 +1260,7 @@ export class InvestorsService {
         ar.ar_regions = arRegions;
         ar.investors_ar_category = investors_ar_category;
         ar.sort_order = sort_order;
+        ar.is_active = is_active;
 
         return this.arRepository.save(ar);
       }
@@ -1263,6 +1275,7 @@ export class InvestorsService {
       ar.ar_regions = arRegions;
       ar.investors_ar_category = investors_ar_category;
       ar.sort_order = sort_order;
+      ar.is_active = is_active;
       return this.arRepository.save(ar);
     }
   }

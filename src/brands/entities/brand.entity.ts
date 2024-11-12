@@ -96,6 +96,14 @@ export class Brand {
   @Column()
   @Index()
   shop_now_url: string;
+  
+  @Column()
+  @Index()
+  show_in_front: boolean;
+
+  @Column()
+  @Index()
+  is_active: boolean;
 
   @CreateDateColumn()
   @Index()

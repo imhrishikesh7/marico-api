@@ -10,6 +10,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { RegionsService } from 'src/regions/regions.service';
@@ -224,6 +225,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -241,6 +245,7 @@ export class InvestorsAdminController {
     @Body('investors_agm_category', EmptystringPipe)
     investors_agm_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ agm: InvestorAGM }> {
     const agm = await this.investorsService.addUpdateAGM(
       id,
@@ -251,6 +256,7 @@ export class InvestorsAdminController {
       agm_regions,
       investors_agm_category,
       sort_order,
+      is_active,
     );
     return {
       agm,
@@ -331,6 +337,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -349,6 +358,7 @@ export class InvestorsAdminController {
     @Body('dividends_year') dividends_year: string,
     @Body('dividend_regions') dividend_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ dividend: InvestorDividends }> {
     const dividend = await this.investorsService.addUpdateDividends(
       id,
@@ -361,6 +371,7 @@ export class InvestorsAdminController {
       dividends_year,
       dividend_regions,
       sort_order,
+      is_active,
     );
     return {
       dividend,
@@ -696,6 +707,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -713,6 +727,7 @@ export class InvestorsAdminController {
     documentation_cg_category: string,
     @Body('cg_regions') cg_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ cg: CorporateGovernance }> {
     const cg = await this.investorsService.addUpdateCG(
       id,
@@ -723,6 +738,7 @@ export class InvestorsAdminController {
       documentation_cg_category,
       cg_regions,
       sort_order,
+      is_active,
     );
     return {
       cg,
@@ -1205,15 +1221,19 @@ export class InvestorsAdminController {
     annual_report: InvestorAR | null;
     annual_reports: InvestorAR[] | null;
     regions: Region[] | null;
+    categoryMenu: TitleCategory[] | null;
   }> {
     const toReturn = {
       annual_report: await this.investorsService.getARById(id),
       annual_reports: await this.investorsService.getAR(),
       regions: await this.regionService.getRegionList(),
+      categoryMenu:
+        await this.featuresService.getTitleCategoryDropdownBySubmenu('agm'),
     } as {
       annual_report: InvestorAR | null;
       annual_reports: InvestorAR[] | null;
       regions: Region[] | null;
+      categoryMenu: TitleCategory[] | null;
     };
     return toReturn;
   }
@@ -1253,6 +1273,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1270,6 +1293,7 @@ export class InvestorsAdminController {
     @Body('investors_ar_category', EmptystringPipe)
     investors_ar_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ annual_report: InvestorAR }> {
     const annual_report = await this.investorsService.addUpdateAR(
       id,
@@ -1280,6 +1304,7 @@ export class InvestorsAdminController {
       ar_regions,
       investors_ar_category,
       sort_order,
+      is_active,
     );
     return {
       annual_report,
@@ -1380,7 +1405,6 @@ export class InvestorsAdminController {
       director_report,
     };
   }
-  
 
   @AdminOnly()
   @ApiBearerAuth()

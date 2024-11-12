@@ -278,6 +278,8 @@ export class BrandsService {
     brandRegions: string[],
     sort_order: number,
     shop_now_url: string,
+    show_in_front: boolean,
+    is_active: boolean,
   ): Promise<Brand> {
     if (id) {
       const brand = await this.brandRepository.findOne({
@@ -306,6 +308,8 @@ export class BrandsService {
         brand.regions = brandRegions;
         brand.sort_order = sort_order;
         brand.shop_now_url = shop_now_url;
+        brand.show_in_front = show_in_front;
+        brand.is_active = is_active;
         return this.brandRepository.save(brand);
       }
       throw new Error('Brand not found');
@@ -332,6 +336,8 @@ export class BrandsService {
       brand.regions = brandRegions;
       brand.sort_order = sort_order;
       brand.shop_now_url = shop_now_url;
+      brand.show_in_front = show_in_front;
+      brand.is_active = is_active;
       return this.brandRepository.save(brand);
     }
   }

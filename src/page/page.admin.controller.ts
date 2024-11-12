@@ -25,11 +25,14 @@ import { ParseDateTimePipe } from 'src/validations/parsedatetime/parsedatetime.p
 import { AdminService } from 'src/admin/admin.service';
 import { RegionsService } from 'src/regions/regions.service';
 import { Region } from 'src/regions/entities/region.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
+import { SeoService } from 'src/seo/seo.service';
 
 @Controller('admin/pages')
 export class PageAdminController {
   constructor(
     private readonly pageService: PageService,
+    private readonly seoService: SeoService,
     private readonly regionService: RegionsService,
     private readonly adminService: AdminService,
     @Inject(REQUEST) private readonly request: AdminRequest,
@@ -95,10 +98,12 @@ export class PageAdminController {
   @Get('/:id')
   async findOne(@Param('id') id: number): Promise<{
     page: Page | null;
+    seo: Sitemap | null;
     regions: Region[];
   }> {
     return {
       page: await this.pageService.findOne(id),
+      seo: await this.seoService.findOne(id),
       regions: await this.regionService.getRegionList(),
     };
   }
@@ -180,8 +185,8 @@ export class PageAdminController {
               short_description: {
                 type: 'string',
               },
-              description:{
-                type:'string',
+              description: {
+                type: 'string',
               },
               region: {
                 type: 'array',
@@ -196,6 +201,24 @@ export class PageAdminController {
                 type: 'string',
               },
             },
+          },
+        },
+        seo: {
+          type: 'object',
+          properties: {
+            meta_title: { type: 'string' },
+            meta_description: { type: 'string' },
+            canonical_url: { type: 'string' },
+            meta_image: {
+              type: 'object',
+              properties: {
+                url: { type: 'string' },
+                alt: { type: 'string' },
+                width: { type: 'number' },
+                height: { type: 'number' },
+              },
+            },
+            indexed: { type: 'boolean' },
           },
         },
       },
@@ -226,11 +249,24 @@ export class PageAdminController {
       title: string;
       link: string;
       short_description: string;
-      description:string;
+      description: string;
       region: string[];
       order: number;
       is_active: boolean;
     }[],
+    @Body('seo')
+    seo: {
+      meta_title: string;
+      meta_description: string;
+      canonical_url: string;
+      meta_image: {
+        url: string;
+        alt: string;
+        width: number;
+        height: number;
+      } | null;
+      indexed: boolean;
+    },
   ): Promise<boolean> {
     const updatedRecord = await this.pageService.createOrUpdatePage(
       id,
@@ -259,6 +295,7 @@ export class PageAdminController {
           is_active: page_content.is_active,
         };
       }),
+      seo,
     );
     await this.adminService.addAdminActivity(
       this.request.admin,
