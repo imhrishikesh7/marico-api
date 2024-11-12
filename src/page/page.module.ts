@@ -7,11 +7,13 @@ import { PageContent } from './entities/page_content.entity';
 import { AdminModule } from 'src/admin/admin.module';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 import { SeoService } from 'src/seo/seo.service';
+import { BrandsService } from 'src/brands/brands.service';
+import { Brand } from 'src/brands/entities/brand.entity';
   
 @Module({
-  imports: [TypeOrmModule.forFeature([Page, PageContent,Sitemap]), AdminModule],
+  imports: [TypeOrmModule.forFeature([Page, PageContent,Sitemap, Brand]), AdminModule],
   controllers: [PageController],
-  providers: [PageService, SeoService],
-  exports: [PageService, SeoService],
+  providers: [PageService, SeoService, BrandsService],
+  exports: [PageService, SeoService, BrandsService],
 })
 export class PageModule {}
