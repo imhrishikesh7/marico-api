@@ -182,7 +182,7 @@ export class InvestorsController {
   @ApiBearerAuth()
   @Get('documentation/quarterly-updates')
   async getQUDetail(@Param('region') region: string): Promise<any[]> {
-    return await this.investorsService.getQUALL();
+    return await this.investorsService.getQUALL(region);
   }
 
   @ApiBearerAuth()

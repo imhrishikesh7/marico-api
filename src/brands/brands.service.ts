@@ -152,6 +152,19 @@ export class BrandsService {
     return await query.getMany();
   }
 
+  async getFrontBrandDetail(region: string): Promise<Brand[]> {
+    const where: any = {};
+  
+    if (region != null && region != '') {
+      where.regions =  Like('%' + region+ '%');
+    }
+    where.show_in_front = 1;
+    where.is_active = 1;
+    return await this.brandRepository.find({
+      where,
+    });
+  }
+
   async getBrandsDropdown(): Promise<Brand[]> {
     return await this.brandRepository.find({
       select: ['id', 'title'],
