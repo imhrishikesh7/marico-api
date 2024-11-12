@@ -9,9 +9,14 @@ import { Sitemap } from 'src/seo/entities/seo.entity';
 import { SeoService } from 'src/seo/seo.service';
 import { BrandsService } from 'src/brands/brands.service';
 import { Brand } from 'src/brands/entities/brand.entity';
-  
+import { PrintAd } from 'src/brands/entities/print_ad.entity';
+import { Tvc } from 'src/brands/entities/tvc.entity';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Page, PageContent,Sitemap, Brand]), AdminModule],
+  imports: [
+    TypeOrmModule.forFeature([Page, PageContent, Sitemap, Brand, Tvc, PrintAd]),
+    AdminModule,
+  ],
   controllers: [PageController],
   providers: [PageService, SeoService, BrandsService],
   exports: [PageService, SeoService, BrandsService],
