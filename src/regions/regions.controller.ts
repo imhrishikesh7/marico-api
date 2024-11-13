@@ -11,7 +11,7 @@ export class RegionsController {
   @ApiBearerAuth()
   @Get('')
   async getRegionList(): Promise<Region[]> {
-    return await this.regionService.getRegionList();
+    return await this.regionService.getRegions();
   }
 
 }

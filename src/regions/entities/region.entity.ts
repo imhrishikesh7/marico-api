@@ -39,6 +39,10 @@ import {
     @Index()
     is_active: boolean;
   
+    @Column()
+    @Index()
+    sort_order: number;
+
     @CreateDateColumn()
     created_at: Date;
   

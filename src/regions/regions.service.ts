@@ -23,6 +23,16 @@ export class RegionsService {
     return regions;
   }
 
+  async getRegions(): Promise<Region[]> {
+    const regions = await this.regionRepository.find({
+      order:{
+        sort_order: "ASC"
+      },
+    });
+
+    return regions;
+  }
+
   async getRegionById(id: number): Promise<Region | null> {
     return await this.regionRepository.findOne({
       where: {
@@ -42,6 +52,7 @@ export class RegionsService {
       alt: string;
     } | null,
     is_active: boolean,
+    sort_order: number,
   ): Promise<Region> {
     const generatedAlias = Utility.slugify(name);
     if (id) {
@@ -55,6 +66,7 @@ export class RegionsService {
         region.alias = alias;
         region.thumbnail = thumbnail;
         region.is_active = is_active;
+        region.sort_order = sort_order;
         return this.regionRepository.save(region);
       }
       throw new Error('Region not found');
@@ -65,6 +77,7 @@ export class RegionsService {
       region.alias = alias;
       region.thumbnail = thumbnail;
       region.is_active = is_active;
+      region.sort_order = sort_order;
       return this.regionRepository.save(region);
     }
   }

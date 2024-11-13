@@ -13,8 +13,7 @@ export class InvestorContact {
   @Index()
   url_title: string;
 
-  @Column()
-  @Index()
+  @Column({type: 'text'})
   ic_contact_info: string;
 
   @Column('json')
