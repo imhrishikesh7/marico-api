@@ -26,7 +26,9 @@ import { InvestorDR } from './entities/investor_dr.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
-  constructor(private readonly investorsService: InvestorsService) {}
+  constructor(
+    private readonly investorsService: InvestorsService,
+  ) {}
 
   @ApiBearerAuth()
   @Get('qu')
@@ -45,34 +47,7 @@ export class InvestorsController {
   @ApiBearerAuth()
   @Get('documentation/agm')
   async getAGMDetail(@Param('region') region: string): Promise<InvestorAGM[]> {
-    const agm = await this.investorsService.getAGMDetail(region);
-
-    const groupedByCategory = agm.reduce((acc: any, item: InvestorAGM) => {
-      const category = item.investors_agm_category;
-
-      if (!acc[category]) {
-        acc[category] = {
-          category: category,
-          pdfs: [],
-        };
-      }
-
-      acc[category].pdfs.push({
-        pdf_title: item.agm_documentation_title,
-        pdf: item.agm_documentation_pdf,
-        id: item.id,
-        title: item.title,
-        url_title: item.url_title,
-        region: item.agm_regions,
-        sort_order: item.sort_order,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      });
-
-      return acc;
-    }, {});
-
-    return Object.values(groupedByCategory);
+    return await this.investorsService.getAGMDetail(region);  
   }
 
   @ApiBearerAuth()
@@ -226,26 +201,19 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/annual-reports')
-  async getARDetail(
-    @Param('region') region: string,
-  ): Promise<InvestorAR[]> {
+  async getARDetail(@Param('region') region: string): Promise<InvestorAR[]> {
     return await this.investorsService.getARDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/latest-director-report')
-  async getDRDetail(
-    @Param('region') region: string,
-  ): Promise<InvestorDR[]> {
+  async getDRDetail(@Param('region') region: string): Promise<InvestorDR[]> {
     return await this.investorsService.getDRDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/investor-principles-disclosure')
-  async getMIDetail(
-    @Param('region') region: string,
-  ): Promise<InvestorMI[]> {
+  async getMIDetail(@Param('region') region: string): Promise<InvestorMI[]> {
     return await this.investorsService.getMIDetail(region);
   }
-
 }

@@ -16,6 +16,7 @@ import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
+import { TitleCategory } from 'src/features/entities/feature.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -50,6 +51,8 @@ export class InvestorsService {
     private readonly drRepository: Repository<InvestorDR>,
     @InjectRepository(InvestorMI)
     private readonly miRepository: Repository<InvestorMI>,
+    @InjectRepository(TitleCategory)
+    private readonly titleCategoryRepository: Repository<TitleCategory>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -217,9 +220,50 @@ export class InvestorsService {
       where.agm_regions = Like('%' + region + '%');
     }
 
-    return await this.agmRepository.find({
+    const agm = await this.agmRepository.find({
       where,
     });
+
+    let titleCategory = await this.titleCategoryRepository.find({
+      where: {
+        sub_menu: Like('%agm%'),
+      },
+    });
+    const groupedByCategory = agm.reduce((acc: any, item: InvestorAGM) => {
+      const category = item.investors_agm_category;
+
+      if (!acc[category]) {
+        acc[category] = {
+          category: category,
+          qr_title: '',
+          qr_code: '',
+          pdfs: [],
+        };
+      }
+      if (titleCategory) {
+        const filteredTitles = titleCategory.filter((p) => p.category_title == category);
+  
+        if (filteredTitles.length > 0) {
+          acc[category].qr_title = filteredTitles[0].qr_title; 
+          acc[category].qr_code = filteredTitles[0].qr_code;   
+        }
+      }
+      acc[category].pdfs.push({
+        pdf_title: item.agm_documentation_title,
+        pdf: item.agm_documentation_pdf,
+        id: item.id,
+        title: item.title,
+        url_title: item.url_title,
+        region: item.agm_regions,
+        sort_order: item.sort_order,
+        created_at: item.created_at,
+        updated_at: item.updated_at,
+      });
+
+      return acc;
+    }, {});
+
+    return Object.values(groupedByCategory);
   }
 
   async getAGMById(id: number): Promise<InvestorAGM | null> {
@@ -239,7 +283,7 @@ export class InvestorsService {
     agmRegions: string[],
     investors_agm_category: string,
     sort_order: number,
-    is_active:boolean,
+    is_active: boolean,
   ): Promise<InvestorAGM> {
     if (id) {
       const agm = await this.getAGMById(id);
@@ -1394,7 +1438,6 @@ export class InvestorsService {
   }
 
   async getMIDetail(region?: string): Promise<any[]> {
-
     interface ProcessedMI {
       pdf: string;
       pdf_title: string;
@@ -1403,15 +1446,15 @@ export class InvestorsService {
       url_title: string;
       id: number;
     }
-    
+
     const where: any = {};
     if (region) {
       where.mi_regions = Like(`%${region}%`);
     }
-  
+
     const mi = await this.miRepository.find({ where });
-  
-    const processedMIs: ProcessedMI[] = mi.map(mi => ({
+
+    const processedMIs: ProcessedMI[] = mi.map((mi) => ({
       pdf: mi.mi_documentation_pdf,
       pdf_title: mi.mi_documentation_title,
       region: mi.mi_regions,
@@ -1419,10 +1462,9 @@ export class InvestorsService {
       url_title: mi.url_title,
       id: mi.id,
     }));
-    
+
     return processedMIs;
   }
-  
 
   async getMIById(id: number): Promise<InvestorMI | null> {
     return await this.miRepository.findOne({
