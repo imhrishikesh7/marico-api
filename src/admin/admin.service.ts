@@ -501,6 +501,8 @@ export class AdminService {
       'gif',
       'docx',
       'doc',
+      'mp3',
+      'mp4',
     ];
     const extension = file_name[1];
     if (extension) {
