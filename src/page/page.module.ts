@@ -12,10 +12,20 @@ import { Brand } from 'src/brands/entities/brand.entity';
 import { PrintAd } from 'src/brands/entities/print_ad.entity';
 import { Tvc } from 'src/brands/entities/tvc.entity';
 import { Region } from 'src/regions/entities/region.entity';
+import { Contact } from 'src/seo/entities/contact.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Page, PageContent, Sitemap, Brand, Tvc, PrintAd, Region]),
+    TypeOrmModule.forFeature([
+      Page,
+      PageContent,
+      Sitemap,
+      Contact,
+      Brand,
+      Tvc,
+      PrintAd,
+      Region,
+    ]),
     AdminModule,
   ],
   controllers: [PageController],
