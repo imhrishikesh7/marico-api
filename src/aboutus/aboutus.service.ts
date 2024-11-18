@@ -127,6 +127,9 @@ export class AboutusService {
       where: {
         id: id,
       },
+      order: {
+        year: "DESC",
+      }
     });
   }
 
