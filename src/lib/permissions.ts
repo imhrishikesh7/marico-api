@@ -37,6 +37,11 @@ const permissions: Permission[] = [
   {
     key: 'ABOUT_US',
     level: 1,
+    name: 'About Us',
+  },
+  {
+    key: 'ABOUT_US',
+    level: 1,
     name: 'About Us > MemberList',
   },
   {
@@ -48,6 +53,11 @@ const permissions: Permission[] = [
     key: 'ABOUT_US',
     level: 2,
     name: 'About Us > History',
+  },
+  {
+    key: 'BRAND',
+    level: 1,
+    name: 'Brands',
   },
   {
     key: 'BRAND',
