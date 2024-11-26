@@ -25,8 +25,11 @@ export class RegionsService {
 
   async getRegions(): Promise<Region[]> {
     const regions = await this.regionRepository.find({
-      order:{
-        sort_order: "ASC"
+      where: {
+        is_active: true,
+      },
+      order: {
+        sort_order: 'ASC',
       },
     });
 
