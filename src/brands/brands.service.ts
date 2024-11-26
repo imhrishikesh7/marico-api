@@ -154,9 +154,9 @@ export class BrandsService {
 
   async getFrontBrandDetail(region: string): Promise<Brand[]> {
     const where: any = {};
-  
+
     if (region != null && region != '') {
-      where.regions =  Like('%' + region+ '%');
+      where.regions = Like('%' + region + '%');
     }
     where.show_in_front = 1;
     where.is_active = 1;
@@ -217,9 +217,10 @@ export class BrandsService {
       where.url_title = Like(`%${alias}%`);
     }
 
-    const toReturn: { brand: Brand | null; subBrands?: Brand[] } = {
-      brand: null,
-    };
+    const toReturn: { brand: Brand | null; subBrands?: Brand[]; tvc?: Tvc[] } =
+      {
+        brand: null,
+      };
 
     // Fetch the main brand
     const brand = await this.brandRepository.findOne({
@@ -245,6 +246,19 @@ export class BrandsService {
     // Set subBrands if there are any
     if (subBrands.length > 0) {
       toReturn.subBrands = subBrands;
+    }
+    let tvc: Tvc[] = [];
+    if (brand) {
+      // Fetch the sub-brands related to the main brand
+      tvc = await this.tvcRepository.find({
+        select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
+        where: {
+          tvc_title: In(brand.tvc_relation),
+        },
+      });
+    }
+    if (tvc.length > 0) {
+      toReturn.tvc = tvc;
     }
 
     return toReturn;
