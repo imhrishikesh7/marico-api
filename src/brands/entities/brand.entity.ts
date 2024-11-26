@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -114,7 +115,4 @@ export class Brand {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
-
-  @OneToMany(() => Tvc, (tvcs: any) => tvcs.brand)
-  tvcs: Tvc[];
 }

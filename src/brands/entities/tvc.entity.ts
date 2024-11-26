@@ -61,8 +61,4 @@ export class Tvc {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
-
-  @ManyToOne(() => Brand, (brand) => brand.tvcs)
-  @JoinColumn({ name: 'tvc_title' })
-  brand: Brand;
 }
