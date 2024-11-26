@@ -193,7 +193,6 @@ export class BrandsService {
     where.brand_type = Like('sub-brand');
     return await this.brandRepository.find({
       where,
-      relations: ['tvc'],
     });
   }
   async getBrandById(id: number): Promise<Brand | null> {
