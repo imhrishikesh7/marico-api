@@ -193,6 +193,7 @@ export class BrandsService {
     where.brand_type = Like('sub-brand');
     return await this.brandRepository.find({
       where,
+      relations: ['tvc'],
     });
   }
   async getBrandById(id: number): Promise<Brand | null> {
@@ -225,6 +226,7 @@ export class BrandsService {
     // Fetch the main brand
     const brand = await this.brandRepository.findOne({
       where,
+      relations: ['tvc'],
     });
 
     // Declare subBrands outside the if-block
@@ -237,6 +239,7 @@ export class BrandsService {
           brand_type: Like('sub-brand'),
           brand_url_title: In(brand.sub_brand_relation),
         },
+        relations: ['tvc'],
       });
     }
 
@@ -247,20 +250,6 @@ export class BrandsService {
     if (subBrands.length > 0) {
       toReturn.subBrands = subBrands;
     }
-    let tvc: Tvc[] = [];
-    if (brand) {
-      // Fetch the sub-brands related to the main brand
-      tvc = await this.tvcRepository.find({
-        select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
-        where: {
-          tvc_title: In(brand.tvc_relation),
-        },
-      });
-    }
-    if (tvc.length > 0) {
-      toReturn.tvc = tvc;
-    }
-
     return toReturn;
   }
 

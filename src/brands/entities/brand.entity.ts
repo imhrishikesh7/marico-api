@@ -3,9 +3,11 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Tvc } from './tvc.entity';
 
 @Entity()
 export class Brand {
@@ -112,4 +114,7 @@ export class Brand {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
+
+  @OneToMany(() => Tvc, (tvcs: any) => tvcs.brand)
+  tvcs: Tvc[];
 }

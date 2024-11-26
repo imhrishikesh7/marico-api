@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Brand } from './brand.entity';
 
 @Entity()
 export class Tvc {
@@ -58,4 +61,8 @@ export class Tvc {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
+
+  @ManyToOne(() => Brand, (brand) => brand.tvcs)
+  @JoinColumn({ name: 'tvc_title' })
+  brand: Brand;
 }
