@@ -239,7 +239,7 @@ export class BrandsService {
           brand_type: Like('sub-brand'),
           brand_url_title: In(brand.sub_brand_relation),
         },
-        relations: ['tvc'],
+        relations: ['tvcs'],
       });
     }
 
