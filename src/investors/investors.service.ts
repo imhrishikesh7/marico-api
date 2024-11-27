@@ -629,10 +629,10 @@ export class InvestorsService {
         category = {
           category: investor_qu_year,
           subcategories: [
-            { subcategory: 'q1', pdfs: [] },
-            { subcategory: 'q2', pdfs: [] },
-            { subcategory: 'q3', pdfs: [] },
-            { subcategory: 'q4', pdfs: [] },
+            { subcategory: 'Q1', pdfs: [] },
+            { subcategory: 'Q2', pdfs: [] },
+            { subcategory: 'Q3', pdfs: [] },
+            { subcategory: 'Q4', pdfs: [] },
           ],
         };
         acc.push(category);
