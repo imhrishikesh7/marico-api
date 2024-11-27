@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Brand } from './entities/brand.entity';
+import { Tvc } from './entities/tvc.entity';
 
 @Controller(':region/brands')
 export class BrandsController {
@@ -9,9 +18,7 @@ export class BrandsController {
 
   @ApiBearerAuth()
   @Get('')
-  async getBrandDetail(
-    @Param('region') region: string,
-  ): Promise<Brand[]> {
+  async getBrandDetail(@Param('region') region: string): Promise<Brand[]> {
     return await this.brandsService.getBrandDetail(region);
   }
 
@@ -20,9 +27,14 @@ export class BrandsController {
   async getBrandByAlias(
     @Param('region') region: string,
     @Param('alias') alias: string,
-  ): Promise<{ brand: Brand | null; subBrands?: Brand[] }> {
-    return await this.brandsService.getBrandByAlias(region,alias);
+  ): Promise<{
+    brand: Brand | null;
+    subBrands?: {
+      subBrand: Brand;
+      tvcs: Tvc[];
+    }[];
+    tvcs: Tvc[];
+  }> {
+    return await this.brandsService.getBrandByAlias(region, alias);
   }
-
-  
 }

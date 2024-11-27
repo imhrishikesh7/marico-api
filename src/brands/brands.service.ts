@@ -206,42 +206,42 @@ export class BrandsService {
   async getBrandByAlias(
     region?: string,
     alias?: string,
-  ): Promise<{ 
-    brand: Brand | null; 
-    subBrands?: { 
-      subBrand: Brand; 
-      tvcs: Tvc[] 
-    }[]; 
-    tvcs: Tvc[] 
+  ): Promise<{
+    brand: Brand | null;
+    subBrands?: {
+      subBrand: Brand;
+      tvcs: Tvc[];
+    }[];
+    tvcs: Tvc[];
   }> {
     const where: { regions?: any; url_title?: any } = {};
-  
+
     if (region) {
       where.regions = Like(`%${region}%`);
     }
-  
+
     if (alias) {
       where.url_title = Like(`%${alias}%`);
     }
-  
-    const toReturn: { 
-      brand: Brand | null; 
-      subBrands?: { 
-        subBrand: Brand; 
-        tvcs: Tvc[] 
-      }[]; 
-      tvcs: Tvc[] 
+
+    const toReturn: {
+      brand: Brand | null;
+      subBrands?: {
+        subBrand: Brand;
+        tvcs: Tvc[];
+      }[];
+      tvcs: Tvc[];
     } = {
       brand: null,
       tvcs: [],
       subBrands: [],
     };
-  
+
     // Fetch the main brand
     const brand = await this.brandRepository.findOne({
       where,
     });
-  
+
     if (brand) {
       // Fetch TVCs for the main brand
       if (Array.isArray(brand.tvc_relation)) {
@@ -252,7 +252,7 @@ export class BrandsService {
         });
         toReturn.tvcs = mainBrandTvcs;
       }
-  
+
       // Fetch the sub-brands related to the main brand
       const subBrands = await this.brandRepository.find({
         where: {
@@ -260,7 +260,7 @@ export class BrandsService {
           brand_url_title: In(brand.sub_brand_relation),
         },
       });
-  
+
       // Fetch TVCs for sub-brands
       for (const subBrand of subBrands) {
         let subBrandTvcs: Tvc[] = [];
@@ -277,11 +277,10 @@ export class BrandsService {
         });
       }
     }
-  
+
     toReturn.brand = brand;
     return toReturn;
   }
-  
 
   async addUpdateBrand(
     id: number,
