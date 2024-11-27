@@ -206,7 +206,14 @@ export class BrandsService {
   async getBrandByAlias(
     region?: string,
     alias?: string,
-  ): Promise<{ brand: Brand | null; subBrands?: Brand[]; tvcs?: Tvc[] }> {
+  ): Promise<{ 
+    brand: Brand | null; 
+    subBrands?: { 
+      subBrand: Brand; 
+      tvcs: Tvc[] 
+    }[]; 
+    tvcs: Tvc[] 
+  }> {
     const where: { regions?: any; url_title?: any } = {};
   
     if (region) {
@@ -217,17 +224,23 @@ export class BrandsService {
       where.url_title = Like(`%${alias}%`);
     }
   
-    const toReturn: { brand: Brand | null; subBrands?: Brand[]; tvcs?: Tvc[] } = {
+    const toReturn: { 
+      brand: Brand | null; 
+      subBrands?: { 
+        subBrand: Brand; 
+        tvcs: Tvc[] 
+      }[]; 
+      tvcs: Tvc[] 
+    } = {
       brand: null,
+      tvcs: [],
+      subBrands: [],
     };
   
     // Fetch the main brand
     const brand = await this.brandRepository.findOne({
       where,
     });
-  
-    let subBrands: Brand[] = [];
-    let tvcs: Tvc[] = [];
   
     if (brand) {
       // Fetch TVCs for the main brand
@@ -237,11 +250,11 @@ export class BrandsService {
           select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
           where: { tvc_title: In(mainBrandTvcIds) },
         });
-        tvcs = [...tvcs, ...mainBrandTvcs];
+        toReturn.tvcs = mainBrandTvcs;
       }
   
       // Fetch the sub-brands related to the main brand
-      subBrands = await this.brandRepository.find({
+      const subBrands = await this.brandRepository.find({
         where: {
           brand_type: Like('sub-brand'),
           brand_url_title: In(brand.sub_brand_relation),
@@ -250,31 +263,22 @@ export class BrandsService {
   
       // Fetch TVCs for sub-brands
       for (const subBrand of subBrands) {
+        let subBrandTvcs: Tvc[] = [];
         if (Array.isArray(subBrand.tvc_relation)) {
           const subBrandTvcIds = subBrand.tvc_relation.map((id) => id.trim());
-          const subBrandTvcs = await this.tvcRepository.find({
+          subBrandTvcs = await this.tvcRepository.find({
             select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
             where: { tvc_title: In(subBrandTvcIds) },
           });
-          tvcs = [...tvcs, ...subBrandTvcs];
         }
+        toReturn.subBrands?.push({
+          subBrand,
+          tvcs: subBrandTvcs,
+        });
       }
     }
   
-  
-    // Set the main brand in the return object
     toReturn.brand = brand;
-  
-    // Set subBrands if there are any
-    if (subBrands.length > 0) {
-      toReturn.subBrands = subBrands;
-    }
-  
-    // Set TVCs if there are any
-    if (tvcs.length > 0) {
-      toReturn.tvcs = tvcs;
-    }
-  
     return toReturn;
   }
   
