@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Media } from './entities/media.entity';
-import { Like, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -20,6 +20,19 @@ export class MediaService {
     } else {
       return await this.mediaRepository.find({});
     }
+  }
+
+  async getFrontNewsDetail(region?: string): Promise<Media|null> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      where.regions = Like('%' + region + '%');
+    }
+    where.is_active = 1;
+    where.is_latest = true;
+    return await this.mediaRepository.findOne({
+      where,
+    });
   }
 
   async getMediaById(id: number): Promise<Media | null> {

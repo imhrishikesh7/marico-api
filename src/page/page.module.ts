@@ -13,6 +13,8 @@ import { PrintAd } from 'src/brands/entities/print_ad.entity';
 import { Tvc } from 'src/brands/entities/tvc.entity';
 import { Region } from 'src/regions/entities/region.entity';
 import { Contact } from 'src/seo/entities/contact.entity';
+import { MediaService } from 'src/media/media.service';
+import { Media } from 'src/media/entities/media.entity';
 
 @Module({
   imports: [
@@ -25,11 +27,12 @@ import { Contact } from 'src/seo/entities/contact.entity';
       Tvc,
       PrintAd,
       Region,
+      Media,
     ]),
     AdminModule,
   ],
   controllers: [PageController],
-  providers: [PageService, SeoService, BrandsService],
-  exports: [PageService, SeoService, BrandsService],
+  providers: [PageService, SeoService, BrandsService, MediaService],
+  exports: [PageService, SeoService, BrandsService, MediaService],
 })
 export class PageModule {}

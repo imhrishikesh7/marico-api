@@ -16,12 +16,15 @@ import { PageService } from './page.service';
 import { Region } from 'src/regions/entities/region.entity';
 import { BrandsService } from 'src/brands/brands.service';
 import { Brand } from 'src/brands/entities/brand.entity';
+import { Media } from 'src/media/entities/media.entity';
+import { MediaService } from 'src/media/media.service';
 
 @Controller(':region/page')
 export class PageController {
   constructor(
     private readonly pageService: PageService,
     private readonly brandService: BrandsService,
+    private readonly mediaService: MediaService,
   ) {}
 
   //public get page by url
@@ -38,13 +41,18 @@ export class PageController {
   ): Promise<{
     page: Page;
     brand_slider: Brand[];
+    news: Media | null;
   }> {
     const page = await this.pageService.findOneByUrl(url, true, true, region);
     let brand_slider: Brand[] = [];
+    let news = null;
     if (page) {
       for (const content of page.page_contents) {
         if (content.component_type === 'Brands Collection') {
           brand_slider = await this.brandService.getFrontBrandDetail(region);
+        }
+        if (content.component_type === 'News Collection') {
+          news = await this.mediaService.getFrontNewsDetail(region);
         }
       }
     }
@@ -54,6 +62,7 @@ export class PageController {
     return {
       page,
       brand_slider,
+      news,
     };
   }
 }

@@ -113,6 +113,9 @@ export class Brand {
   web_url: string;
 
   @Column()
+  insta_url: string;
+
+  @Column()
   @Index()
   show_in_front: boolean;
 

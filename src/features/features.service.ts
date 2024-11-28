@@ -46,12 +46,13 @@ export class FeaturesService {
     category_title: string,
     is_active: boolean,
     qr_title?: string,
-    qr_code?:  {
+    qr_code?: {
       url: string;
       width: number;
       height: number;
       alt: string;
     } | null,
+    qr_link?: string,
   ): Promise<TitleCategory> {
     if (id) {
       const head = await this.getTitleCategoryById(id);
@@ -63,6 +64,7 @@ export class FeaturesService {
         head.is_active = is_active;
         head.qr_title = qr_title ? qr_title : '';
         head.qr_code = qr_code ? qr_code : null;
+        head.qr_link = qr_link ? qr_link : '';
 
         return this.titleCategoryRepository.save(head);
       }
@@ -76,6 +78,8 @@ export class FeaturesService {
       head.is_active = is_active;
       head.qr_title = qr_title ? qr_title : '';
       head.qr_code = qr_code ? qr_code : null;
+      head.qr_link = qr_link ? qr_link : '';
+
 
       return this.titleCategoryRepository.save(head);
     }

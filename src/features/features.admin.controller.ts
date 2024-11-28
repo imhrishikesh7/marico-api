@@ -89,6 +89,10 @@ export class FeaturesAdminController {
           },
           nullable: true,
         },
+        qr_link: {
+          type: 'string',
+          nullable: true,
+        },
       },
     },
   })
@@ -107,6 +111,7 @@ export class FeaturesAdminController {
       width: number;
       height: number;
     } | null,
+    @Body('qr_link', EmptystringPipe) qr_link?: string,
   ): Promise<{ head: TitleCategory }> {
     const head = await this.featuresService.addUpdateTitleCategory(
       id,
@@ -116,6 +121,7 @@ export class FeaturesAdminController {
       is_active,
       qr_title,
       qr_code,
+      qr_link,
     );
     return {
       head,

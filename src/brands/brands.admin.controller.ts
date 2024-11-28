@@ -240,6 +240,9 @@ export class BrandsAdminController {
         web_url: {
           type: 'string',
         },
+        insta_url: {
+          type: 'string',
+        },
         show_in_front: {
           type: 'boolean',
         },
@@ -300,6 +303,7 @@ export class BrandsAdminController {
     @Body('twitter_url') twitter_url: string,
     @Body('youtube_url') youtube_url: string,
     @Body('web_url') web_url: string,
+    @Body('insta_url') insta_url: string,
     @Body('show_in_front') show_in_front: boolean,
     @Body('is_active') is_active: boolean,
   ): Promise<{ brand: Brand }> {
@@ -328,6 +332,7 @@ export class BrandsAdminController {
       twitter_url,
       youtube_url,
       web_url,
+      insta_url,
       show_in_front,
       is_active,
     );
@@ -362,6 +367,7 @@ export class BrandsAdminController {
         twitter_url,
         youtube_url,
         web_url,
+        insta_url,
         show_in_front,
         is_active,
       },

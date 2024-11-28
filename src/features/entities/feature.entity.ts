@@ -35,6 +35,10 @@ export class TitleCategory {
   @Column({ type: 'json', nullable: true })
   qr_code: { url: string; alt: string; width: number; height: number } | null;
 
+  @Column()
+  @Index()
+  qr_link: string;
+  
   @CreateDateColumn()
   @Index()
   created_at: Date;
