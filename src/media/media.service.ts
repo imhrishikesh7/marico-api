@@ -28,7 +28,6 @@ export class MediaService {
     if (region != null && region != '') {
       where.media_regions = Like('%' + region + '%');
     }
-    where.is_active = 1;
     where.is_latest = true;
     return await this.mediaRepository.findOne({
       where,
