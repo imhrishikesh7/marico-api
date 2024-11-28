@@ -44,9 +44,7 @@ export class PageController {
     if (page) {
       for (const content of page.page_contents) {
         if (content.component_type === 'Brands Collection') {
-          console.log('aaaaa');
           brand_slider = await this.brandService.getFrontBrandDetail(region);
-          console.log(brand_slider, '=====brandssss');
         }
       }
     }
