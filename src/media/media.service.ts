@@ -29,6 +29,7 @@ export class MediaService {
       where.media_regions = Like('%' + region + '%');
     }
     where.is_latest = true;
+    where.category = Like('marico-in-the-news');
     return await this.mediaRepository.findOne({
       where,
     });
