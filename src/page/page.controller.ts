@@ -42,18 +42,20 @@ export class PageController {
     const page = await this.pageService.findOneByUrl(url, true, true, region);
     let brand_slider: Brand[] = [];
     if (page) {
-      page.page_contents.forEach(async (content) => {
-        if (content.component_type == 'Brands Collection') {
+      for (const content of page.page_contents) {
+        if (content.component_type === 'Brands Collection') {
+          console.log('aaaaa');
           brand_slider = await this.brandService.getFrontBrandDetail(region);
+          console.log(brand_slider, '=====brandssss');
         }
-      });
+      }
     }
     if (!page) {
       throw new BadRequestException('Page not found');
     }
     return {
-      page: page,
-      brand_slider: brand_slider,
+      page,
+      brand_slider,
     };
   }
 }
