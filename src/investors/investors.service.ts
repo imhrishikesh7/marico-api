@@ -241,11 +241,13 @@ export class InvestorsService {
         };
       }
       if (titleCategory) {
-        const filteredTitles = titleCategory.filter((p) => p.category_title == category);
-  
+        const filteredTitles = titleCategory.filter(
+          (p) => p.category_title == category,
+        );
+
         if (filteredTitles.length > 0) {
-          acc[category].qr_title = filteredTitles[0].qr_title; 
-          acc[category].qr_code = filteredTitles[0].qr_code;   
+          acc[category].qr_title = filteredTitles[0].qr_title;
+          acc[category].qr_code = filteredTitles[0].qr_code;
         }
       }
       acc[category].pdfs.push({
@@ -1212,11 +1214,12 @@ export class InvestorsService {
         item.ar_documentation_year !== ''
           ? item.investors_ar_category
           : undefined;
-
+      const is_year = item.ar_documentation_year !== '' ? true : false;
       // If the category doesn't exist, initialize it
       if (!acc[category]) {
         acc[category] = {
           category: category,
+          is_year: is_year,
           subcategories: subcategory ? [] : undefined,
           pdfs: subcategory ? undefined : [],
         };
