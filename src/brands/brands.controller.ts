@@ -11,6 +11,7 @@ import { BrandsService } from './brands.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Brand } from './entities/brand.entity';
 import { Tvc } from './entities/tvc.entity';
+import { PrintAd } from './entities/print_ad.entity';
 
 @Controller(':region/brands')
 export class BrandsController {
@@ -34,6 +35,7 @@ export class BrandsController {
       tvcs: Tvc[];
     }[];
     tvcs: Tvc[];
+    printAds: PrintAd[];
   }> {
     return await this.brandsService.getBrandByAlias(region, alias);
   }

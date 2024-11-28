@@ -26,9 +26,7 @@ import { InvestorDR } from './entities/investor_dr.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
-  constructor(
-    private readonly investorsService: InvestorsService,
-  ) {}
+  constructor(private readonly investorsService: InvestorsService) {}
 
   @ApiBearerAuth()
   @Get('qu')
@@ -47,7 +45,7 @@ export class InvestorsController {
   @ApiBearerAuth()
   @Get('documentation/agm')
   async getAGMDetail(@Param('region') region: string): Promise<InvestorAGM[]> {
-    return await this.investorsService.getAGMDetail(region);  
+    return await this.investorsService.getAGMDetail(region);
   }
 
   @ApiBearerAuth()

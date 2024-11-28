@@ -213,6 +213,7 @@ export class BrandsService {
       tvcs: Tvc[];
     }[];
     tvcs: Tvc[];
+    printAds: PrintAd[];
   }> {
     const where: { regions?: any; url_title?: any } = {};
 
@@ -231,9 +232,11 @@ export class BrandsService {
         tvcs: Tvc[];
       }[];
       tvcs: Tvc[];
+      printAds: PrintAd[];
     } = {
       brand: null,
       tvcs: [],
+      printAds: [],
       subBrands: [],
     };
 
@@ -276,8 +279,23 @@ export class BrandsService {
           tvcs: subBrandTvcs,
         });
       }
-    }
 
+      //fetch print ad for sub brands
+      if (Array.isArray(brand.print_ad_relation)) {
+        const printAdIds = brand.print_ad_relation.map((id) => id.trim());
+        const printAds = await this.printAdRepository.find({
+          select: [
+            'title',
+            'print_ad_title',
+            'small_thumbnail',
+            'large_thumbnail',
+            'regions',
+          ],
+          where: { title: In(printAdIds) },
+        });
+        toReturn.printAds = printAds;
+      }
+    }
     toReturn.brand = brand;
     return toReturn;
   }
