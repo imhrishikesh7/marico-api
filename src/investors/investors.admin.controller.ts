@@ -1228,7 +1228,7 @@ export class InvestorsAdminController {
       annual_reports: await this.investorsService.getAR(),
       regions: await this.regionService.getRegionList(),
       categoryMenu:
-        await this.featuresService.getTitleCategoryDropdownBySubmenu('agm'),
+        await this.featuresService.getTitleCategoryDropdownBySubmenu('ar'),
     } as {
       annual_report: InvestorAR | null;
       annual_reports: InvestorAR[] | null;
