@@ -132,6 +132,7 @@ export class PageService {
       region: string[];
       order: number;
       is_active: boolean;
+      add_choice: string[];
     }[],
     seo: {
       meta_title: string;
@@ -211,6 +212,7 @@ export class PageService {
         record.region = page_contents[i].region;
         record.order = page_contents[i].order;
         record.is_active = page_contents[i].is_active;
+        record.add_choice = page_contents[i].add_choice;
         await this.pageContentRepository.save(record);
       } else {
         const record = new PageContent();
@@ -226,6 +228,7 @@ export class PageService {
         record.description = page_contents[i].description;
         record.region = page_contents[i].region;
         record.is_active = page_contents[i].is_active;
+        record.add_choice = page_contents[i].add_choice;
         const u = await this.pageContentRepository.save(record);
         page_contents[i].id = u.id;
       }

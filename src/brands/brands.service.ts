@@ -356,6 +356,10 @@ export class BrandsService {
     brandRegions: string[],
     sort_order: number,
     shop_now_url: string,
+    facebook_url: string,
+    twitter_url: string,
+    youtube_url: string,
+    web_url: string,
     show_in_front: boolean,
     is_active: boolean,
   ): Promise<Brand> {
@@ -386,6 +390,10 @@ export class BrandsService {
         brand.regions = brandRegions;
         brand.sort_order = sort_order;
         brand.shop_now_url = shop_now_url;
+        brand.facebook_url = facebook_url;
+        brand.twitter_url = twitter_url;
+        brand.youtube_url = youtube_url;
+        brand.web_url = web_url;
         brand.show_in_front = show_in_front;
         brand.is_active = is_active;
         return this.brandRepository.save(brand);
@@ -414,6 +422,10 @@ export class BrandsService {
       brand.regions = brandRegions;
       brand.sort_order = sort_order;
       brand.shop_now_url = shop_now_url;
+      brand.facebook_url = facebook_url;
+      brand.twitter_url = twitter_url;
+      brand.youtube_url = youtube_url;
+      brand.web_url = web_url;
       brand.show_in_front = show_in_front;
       brand.is_active = is_active;
       return this.brandRepository.save(brand);

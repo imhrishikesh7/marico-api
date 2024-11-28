@@ -124,32 +124,6 @@ export class PageAdminController {
         url: {
           type: 'string',
         },
-        //  indexed: {
-        //    type: "string",
-        //  },
-        //  meta_title: {
-        //    type: "string",
-        //  },
-        //  meta_description: {
-        //    type: "string",
-        //  },
-        //  meta_image: {
-        //    type: "object",
-        //    properties: {
-        //      url: {
-        //        type: "string",
-        //      },
-        //      width: {
-        //        type: "number",
-        //      },
-        //      height: {
-        //        type: "number",
-        //      },
-        //    },
-        //  },
-        //  canonical_override: {
-        //    type: "string",
-        //  },
         published_at: {
           type: 'string',
         },
@@ -199,6 +173,12 @@ export class PageAdminController {
               },
               is_active: {
                 type: 'string',
+              },
+              add_choice: {
+                type: 'array',
+                items: {
+                  type: 'string',
+                },
               },
             },
           },
@@ -253,6 +233,7 @@ export class PageAdminController {
       region: string[];
       order: number;
       is_active: boolean;
+      add_choice: string[];
     }[],
     @Body('seo')
     seo: {
@@ -293,6 +274,7 @@ export class PageAdminController {
           region: page_content.region,
           order: index,
           is_active: page_content.is_active,
+          add_choice: page_content.add_choice,
         };
       }),
       seo,

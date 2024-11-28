@@ -99,7 +99,19 @@ export class Brand {
   @Column()
   @Index()
   shop_now_url: string;
-  
+
+  @Column()
+  facebook_url: string;
+
+  @Column()
+  twitter_url: string;
+
+  @Column()
+  youtube_url: string;
+
+  @Column()
+  web_url: string;
+
   @Column()
   @Index()
   show_in_front: boolean;

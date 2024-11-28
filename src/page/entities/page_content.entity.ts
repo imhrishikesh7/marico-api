@@ -81,6 +81,9 @@ export class PageContent {
   @Index()
   is_active: boolean;
 
+  @Column('json')
+  add_choice: string[];
+
   @CreateDateColumn()
   @Index()
   created_at: Date;

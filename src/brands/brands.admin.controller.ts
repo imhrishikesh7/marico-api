@@ -228,6 +228,18 @@ export class BrandsAdminController {
         shop_now_url: {
           type: 'string',
         },
+        facebook_url: {
+          type: 'string',
+        },
+        twitter_url: {
+          type: 'string',
+        },
+        youtube_url: {
+          type: 'string',
+        },
+        web_url: {
+          type: 'string',
+        },
         show_in_front: {
           type: 'boolean',
         },
@@ -284,6 +296,10 @@ export class BrandsAdminController {
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
     @Body('shop_now_url') shop_now_url: string,
+    @Body('facebook_url') facebook_url: string,
+    @Body('twitter_url') twitter_url: string,
+    @Body('youtube_url') youtube_url: string,
+    @Body('web_url') web_url: string,
     @Body('show_in_front') show_in_front: boolean,
     @Body('is_active') is_active: boolean,
   ): Promise<{ brand: Brand }> {
@@ -308,6 +324,10 @@ export class BrandsAdminController {
       regions,
       sort_order,
       shop_now_url,
+      facebook_url,
+      twitter_url,
+      youtube_url,
+      web_url,
       show_in_front,
       is_active,
     );
@@ -338,6 +358,10 @@ export class BrandsAdminController {
         regions,
         sort_order,
         shop_now_url,
+        facebook_url,
+        twitter_url,
+        youtube_url,
+        web_url,
         show_in_front,
         is_active,
       },
