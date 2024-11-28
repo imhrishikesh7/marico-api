@@ -44,10 +44,16 @@ export class AboutusController {
     name: 'category',
     required: true,
   })
+  @ApiQuery({
+    name: 'year',
+    required: false,
+    description: 'An optional parameter',
+  })
   async getRecognition(
     @Param('region') region: string,
     @Query('category') category: string,
+    @Query('year') year?: string,
   ): Promise<Recognition[]> {
-    return await this.aboutusService.getRecognition(region, category);
+    return await this.aboutusService.getRecognition(region, category, year);
   }
 }

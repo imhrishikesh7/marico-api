@@ -109,6 +109,7 @@ export class AboutusService {
   async getRecognition(
     region?: string,
     category?: string,
+    yearfliter?: string
   ): Promise<Recognition[]> {
     const where: any = {};
 
@@ -117,6 +118,9 @@ export class AboutusService {
     }
     if (category != null && category != '') {
       where.category = Like('%' + category + '%');
+    }
+    if (yearfliter != null && yearfliter != '') {
+      where.year = Like('%' + yearfliter + '%');
     }
     return await this.recognitionRepository.find({
       where,
