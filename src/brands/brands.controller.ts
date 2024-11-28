@@ -33,6 +33,7 @@ export class BrandsController {
     subBrands?: {
       subBrand: Brand;
       tvcs: Tvc[];
+      printAds: PrintAd[];
     }[];
     tvcs: Tvc[];
     printAds: PrintAd[];

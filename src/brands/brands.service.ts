@@ -211,6 +211,7 @@ export class BrandsService {
     subBrands?: {
       subBrand: Brand;
       tvcs: Tvc[];
+      printAds: PrintAd[];
     }[];
     tvcs: Tvc[];
     printAds: PrintAd[];
@@ -222,7 +223,7 @@ export class BrandsService {
     }
 
     if (alias) {
-      where.url_title = Like(`%${alias}%`);
+      where.url_title = Like(`${alias}`);
     }
 
     const toReturn: {
@@ -230,6 +231,7 @@ export class BrandsService {
       subBrands?: {
         subBrand: Brand;
         tvcs: Tvc[];
+        printAds: PrintAd[];
       }[];
       tvcs: Tvc[];
       printAds: PrintAd[];
@@ -255,7 +257,21 @@ export class BrandsService {
         });
         toReturn.tvcs = mainBrandTvcs;
       }
-
+      //fetch print ad for sub brands
+      if (Array.isArray(brand.print_ad_relation)) {
+        const printAdIds = brand.print_ad_relation.map((id) => id.trim());
+        const printAds = await this.printAdRepository.find({
+          select: [
+            'title',
+            'print_ad_title',
+            'small_thumbnail',
+            'large_thumbnail',
+            'regions',
+          ],
+          where: { title: In(printAdIds) },
+        });
+        toReturn.printAds = printAds;
+      }
       // Fetch the sub-brands related to the main brand
       const subBrands = await this.brandRepository.find({
         where: {
@@ -274,26 +290,25 @@ export class BrandsService {
             where: { tvc_title: In(subBrandTvcIds) },
           });
         }
+
+        let subBrandprintAds: PrintAd[] = [];
+        if (Array.isArray(subBrand.print_ad_relation)) {
+          const printAdIds = subBrand.print_ad_relation.map((id) => id.trim());
+          subBrandprintAds = await this.printAdRepository.find({
+            select: [
+              'print_ad_title',
+              'small_thumbnail',
+              'large_thumbnail',
+              'regions',
+            ],
+            where: { print_ad_title: In(printAdIds) },
+          });
+        }
         toReturn.subBrands?.push({
           subBrand,
           tvcs: subBrandTvcs,
+          printAds: subBrandprintAds,
         });
-      }
-
-      //fetch print ad for sub brands
-      if (Array.isArray(brand.print_ad_relation)) {
-        const printAdIds = brand.print_ad_relation.map((id) => id.trim());
-        const printAds = await this.printAdRepository.find({
-          select: [
-            'title',
-            'print_ad_title',
-            'small_thumbnail',
-            'large_thumbnail',
-            'regions',
-          ],
-          where: { title: In(printAdIds) },
-        });
-        toReturn.printAds = printAds;
       }
     }
     toReturn.brand = brand;
