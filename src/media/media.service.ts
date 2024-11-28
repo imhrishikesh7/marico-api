@@ -26,7 +26,7 @@ export class MediaService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      where.media_regions = Like('%' + region + '%');
     }
     where.is_active = 1;
     where.is_latest = true;
