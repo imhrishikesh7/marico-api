@@ -180,6 +180,9 @@ export class PageAdminController {
                   type: 'string',
                 },
               },
+              download_link: {
+                type: 'string',
+              },
             },
           },
         },
@@ -234,6 +237,7 @@ export class PageAdminController {
       order: number;
       is_active: boolean;
       add_choice: string[];
+      download_link:string;
     }[],
     @Body('seo')
     seo: {
@@ -275,6 +279,7 @@ export class PageAdminController {
           order: index,
           is_active: page_content.is_active,
           add_choice: page_content.add_choice,
+          download_link: page_content.download_link,
         };
       }),
       seo,
