@@ -184,6 +184,17 @@ export class PageService {
     page.is_active = is_active;
     page = await this.pageRepository.save(page);
     if (site) {
+      site.id = site.id;
+      site.indexed = seo.indexed;
+      site.meta_title = seo.meta_title;
+      site.meta_description = seo.meta_description;
+      site.meta_image = seo.meta_image;
+      site.canonical_url = seo.canonical_url;
+      site.ref = 'page';
+      site.ref_id = id;
+      await this.seoRepository.save(site);
+    }else{
+      const site = new Sitemap();
       site.indexed = seo.indexed;
       site.meta_title = seo.meta_title;
       site.meta_description = seo.meta_description;
