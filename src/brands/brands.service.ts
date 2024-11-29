@@ -160,6 +160,42 @@ export class BrandsService {
     return await query.getMany();
   }
 
+  async getBrandMenuDetail(alias: string): Promise<{ name: string; link: string }[]> {
+    const query = this.brandRepository.createQueryBuilder('brand');
+
+    // Add condition for 'brand_type' being either 'main-brand' or 'standalone'
+    query.where(
+      '(brand.brand_type = :mainBrand OR brand.brand_type = :standalone)',
+      {
+        mainBrand: 'main-brand',
+        standalone: 'standalone',
+      },
+    );
+
+    if (alias != null && alias != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: alias,
+        },
+      });
+      if (regionName != null) {
+        query.andWhere('brand.regions LIKE :alias', {
+          alias: `%${regionName.id}%`,
+        });
+      }
+    }
+    query.select(['brand.brand_title', 'brand.brand_url_title']);
+
+    query.orderBy('brand.sort_order', 'ASC');
+
+    const result = await query.getMany();
+
+    return result.map((brand) => ({
+      name: brand.brand_title,
+      link: brand.brand_url_title,
+    }));
+  }
+
   async getFrontBrandDetail(region: string): Promise<Brand[]> {
     const where: any = {};
 
@@ -243,7 +279,7 @@ export class BrandsService {
       superSubBrand?: SubBrandWithSuperSubBrand[]; // Nested sub-brands (recursive structure)
     };
     const where: { regions?: any; url_title?: any } = {};
-  
+
     // Handling region filter (only if region is "1")
     const regionName = await this.regionRepository.findOne({
       where: {
@@ -254,12 +290,12 @@ export class BrandsService {
     if (regionName != null) {
       where.regions = Like('%' + regionName.id + '%');
     }
-  
+
     // Handling alias filter
     if (alias) {
       where.url_title = Like(`${alias}`);
     }
-  
+
     const toReturn: {
       brand: Brand | null;
       subBrands?: SubBrandWithSuperSubBrand[];
@@ -271,34 +307,40 @@ export class BrandsService {
       printAds: [],
       subBrands: [],
     };
-  
+
     // Fetch the main brand
     const brand = await this.brandRepository.findOne({ where });
-    
+
     if (!brand) {
       return toReturn; // Return early if no brand is found
     }
-  
+
     // Fetch TVCs for the main brand
     if (Array.isArray(brand.tvc_relation)) {
-      const mainBrandTvcIds = brand.tvc_relation.map(id => id.trim());
+      const mainBrandTvcIds = brand.tvc_relation.map((id) => id.trim());
       const mainBrandTvcs = await this.tvcRepository.find({
         select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
         where: { tvc_title: In(mainBrandTvcIds) },
       });
       toReturn.tvcs = mainBrandTvcs;
     }
-  
+
     // Fetch Print Ads for the main brand
     if (Array.isArray(brand.print_ad_relation)) {
-      const printAdIds = brand.print_ad_relation.map(id => id.trim());
+      const printAdIds = brand.print_ad_relation.map((id) => id.trim());
       const printAds = await this.printAdRepository.find({
-        select: ['title', 'print_ad_title', 'small_thumbnail', 'large_thumbnail', 'regions'],
+        select: [
+          'title',
+          'print_ad_title',
+          'small_thumbnail',
+          'large_thumbnail',
+          'regions',
+        ],
         where: { title: In(printAdIds) },
       });
       toReturn.printAds = printAds;
     }
-  
+
     // Fetch sub-brands related to the main brand
     const subBrands = await this.brandRepository.find({
       where: {
@@ -306,29 +348,38 @@ export class BrandsService {
         brand_url_title: In(brand.sub_brand_relation),
       },
     });
-  
+
     // Recursive function to fetch sub-brands with their TVCs and Print Ads
-    const fetchSubBrands = async (subBrand: Brand): Promise<SubBrandWithSuperSubBrand> => {
+    const fetchSubBrands = async (
+      subBrand: Brand,
+    ): Promise<SubBrandWithSuperSubBrand> => {
       const subBrandTvcs: Tvc[] = [];
       if (Array.isArray(subBrand.tvc_relation)) {
-        const subBrandTvcIds = subBrand.tvc_relation.map(id => id.trim());
+        const subBrandTvcIds = subBrand.tvc_relation.map((id) => id.trim());
         const subBrandTvcsData = await this.tvcRepository.find({
           select: ['tvc_title', 'tvc_code', 'tvc_description', 'thumbnail'],
           where: { tvc_title: In(subBrandTvcIds) },
         });
         subBrandTvcs.push(...subBrandTvcsData);
       }
-  
+
       const subBrandPrintAds: PrintAd[] = [];
       if (Array.isArray(subBrand.print_ad_relation)) {
-        const subBrandPrintAdIds = subBrand.print_ad_relation.map(id => id.trim());
+        const subBrandPrintAdIds = subBrand.print_ad_relation.map((id) =>
+          id.trim(),
+        );
         const subBrandPrintAdsData = await this.printAdRepository.find({
-          select: ['print_ad_title', 'small_thumbnail', 'large_thumbnail', 'regions'],
+          select: [
+            'print_ad_title',
+            'small_thumbnail',
+            'large_thumbnail',
+            'regions',
+          ],
           where: { print_ad_title: In(subBrandPrintAdIds) },
         });
         subBrandPrintAds.push(...subBrandPrintAdsData);
       }
-  
+
       // Recursively fetch super sub-brands for the current sub-brand
       const superSubBrands = await this.brandRepository.find({
         where: {
@@ -336,27 +387,30 @@ export class BrandsService {
           brand_url_title: In(subBrand.sub_brand_relation),
         },
       });
-  
-      const nestedSuperSubBrands = await Promise.all(superSubBrands.map(fetchSubBrands));
-  
+
+      const nestedSuperSubBrands = await Promise.all(
+        superSubBrands.map(fetchSubBrands),
+      );
+
       return {
         subBrand,
         tvcs: subBrandTvcs,
         printAds: subBrandPrintAds,
-        superSubBrand: nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined, // Add nested super sub-brands if any
+        superSubBrand:
+          nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined, // Add nested super sub-brands if any
       };
     };
-  
+
     // Fetch and add the sub-brands to the return object
     for (const subBrand of subBrands) {
       const nestedSubBrandData = await fetchSubBrands(subBrand);
       toReturn.subBrands?.push(nestedSubBrandData);
     }
-  
+
     toReturn.brand = brand;
     return toReturn;
   }
-  
+
   async addUpdateBrand(
     id: number,
     title: string,

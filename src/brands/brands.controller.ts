@@ -24,6 +24,12 @@ export class BrandsController {
   }
 
   @ApiBearerAuth()
+  @Get('')
+  async getBrandMenuDetail(@Param('region') region: string): Promise<{ name: string; link: string }[]> {
+    return await this.brandsService.getBrandMenuDetail(region);
+  }
+
+  @ApiBearerAuth()
   @Get('/:alias')
   async getBrandByAlias(
     @Param('region') region: string,
