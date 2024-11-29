@@ -163,9 +163,16 @@ export class BrandsService {
   async getFrontBrandDetail(region: string): Promise<Brand[]> {
     const where: any = {};
 
-    if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+    const regionName = await this.regionRepository.findOne({
+      where: {
+        alias: region,
+      },
+    });
+
+    if (regionName != null) {
+      where.regions = Like('%' + regionName.id + '%');
     }
+
     where.show_in_front = 1;
     where.is_active = 1;
     return await this.brandRepository.find({
