@@ -217,10 +217,20 @@ export class BrandsService {
     printAds: PrintAd[];
   }> {
     const where: { regions?: any; url_title?: any } = {};
-
-    if (region) {
-      where.regions = Like(`%${region}%`);
-    }
+    if (region != null && region != '') {
+        const regionName = await this.regionRepository.findOne({
+          where: {
+            alias: region,
+          },
+        });
+  
+        if (regionName != null) {
+          where.regions = Like('%' + regionName.id + '%');
+        }
+      }
+    // if (region) {
+    //   where.regions = Like(`%${region}%`);
+    // }
 
     if (alias) {
       where.url_title = Like(`${alias}`);
