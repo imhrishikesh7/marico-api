@@ -36,6 +36,9 @@ export class FeaturesService {
       where: {
         sub_menu: Like('%' + sub_menu + '%'),
       },
+      order: {
+        sort_order: "ASC",
+      }
     });
   }
 
@@ -45,6 +48,7 @@ export class FeaturesService {
     sub_menu: string,
     category_title: string,
     is_active: boolean,
+    sort_order: number,
     qr_title?: string,
     qr_code?: {
       url: string;
@@ -62,6 +66,7 @@ export class FeaturesService {
         head.sub_menu = sub_menu;
         head.category_title = category_title;
         head.is_active = is_active;
+        head.sort_order = sort_order;
         head.qr_title = qr_title ? qr_title : '';
         head.qr_code = qr_code ? qr_code : null;
         head.qr_link = qr_link ? qr_link : '';
@@ -76,6 +81,7 @@ export class FeaturesService {
       head.sub_menu = sub_menu;
       head.category_title = category_title;
       head.is_active = is_active;
+      head.sort_order = sort_order;
       head.qr_title = qr_title ? qr_title : '';
       head.qr_code = qr_code ? qr_code : null;
       head.qr_link = qr_link ? qr_link : '';

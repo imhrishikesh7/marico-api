@@ -17,6 +17,7 @@ import { Roles } from 'src/admin/roles.decorator';
 import { TitleCategory } from './entities/feature.entity';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
+import { IntOrNullPipe } from 'src/validations/intornull/intornull.pipe';
 
 @Controller('admin/features')
 export class FeaturesAdminController {
@@ -70,6 +71,9 @@ export class FeaturesAdminController {
         is_active: {
           type: 'boolean',
         },
+        sort_order: {
+          type: 'number',
+        },
         qr_title: {
           type: 'string',
           nullable: true,
@@ -104,14 +108,15 @@ export class FeaturesAdminController {
     @Body('sub_menu', EmptystringPipe) sub_menu: string,
     @Body('category_title', EmptystringPipe) category_title: string,
     @Body('is_active', SwitchPipe) is_active: boolean,
-    @Body('qr_title', EmptystringPipe) qr_title?: string,
+    @Body('sort_order') sort_order:number,
+    @Body('qr_title') qr_title?: string,
     @Body('qr_code') qr_code?: {
       url: string;
       alt: string;
       width: number;
       height: number;
     } | null,
-    @Body('qr_link', EmptystringPipe) qr_link?: string,
+    @Body('qr_link') qr_link?: string,
   ): Promise<{ head: TitleCategory }> {
     const head = await this.featuresService.addUpdateTitleCategory(
       id,
@@ -119,6 +124,7 @@ export class FeaturesAdminController {
       sub_menu,
       category_title,
       is_active,
+      sort_order,
       qr_title,
       qr_code,
       qr_link,

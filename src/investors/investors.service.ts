@@ -17,6 +17,7 @@ import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
+import { FeaturesService } from 'src/features/features.service';
 
 @Injectable()
 export class InvestorsService {
@@ -81,6 +82,20 @@ export class InvestorsService {
       },
     });
 
+    // Fetch the title categories for ordering
+    const titleCategories = await this.titleCategoryRepository.find({
+      where: {
+        sub_menu: Like('shi'),
+      },
+      order: {
+        sort_order: 'ASC',
+      },
+    });
+    const categoryOrder = titleCategories?.reduce((acc: any, category: any) => {
+      acc[category.category_title] = category.sort_order;
+      return acc;
+    }, {});
+
     const groupedByCategory = shi.reduce(
       (acc: any, item: InvestorShareHolder) => {
         const category = item.investors_shi_category;
@@ -141,12 +156,19 @@ export class InvestorsService {
       {},
     );
 
-    const result = Object.values(groupedByCategory).map((item: any) => {
-      if (!item.subcategories) {
-        delete item.subcategories;
-      }
-      return item;
-    });
+    const result = Object.values(groupedByCategory)
+      .map((item: any) => {
+        if (!item.subcategories) {
+          delete item.subcategories;
+        }
+        return item;
+      })
+      // Sort categories based on title category order
+      .sort((a: any, b: any) => {
+        const orderA = categoryOrder?.[a.category] ?? Number.MAX_SAFE_INTEGER;
+        const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      });
 
     return result;
   }
@@ -333,12 +355,12 @@ export class InvestorsService {
 
   async getDividendsDetail(region?: string): Promise<any[]> {
     const where: any = {};
-
+  
     // Filter by region if provided
     if (region) {
       where.dividend_regions = Like(`%${region}%`);
     }
-
+  
     // Fetch dividends from repository
     const dividends = await this.dividendsRepository.find({
       where,
@@ -346,7 +368,21 @@ export class InvestorsService {
         dividends_year: 'DESC',
       },
     });
-
+  
+    // Fetch title categories for ordering
+    const titleCategories = await this.titleCategoryRepository.find({
+      where: {
+        sub_menu: Like('dividends'),
+      },
+      order: {
+        sort_order: 'ASC',
+      },
+    });
+    const categoryOrder = titleCategories?.reduce((acc: any, category: any) => {
+      acc[category.category_title] = category.sort_order;
+      return acc;
+    }, {});
+  
     // Group the data
     const groupedData = dividends.reduce(
       (acc: any, item: InvestorDividends) => {
@@ -359,7 +395,7 @@ export class InvestorsService {
           item.investors_dividend_subcategory !== ''
             ? item.dividends_year
             : undefined;
-
+  
         // Find or create category
         let categoryObj = acc.find((c: any) => c.category === category);
         if (!categoryObj) {
@@ -370,7 +406,7 @@ export class InvestorsService {
           };
           acc.push(categoryObj);
         }
-
+  
         // If subcategory exists
         if (subcategory) {
           let subcategoryObj = categoryObj.subcategories.find(
@@ -384,7 +420,7 @@ export class InvestorsService {
             };
             categoryObj.subcategories.push(subcategoryObj);
           }
-
+  
           // If supersubcategory exists
           if (supersubcategory) {
             let supersubcategoryObj = subcategoryObj.supersubcategories.find(
@@ -397,7 +433,7 @@ export class InvestorsService {
               };
               subcategoryObj.supersubcategories.push(supersubcategoryObj);
             }
-
+  
             // Push PDFs into supersubcategory
             supersubcategoryObj.pdfs.push({
               id: item.id,
@@ -441,31 +477,41 @@ export class InvestorsService {
             updated_at: item.updated_at,
           });
         }
-
+  
         return acc;
       },
       [],
     );
-
-    return groupedData.map((category: any) => {
-      if (category.subcategories.length === 0) {
-        delete category.subcategories;
-      } else {
-        category.subcategories = category.subcategories.map((subcat: any) => {
-          if (subcat.supersubcategories.length === 0) {
-            delete subcat.supersubcategories;
-            delete category.pdfs;
-          } else {
-            delete category.pdfs;
-            delete subcat.pdfs;
-          }
-
-          return subcat;
-        });
-      }
-      return category;
-    });
+  
+    // Map grouped data and sort categories
+    const result = groupedData
+      .map((category: any) => {
+        if (category.subcategories.length === 0) {
+          delete category.subcategories;
+        } else {
+          category.subcategories = category.subcategories.map((subcat: any) => {
+            if (subcat.supersubcategories.length === 0) {
+              delete subcat.supersubcategories;
+              delete category.pdfs;
+            } else {
+              delete category.pdfs;
+              delete subcat.pdfs;
+            }
+  
+            return subcat;
+          });
+        }
+        return category;
+      })
+      .sort((a: any, b: any) => {
+        const orderA = categoryOrder?.[a.category] ?? Number.MAX_SAFE_INTEGER;
+        const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
+        return orderA - orderB;
+      });
+  
+    return result;
   }
+  
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
     return await this.dividendsRepository.findOne({

@@ -30,6 +30,10 @@ export class TitleCategory {
 
   @Column()
   @Index()
+  sort_order: number;
+
+  @Column()
+  @Index()
   qr_title: string;
 
   @Column({ type: 'json', nullable: true })
