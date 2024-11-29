@@ -225,7 +225,7 @@ export class BrandsService {
         });
   
         if (regionName != null) {
-          where.regions = Like('%' + regionName.id + '%');
+          where.regions = Like('%' + regionName.id.toString() + '%');
         }
       }
     // if (region) {
