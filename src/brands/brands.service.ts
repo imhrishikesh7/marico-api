@@ -143,9 +143,17 @@ export class BrandsService {
       },
     );
 
-    // Add condition for 'regions' using LIKE for the provided alias
-    if (alias && alias.trim() !== '') {
-      query.andWhere('brand.regions LIKE :alias', { alias: `%${alias}%` });
+    if (alias != null && alias != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: alias,
+        },
+      });
+      if (regionName != null) {
+        query.andWhere('brand.regions LIKE :alias', {
+          alias: `%${regionName.id}%`,
+        });
+      }
     }
 
     // Execute the query and return the results
@@ -218,16 +226,16 @@ export class BrandsService {
   }> {
     const where: { regions?: any; url_title?: any } = {};
     if (region != null && region != '') {
-        const regionName = await this.regionRepository.findOne({
-          where: {
-            alias: region,
-          },
-        });
-  
-        if (regionName != null) {
-          where.regions = Like('%' + regionName.id.toString() + '%');
-        }
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.id + '%');
       }
+    }
     // if (region) {
     //   where.regions = Like(`%${region}%`);
     // }
