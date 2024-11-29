@@ -84,6 +84,9 @@ export class PageContent {
   @Column('json')
   add_choice: string[];
 
+  @Column()
+  download_link: string;
+
   @CreateDateColumn()
   @Index()
   created_at: Date;
