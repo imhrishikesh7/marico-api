@@ -34,7 +34,15 @@ export class AboutusService {
   async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
     const where: any = {};
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.name + '%');
+      }
     }
     if (role != null && role != '') {
       where.type = Like('%' + role + '%'); // Using In operator for multiple roles
@@ -109,12 +117,20 @@ export class AboutusService {
   async getRecognition(
     region?: string,
     category?: string,
-    yearfliter?: string
+    yearfliter?: string,
   ): Promise<Recognition[]> {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.name + '%');
+      }
     }
     if (category != null && category != '') {
       where.category = Like('%' + category + '%');
@@ -132,8 +148,8 @@ export class AboutusService {
         id: id,
       },
       order: {
-        year: "DESC",
-      }
+        year: 'DESC',
+      },
     });
   }
 
@@ -198,7 +214,15 @@ export class AboutusService {
   async getHistories(region?: string): Promise<History[]> {
     const where: any = {};
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.name + '%');
+      }
     }
     return await this.historyRepository.find({
       where,

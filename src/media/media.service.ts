@@ -2,12 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { Media } from './entities/media.entity';
 import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Region } from 'src/regions/entities/region.entity';
 
 @Injectable()
 export class MediaService {
   constructor(
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
+    @InjectRepository(Region)
+    private readonly regionRepository: Repository<Region>,
   ) {}
 
   async getMedia(search?: string): Promise<Media[]> {
@@ -22,11 +25,19 @@ export class MediaService {
     }
   }
 
-  async getFrontNewsDetail(region?: string): Promise<Media|null> {
+  async getFrontNewsDetail(region?: string): Promise<Media | null> {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.media_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.media_regions = Like('%' + regionName.name + '%');
+      }
     }
     where.is_latest = true;
     where.category = Like('marico-in-the-news');
@@ -50,7 +61,15 @@ export class MediaService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.media_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.media_regions = Like('%' + regionName.name + '%');
+      }
     }
     if (yearfliter != null && yearfliter != '') {
       where.year = Like('%' + yearfliter + '%');

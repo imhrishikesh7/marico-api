@@ -18,6 +18,7 @@ import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { FeaturesService } from 'src/features/features.service';
+import { Region } from 'src/regions/entities/region.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -54,6 +55,8 @@ export class InvestorsService {
     private readonly miRepository: Repository<InvestorMI>,
     @InjectRepository(TitleCategory)
     private readonly titleCategoryRepository: Repository<TitleCategory>,
+    @InjectRepository(Region)
+    private readonly regionRepository: Repository<Region>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -72,7 +75,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.id + '%');
+      }
     }
 
     const shi = await this.shareHolderRepository.find({
@@ -239,7 +250,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.agm_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.agm_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     const agm = await this.agmRepository.find({
@@ -355,12 +374,18 @@ export class InvestorsService {
 
   async getDividendsDetail(region?: string): Promise<any[]> {
     const where: any = {};
-  
-    // Filter by region if provided
-    if (region) {
-      where.dividend_regions = Like(`%${region}%`);
+
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.dividend_regions = Like('%' + regionName.id + '%');
+      }
     }
-  
     // Fetch dividends from repository
     const dividends = await this.dividendsRepository.find({
       where,
@@ -368,7 +393,7 @@ export class InvestorsService {
         dividends_year: 'DESC',
       },
     });
-  
+
     // Fetch title categories for ordering
     const titleCategories = await this.titleCategoryRepository.find({
       where: {
@@ -382,7 +407,7 @@ export class InvestorsService {
       acc[category.category_title] = category.sort_order;
       return acc;
     }, {});
-  
+
     // Group the data
     const groupedData = dividends.reduce(
       (acc: any, item: InvestorDividends) => {
@@ -395,7 +420,7 @@ export class InvestorsService {
           item.investors_dividend_subcategory !== ''
             ? item.dividends_year
             : undefined;
-  
+
         // Find or create category
         let categoryObj = acc.find((c: any) => c.category === category);
         if (!categoryObj) {
@@ -406,7 +431,7 @@ export class InvestorsService {
           };
           acc.push(categoryObj);
         }
-  
+
         // If subcategory exists
         if (subcategory) {
           let subcategoryObj = categoryObj.subcategories.find(
@@ -420,7 +445,7 @@ export class InvestorsService {
             };
             categoryObj.subcategories.push(subcategoryObj);
           }
-  
+
           // If supersubcategory exists
           if (supersubcategory) {
             let supersubcategoryObj = subcategoryObj.supersubcategories.find(
@@ -433,7 +458,7 @@ export class InvestorsService {
               };
               subcategoryObj.supersubcategories.push(supersubcategoryObj);
             }
-  
+
             // Push PDFs into supersubcategory
             supersubcategoryObj.pdfs.push({
               id: item.id,
@@ -477,12 +502,12 @@ export class InvestorsService {
             updated_at: item.updated_at,
           });
         }
-  
+
         return acc;
       },
       [],
     );
-  
+
     // Map grouped data and sort categories
     const result = groupedData
       .map((category: any) => {
@@ -497,7 +522,7 @@ export class InvestorsService {
               delete category.pdfs;
               delete subcat.pdfs;
             }
-  
+
             return subcat;
           });
         }
@@ -508,10 +533,9 @@ export class InvestorsService {
         const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
       });
-  
+
     return result;
   }
-  
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
     return await this.dividendsRepository.findOne({
@@ -632,11 +656,21 @@ export class InvestorsService {
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
+    const where: any = {};
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.qu_region = Like('%' + regionName.id + '%');
+      }
+    }
 
     const qupdfs = await this.quPdfRepository.find({
-      where: {
-        ...(region && { qu_region: Like(`%${region}%`) }),
-      },
+      where,
     });
 
     type PDF = {
@@ -827,7 +861,15 @@ export class InvestorsService {
   async getScheduleDetail(region?: string): Promise<InvestorSchedule[]> {
     const where: any = {};
     if (region != null && region != '') {
-      where.region = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.region = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.scheduleRepository.find({
@@ -896,7 +938,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.cg_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.cg_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.cgRepository.find({
@@ -970,7 +1020,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.iu_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.iu_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.iuRepository.find({
@@ -1038,7 +1096,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.pd_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.pd_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.pdRepository.find({
@@ -1106,7 +1172,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.ic_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.ic_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.icRepository.find({
@@ -1171,7 +1245,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.psi_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.psi_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     return await this.psiRepository.find({
@@ -1242,7 +1324,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.ar_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.ar_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     const AR = await this.arRepository.find({
@@ -1389,7 +1479,15 @@ export class InvestorsService {
     const where: any = {};
 
     if (region != null && region != '') {
-      where.dr_regions = Like('%' + region + '%');
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.dr_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     const DR = await this.drRepository.find({
@@ -1497,8 +1595,17 @@ export class InvestorsService {
     }
 
     const where: any = {};
-    if (region) {
-      where.mi_regions = Like(`%${region}%`);
+
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.mi_regions = Like('%' + regionName.id + '%');
+      }
     }
 
     const mi = await this.miRepository.find({ where });
