@@ -41,7 +41,7 @@ export class AboutusService {
       });
 
       if (regionName != null) {
-        where.regions = Like('%' + regionName.name + '%');
+        where.regions = Like('%' + regionName.id + '%');
       }
     }
     if (role != null && role != '') {
@@ -129,7 +129,7 @@ export class AboutusService {
       });
 
       if (regionName != null) {
-        where.regions = Like('%' + regionName.name + '%');
+        where.regions = Like('%' + regionName.id + '%');
       }
     }
     if (category != null && category != '') {
@@ -221,7 +221,7 @@ export class AboutusService {
       });
 
       if (regionName != null) {
-        where.regions = Like('%' + regionName.name + '%');
+        where.regions = Like('%' + regionName.id + '%');
       }
     }
     return await this.historyRepository.find({

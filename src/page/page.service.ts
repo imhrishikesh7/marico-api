@@ -4,6 +4,7 @@ import { Page } from './entities/page.entity';
 import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { PageContent } from './entities/page_content.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
+import { Region } from 'src/regions/entities/region.entity';
 
 @Injectable()
 export class PageService {
@@ -13,6 +14,8 @@ export class PageService {
     private pageContentRepository: Repository<PageContent>,
     @InjectRepository(Sitemap)
     private seoRepository: Repository<Sitemap>,
+    @InjectRepository(Region)
+    private readonly regionRepository: Repository<Region>,
   ) {}
 
   //get all pages
@@ -100,12 +103,37 @@ export class PageService {
         published_at: LessThanOrEqual(new Date()),
       };
     }
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        return await this.pageRepository.findOne({
+          where: {
+            url: url,
+            is_active: is_active,
+            ...publishedWhere,
+            page_contents: {
+              is_active: true,
+              region: Like('%' + regionName.id + '%'),
+            },
+          },
+          relations: ['page_contents'],
+          order: { page_contents: { order: 'ASC' } },
+        });
+      }
+    }
     return await this.pageRepository.findOne({
       where: {
         url: url,
         is_active: is_active,
         ...publishedWhere,
-        page_contents: { is_active: true, region: Like('%' + region + '%') },
+        page_contents: {
+          is_active: true,
+        },
       },
       relations: ['page_contents'],
       order: { page_contents: { order: 'ASC' } },
@@ -194,7 +222,7 @@ export class PageService {
       site.ref = 'page';
       site.ref_id = id;
       await this.seoRepository.save(site);
-    }else{
+    } else {
       const site = new Sitemap();
       site.indexed = seo.indexed;
       site.meta_title = seo.meta_title;

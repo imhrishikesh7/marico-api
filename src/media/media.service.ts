@@ -36,7 +36,7 @@ export class MediaService {
       });
 
       if (regionName != null) {
-        where.media_regions = Like('%' + regionName.name + '%');
+        where.media_regions = Like('%' + regionName.id + '%');
       }
     }
     where.is_latest = true;
@@ -68,7 +68,7 @@ export class MediaService {
       });
 
       if (regionName != null) {
-        where.media_regions = Like('%' + regionName.name + '%');
+        where.media_regions = Like('%' + regionName.id + '%');
       }
     }
     if (yearfliter != null && yearfliter != '') {
