@@ -20,6 +20,7 @@ import { TitleCategory } from 'src/features/entities/feature.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
+import { SeoService } from 'src/seo/seo.service';
 
 @Module({
   imports: [
@@ -45,7 +46,7 @@ import { Sitemap } from 'src/seo/entities/seo.entity';
     ]),
   ],
   controllers: [InvestorsController],
-  providers: [InvestorsService],
-  exports: [InvestorsService],
+  providers: [InvestorsService, SeoService],
+  exports: [InvestorsService, SeoService],
 })
 export class InvestorsModule {}

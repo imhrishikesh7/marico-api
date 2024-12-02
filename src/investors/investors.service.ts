@@ -257,7 +257,9 @@ export class InvestorsService {
     }
   }
 
-  async getAGMDetail(region?: string): Promise<InvestorAGM[]> {
+  async getAGMDetail(
+    region?: string,
+  ): Promise<{ result: InvestorAGM[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -317,7 +319,16 @@ export class InvestorsService {
       return acc;
     }, {});
 
-    return Object.values(groupedByCategory);
+    const result: any[] = Object.values(groupedByCategory);
+
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getAGMById(id: number): Promise<InvestorAGM | null> {
@@ -383,7 +394,9 @@ export class InvestorsService {
     }
   }
 
-  async getDividendsDetail(region?: string): Promise<any[]> {
+  async getDividendsDetail(
+    region?: string,
+  ): Promise<{ result: any[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -520,7 +533,7 @@ export class InvestorsService {
     );
 
     // Map grouped data and sort categories
-    const result = groupedData
+    const result: any[] = groupedData
       .map((category: any) => {
         if (category.subcategories.length === 0) {
           delete category.subcategories;
@@ -545,7 +558,14 @@ export class InvestorsService {
         return orderA - orderB;
       });
 
-    return result;
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getDividendsById(id: number): Promise<InvestorDividends | null> {
@@ -663,7 +683,7 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(region?: string): Promise<any> {
+  async getQUALL(region?: string): Promise<{ result: any[]; seo: any }> {
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
@@ -747,7 +767,14 @@ export class InvestorsService {
       return acc;
     }, []);
 
-    return structuredData;
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+    });
+
+    return {
+      result: structuredData,
+      seo: seoRecord,
+    };
   }
 
   async addUpdateQUPDFs(

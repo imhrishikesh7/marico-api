@@ -23,10 +23,14 @@ import { InvestorPSI } from './entities/investor_psi.entity';
 import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
+import { SeoService } from 'src/seo/seo.service';
 
 @Controller(':region/investors')
 export class InvestorsController {
-  constructor(private readonly investorsService: InvestorsService) {}
+  constructor(
+    private readonly investorsService: InvestorsService,
+    private readonly seoService: SeoService,
+  ) {}
 
   @ApiBearerAuth()
   @Get('qu')
@@ -44,7 +48,9 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/agm')
-  async getAGMDetail(@Param('region') region: string): Promise<InvestorAGM[]> {
+  async getAGMDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorAGM[]; seo: any }> {
     return await this.investorsService.getAGMDetail(region);
   }
 
@@ -52,7 +58,7 @@ export class InvestorsController {
   @Get('documentation/dividend')
   async getDevidendsDetail(
     @Param('region') region: string,
-  ): Promise<InvestorDividends[]> {
+  ): Promise<{ result: InvestorDividends[]; seo: any }> {
     return await this.investorsService.getDividendsDetail(region);
   }
 
@@ -114,7 +120,7 @@ export class InvestorsController {
   @Get('documentation/schedule-of-investors')
   async getScheduleDetail(
     @Param('region') region: string,
-  ): Promise<InvestorSchedule[]> {
+  ): Promise<{ result: InvestorSchedule[]; seo: any }> {
     const schedule = await this.investorsService.getScheduleDetail();
     const groupedByCategory = schedule.reduce(
       (acc: any, item: InvestorSchedule) => {
@@ -141,7 +147,14 @@ export class InvestorsController {
       {},
     );
 
-    return Object.values(groupedByCategory);
+    const result: any[] = Object.values(groupedByCategory);
+
+    const seoRecord = await this.seoService.findOne(0, 'schedule-of-investors');
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   @ApiBearerAuth()
@@ -154,7 +167,9 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/quarterly-updates')
-  async getQUDetail(@Param('region') region: string): Promise<any[]> {
+  async getQUDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: any[]; seo: any }> {
     return await this.investorsService.getQUALL(region);
   }
 
