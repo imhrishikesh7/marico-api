@@ -184,7 +184,7 @@ export class InvestorsService {
         return orderA - orderB;
       });
       const seoRecord = await this.seoRepository.findOne({
-        where: { ref_id: 0, ref: Like('shi'), indexed: true },
+        where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
       });
       if (seoRecord) {
         (result as any).seo = seoRecord;
