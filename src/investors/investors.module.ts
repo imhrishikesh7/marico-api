@@ -21,6 +21,7 @@ import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 import { SeoService } from 'src/seo/seo.service';
+import { Contact } from 'src/seo/entities/contact.entity';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { SeoService } from 'src/seo/seo.service';
       InvestorDR,
       InvestorMI,
       Sitemap,
+      Contact,
     ]),
   ],
   controllers: [InvestorsController],
