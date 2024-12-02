@@ -30,6 +30,7 @@ import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { StringArrayOrNullPipe } from 'src/validations/stringarrayornull/stringarrayornull.pipe';
 import { SeoService } from 'src/seo/seo.service';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Controller('admin/brands')
 export class BrandsAdminController {
@@ -66,6 +67,7 @@ export class BrandsAdminController {
     tvc_relations: Tvc[] | null;
     print_ad_relations: PrintAd[] | null;
     award_relations: Recognition[] | null;
+    seo: Sitemap | null;
   }> {
     const toReturn = {
       brand: await this.brandService.getBrandById(id),
@@ -75,6 +77,7 @@ export class BrandsAdminController {
       tvc_relations: await this.brandService.getTVCList(),
       print_ad_relations: await this.brandService.getPrintAdList(),
       award_relations: await this.aboutusService.getAwardList(),
+      seo: await this.seoService.findOne(id),
     } as {
       brand: Brand | null;
       brands: Brand[] | null;
@@ -83,6 +86,7 @@ export class BrandsAdminController {
       tvc_relations: Tvc[] | null;
       print_ad_relations: PrintAd[] | null;
       award_relations: Recognition[] | null;
+      seo: Sitemap | null;
     };
     return toReturn;
   }
