@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Region } from 'src/regions/entities/region.entity';
 import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
-import  } from 'src/seo/seo.service';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Module({
