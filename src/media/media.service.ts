@@ -83,7 +83,7 @@ export class MediaService {
     });
 
     const seoRecord = await this.seoRepository.findOne({
-      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+      where: { ref_id: 0, ref: Like('%' + category + '%'), indexed: true },
     });
 
     // Return the result and SEO data
