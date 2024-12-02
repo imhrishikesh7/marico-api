@@ -19,6 +19,7 @@ import { InvestorAR } from './entities/investor_ar.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { InvestorMI } from './entities/investor_mi.entity';
       TitleCategory,
       InvestorDR,
       InvestorMI,
+      Sitemap,
     ]),
   ],
   controllers: [InvestorsController],

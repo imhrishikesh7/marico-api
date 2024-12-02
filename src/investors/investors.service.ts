@@ -19,6 +19,7 @@ import { InvestorMI } from './entities/investor_mi.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { FeaturesService } from 'src/features/features.service';
 import { Region } from 'src/regions/entities/region.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -57,6 +58,8 @@ export class InvestorsService {
     private readonly titleCategoryRepository: Repository<TitleCategory>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @InjectRepository(Sitemap)
+    private seoRepository: Repository<Sitemap>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -180,7 +183,12 @@ export class InvestorsService {
         const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
       });
-
+      const seoRecord = await this.seoRepository.findOne({
+        where: { ref_id: 0, ref: Like('shi'), indexed: true },
+      });
+      if (seoRecord) {
+        (result as any).seo = seoRecord;
+      }
     return result;
   }
 
