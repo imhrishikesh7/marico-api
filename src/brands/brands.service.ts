@@ -163,7 +163,9 @@ export class BrandsService {
     return await query.getMany();
   }
 
-  async getBrandMenuDetail(alias: string): Promise<{ name: string; link: string }[]> {
+  async getBrandMenuDetail(
+    alias: string,
+  ): Promise<{ name: string; link: string }[]> {
     const query = this.brandRepository.createQueryBuilder('brand');
 
     // Add condition for 'brand_type' being either 'main-brand' or 'standalone'
@@ -274,12 +276,14 @@ export class BrandsService {
     }[];
     tvcs: Tvc[];
     printAds: PrintAd[];
+    seo: Sitemap | null;
   }> {
     type SubBrandWithSuperSubBrand = {
       subBrand: Brand;
       tvcs: Tvc[];
       printAds: PrintAd[];
       superSubBrand?: SubBrandWithSuperSubBrand[]; // Nested sub-brands (recursive structure)
+      seo: Sitemap | null;
     };
     const where: { regions?: any; url_title?: any } = {};
 
@@ -304,11 +308,13 @@ export class BrandsService {
       subBrands?: SubBrandWithSuperSubBrand[];
       tvcs: Tvc[];
       printAds: PrintAd[];
+      seo: Sitemap | null;
     } = {
       brand: null,
       tvcs: [],
       printAds: [],
       subBrands: [],
+      seo: null,
     };
 
     // Fetch the main brand
@@ -394,13 +400,16 @@ export class BrandsService {
       const nestedSuperSubBrands = await Promise.all(
         superSubBrands.map(fetchSubBrands),
       );
-
+      const seoRecord = await this.seoRepository.findOne({
+        where: { ref_id: brand.id, ref: Like('brand') },
+      });
       return {
         subBrand,
         tvcs: subBrandTvcs,
         printAds: subBrandPrintAds,
         superSubBrand:
           nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined, // Add nested super sub-brands if any
+        seo: seoRecord,
       };
     };
 
@@ -409,7 +418,6 @@ export class BrandsService {
       const nestedSubBrandData = await fetchSubBrands(subBrand);
       toReturn.subBrands?.push(nestedSubBrandData);
     }
-
     toReturn.brand = brand;
     return toReturn;
   }
@@ -477,7 +485,7 @@ export class BrandsService {
         },
       });
       const seoRecord = await this.seoRepository.findOne({
-        where: { ref_id: id },
+        where: { ref_id: id, ref: Like('brand') },
       });
       if (seoRecord) {
         seoRecord.id = seoRecord.id;

@@ -198,7 +198,7 @@ export class PageService {
       }
       page = record;
       const seoRecord = await this.seoRepository.findOne({
-        where: { ref_id: id },
+        where: { ref_id: id, ref: Like('page') },
       });
       if (seoRecord) {
         site = seoRecord;

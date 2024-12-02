@@ -103,7 +103,7 @@ export class PageAdminController {
   }> {
     return {
       page: await this.pageService.findOne(id),
-      seo: await this.seoService.findOne(id),
+      seo: await this.seoService.findOne(id, 'page'),
       regions: await this.regionService.getRegionList(),
     };
   }
@@ -237,7 +237,7 @@ export class PageAdminController {
       order: number;
       is_active: boolean;
       add_choice: string[];
-      download_link:string;
+      download_link: string;
     }[],
     @Body('seo')
     seo: {

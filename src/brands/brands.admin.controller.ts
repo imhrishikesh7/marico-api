@@ -77,7 +77,7 @@ export class BrandsAdminController {
       tvc_relations: await this.brandService.getTVCList(),
       print_ad_relations: await this.brandService.getPrintAdList(),
       award_relations: await this.aboutusService.getAwardList(),
-      seo: await this.seoService.findOne(id),
+      seo: await this.seoService.findOne(id,'brand'),
     } as {
       brand: Brand | null;
       brands: Brand[] | null;

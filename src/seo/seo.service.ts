@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Sitemap } from './entities/seo.entity';
 import { Contact } from './entities/contact.entity';
 
@@ -13,9 +13,9 @@ export class SeoService {
     private contactRepository: Repository<Contact>,
   ) {}
 
-  async findOne(page_id: number): Promise<Sitemap | null> {
+  async findOne(page_id: number, ref: string): Promise<Sitemap | null> {
     return await this.seoRepository.findOne({
-      where: { ref_id: page_id },
+      where: { ref_id: page_id, ref: Like(ref) },
     });
   }
 
