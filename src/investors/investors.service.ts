@@ -322,7 +322,7 @@ export class InvestorsService {
     const result: any[] = Object.values(groupedByCategory);
 
     const seoRecord = await this.seoRepository.findOne({
-      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+      where: { ref_id: 0, ref: Like('agm'), indexed: true },
     });
 
     return {
@@ -559,7 +559,7 @@ export class InvestorsService {
       });
 
     const seoRecord = await this.seoRepository.findOne({
-      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+      where: { ref_id: 0, ref: Like('dividend'), indexed: true },
     });
 
     return {
@@ -768,7 +768,7 @@ export class InvestorsService {
     }, []);
 
     const seoRecord = await this.seoRepository.findOne({
-      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+      where: { ref_id: 0, ref: Like('quarterly-updates'), indexed: true },
     });
 
     return {
@@ -990,6 +990,8 @@ export class InvestorsService {
     return await this.cgRepository.find({
       where,
     });
+
+   
   }
 
   async getCGById(id: number): Promise<CorporateGovernance | null> {
@@ -1054,7 +1056,7 @@ export class InvestorsService {
     }
   }
 
-  async getIUDetail(region?: string): Promise<InformationUpdate[]> {
+  async getIUDetail(region?: string): Promise<{ result: InformationUpdate[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1069,9 +1071,17 @@ export class InvestorsService {
       }
     }
 
-    return await this.iuRepository.find({
+    const result = await this.iuRepository.find({
       where,
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('latest-update'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getIUById(id: number): Promise<InformationUpdate | null> {
@@ -1130,7 +1140,9 @@ export class InvestorsService {
     }
   }
 
-  async getPDDetail(region?: string): Promise<InvestorPlacement[]> {
+  async getPDDetail(
+    region?: string,
+  ): Promise<{ result: InvestorPlacement[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1145,9 +1157,18 @@ export class InvestorsService {
       }
     }
 
-    return await this.pdRepository.find({
+    const result: any[] = await this.pdRepository.find({
       where,
     });
+
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('placement-document'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getPDById(id: number): Promise<InvestorPlacement | null> {
@@ -1206,7 +1227,9 @@ export class InvestorsService {
     }
   }
 
-  async getICDetail(region?: string): Promise<InvestorContact[]> {
+  async getICDetail(
+    region?: string,
+  ): Promise<{ result: InvestorContact[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1221,9 +1244,17 @@ export class InvestorsService {
       }
     }
 
-    return await this.icRepository.find({
+    const result: any[] = await this.icRepository.find({
       where,
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('investor-contact'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getICById(id: number): Promise<InvestorContact | null> {
@@ -1279,7 +1310,9 @@ export class InvestorsService {
     }
   }
 
-  async getPSIDetail(region?: string): Promise<InvestorPSI[]> {
+  async getPSIDetail(
+    region?: string,
+  ): Promise<InvestorPSI[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1297,6 +1330,7 @@ export class InvestorsService {
     return await this.psiRepository.find({
       where,
     });
+
   }
 
   async getPSIById(id: number): Promise<InvestorPSI | null> {
@@ -1358,7 +1392,7 @@ export class InvestorsService {
     }
   }
 
-  async getARDetail(region?: string): Promise<InvestorAR[]> {
+  async getARDetail(region?: string): Promise<{result: InvestorAR[]; seo:any}> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1447,8 +1481,14 @@ export class InvestorsService {
       }
       return item;
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('annual-reports'), indexed: true },
+    });
 
-    return result;
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getARById(id: number): Promise<InvestorAR | null> {
@@ -1513,7 +1553,7 @@ export class InvestorsService {
     }
   }
 
-  async getDRDetail(region?: string): Promise<InvestorDR[]> {
+  async getDRDetail(region?: string): Promise<{result: InvestorDR[]; seo:any}> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1562,8 +1602,14 @@ export class InvestorsService {
     const result = Object.values(groupedByCategory).map((item: any) => {
       return item;
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('latest-director-report'), indexed: true },
+    });
 
-    return result;
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getDRById(id: number): Promise<InvestorDR | null> {
@@ -1622,7 +1668,7 @@ export class InvestorsService {
     }
   }
 
-  async getMIDetail(region?: string): Promise<any[]> {
+  async getMIDetail(region?: string): Promise<{result: any[]; seo:any}> {
     interface ProcessedMI {
       pdf: string;
       pdf_title: string;
@@ -1657,7 +1703,17 @@ export class InvestorsService {
       id: mi.id,
     }));
 
-    return processedMIs;
+    const result = processedMIs;
+
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('investor-principles-disclosure'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
+
   }
 
   async getMIById(id: number): Promise<InvestorMI | null> {

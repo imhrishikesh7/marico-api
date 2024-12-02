@@ -74,7 +74,7 @@ export class InvestorsController {
   @Get('documentation/cg')
   async getCGDetail(
     @Param('region') region: string,
-  ): Promise<CorporateGovernance[]> {
+  ): Promise<{ result: CorporateGovernance[]; seo: any }> {
     const cg = await this.investorsService.getCGDetail(region);
 
     const groupedByCategory = cg.reduce(
@@ -105,14 +105,21 @@ export class InvestorsController {
       {},
     );
 
-    return Object.values(groupedByCategory);
+    const result: any[] = Object.values(groupedByCategory);
+
+    const seoRecord = await this.seoService.findOne(0, 'cg');
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   @ApiBearerAuth()
   @Get('documentation/latest-update')
   async getIUDetail(
     @Param('region') region: string,
-  ): Promise<InformationUpdate[]> {
+  ): Promise<{ result: InformationUpdate[]; seo: any }> {
     return await this.investorsService.getIUDetail(region);
   }
 
@@ -161,7 +168,7 @@ export class InvestorsController {
   @Get('documentation/placement-document')
   async getPDDetail(
     @Param('region') region: string,
-  ): Promise<InvestorPlacement[]> {
+  ): Promise<{ result: InvestorPlacement[]; seo: any }> {
     return await this.investorsService.getPDDetail(region);
   }
 
@@ -177,13 +184,15 @@ export class InvestorsController {
   @Get('documentation/investor-contact')
   async getICDetail(
     @Param('region') region: string,
-  ): Promise<InvestorContact[]> {
+  ): Promise<{ result: InvestorContact[]; seo: any }> {
     return await this.investorsService.getICDetail();
   }
 
   @ApiBearerAuth()
   @Get('documentation/price-sensitive-information')
-  async getPSIDetail(@Param('region') region: string): Promise<InvestorPSI[]> {
+  async getPSIDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorPSI[]; seo: any }> {
     const psi = await this.investorsService.getPSIDetail();
     const groupedByCategory = psi.reduce((acc: any, item: InvestorPSI) => {
       const category = item.psi_category;
@@ -209,24 +218,40 @@ export class InvestorsController {
       return acc;
     }, {});
 
-    return Object.values(groupedByCategory);
+    const result: any[] = Object.values(groupedByCategory);
+
+    const seoRecord = await this.seoService.findOne(
+      0,
+      'price-sensitive-information',
+    );
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   @ApiBearerAuth()
   @Get('documentation/annual-reports')
-  async getARDetail(@Param('region') region: string): Promise<InvestorAR[]> {
+  async getARDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorAR[]; seo: any }> {
     return await this.investorsService.getARDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/latest-director-report')
-  async getDRDetail(@Param('region') region: string): Promise<InvestorDR[]> {
+  async getDRDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorDR[]; seo: any }> {
     return await this.investorsService.getDRDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/investor-principles-disclosure')
-  async getMIDetail(@Param('region') region: string): Promise<InvestorMI[]> {
+  async getMIDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorMI[]; seo: any }> {
     return await this.investorsService.getMIDetail(region);
   }
 }
