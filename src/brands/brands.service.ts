@@ -283,7 +283,6 @@ export class BrandsService {
       tvcs: Tvc[];
       printAds: PrintAd[];
       superSubBrand?: SubBrandWithSuperSubBrand[]; // Nested sub-brands (recursive structure)
-      seo: Sitemap | null;
     };
     const where: { regions?: any; url_title?: any } = {};
 
@@ -400,16 +399,12 @@ export class BrandsService {
       const nestedSuperSubBrands = await Promise.all(
         superSubBrands.map(fetchSubBrands),
       );
-      const seoRecord = await this.seoRepository.findOne({
-        where: { ref_id: brand.id, ref: Like('brand') },
-      });
       return {
         subBrand,
         tvcs: subBrandTvcs,
         printAds: subBrandPrintAds,
         superSubBrand:
           nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined, // Add nested super sub-brands if any
-        seo: seoRecord,
       };
     };
 
@@ -418,7 +413,11 @@ export class BrandsService {
       const nestedSubBrandData = await fetchSubBrands(subBrand);
       toReturn.subBrands?.push(nestedSubBrandData);
     }
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: brand.id, ref: Like('brand') },
+    });
     toReturn.brand = brand;
+    toReturn.seo= seoRecord;
     return toReturn;
   }
 

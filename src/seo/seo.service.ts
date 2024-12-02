@@ -15,7 +15,7 @@ export class SeoService {
 
   async findOne(page_id: number, ref: string): Promise<Sitemap | null> {
     return await this.seoRepository.findOne({
-      where: { ref_id: page_id, ref: Like(ref) },
+      where: { ref_id: page_id, ref: Like(ref), indexed: true },
     });
   }
 
