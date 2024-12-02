@@ -172,7 +172,7 @@ export class InvestorsService {
       {},
     );
 
-    const result: any[] = Object.values(groupedByCategory)
+    const result = Object.values(groupedByCategory)
       .map((item: any) => {
         if (!item.subcategories) {
           delete item.subcategories;
