@@ -19,13 +19,19 @@ export class SeoService {
     });
   }
 
+  async getSEODetail(page_id: number): Promise<Sitemap | null> {  
+    return await this.seoRepository.findOne({
+      where: { ref_id: page_id },
+    });
+  }
+
   async addContactUS(
-    name:string,
-    email:string,
-    phone:string,
-    address:string,
-    query_type:string,
-    query:string,
+    name: string,
+    email: string,
+    phone: string,
+    address: string,
+    query_type: string,
+    query: string,
   ): Promise<Contact> {
     const contact = new Contact();
     contact.name = name;

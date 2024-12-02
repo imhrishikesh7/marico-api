@@ -29,12 +29,14 @@ import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
 import { ImagefileOrNullPipe } from 'src/validations/imagefile/imagefile.pipe';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { StringArrayOrNullPipe } from 'src/validations/stringarrayornull/stringarrayornull.pipe';
+import { SeoService } from 'src/seo/seo.service';
 
 @Controller('admin/brands')
 export class BrandsAdminController {
   constructor(
     private readonly brandService: BrandsService,
     private readonly aboutusService: AboutusService,
+    private readonly seoService: SeoService,
     private readonly regionService: RegionsService,
     private readonly adminService: AdminService,
     @Inject(REQUEST) private readonly request: AdminRequest,
@@ -249,6 +251,24 @@ export class BrandsAdminController {
         is_active: {
           type: 'boolean',
         },
+        seo: {
+          type: 'object',
+          properties: {
+            meta_title: { type: 'string' },
+            meta_description: { type: 'string' },
+            canonical_url: { type: 'string' },
+            meta_image: {
+              type: 'object',
+              properties: {
+                url: { type: 'string' },
+                alt: { type: 'string' },
+                width: { type: 'number' },
+                height: { type: 'number' },
+              },
+            },
+            indexed: { type: 'boolean' },
+          },
+        },
       },
     },
   })
@@ -306,6 +326,19 @@ export class BrandsAdminController {
     @Body('insta_url') insta_url: string,
     @Body('show_in_front') show_in_front: boolean,
     @Body('is_active') is_active: boolean,
+    @Body('seo')
+    seo: {
+      meta_title: string;
+      meta_description: string;
+      canonical_url: string;
+      meta_image: {
+        url: string;
+        alt: string;
+        width: number;
+        height: number;
+      } | null;
+      indexed: boolean;
+    },
   ): Promise<{ brand: Brand }> {
     const brand = await this.brandService.addUpdateBrand(
       id,
@@ -335,6 +368,7 @@ export class BrandsAdminController {
       insta_url,
       show_in_front,
       is_active,
+      seo,
     );
 
     await this.adminService.addAdminActivity(
@@ -370,6 +404,7 @@ export class BrandsAdminController {
         insta_url,
         show_in_front,
         is_active,
+        seo,
       },
     );
 

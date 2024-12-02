@@ -5,6 +5,7 @@ import { In, Like, Repository } from 'typeorm';
 import { Region } from 'src/regions/entities/region.entity';
 import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Injectable()
 export class BrandsService {
@@ -17,6 +18,8 @@ export class BrandsService {
     private readonly printAdRepository: Repository<PrintAd>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @InjectRepository(Sitemap)
+    private seoRepository: Repository<Sitemap>,
   ) {}
 
   async getTVCList(search?: string | null): Promise<Tvc[]> {
@@ -459,6 +462,13 @@ export class BrandsService {
     insta_url: string,
     show_in_front: boolean,
     is_active: boolean,
+    seo: {
+      meta_title: string;
+      meta_description: string;
+      canonical_url: string;
+      meta_image: { url: string; width: number; height: number } | null;
+      indexed: boolean;
+    },
   ): Promise<Brand> {
     if (id) {
       const brand = await this.brandRepository.findOne({
@@ -466,6 +476,30 @@ export class BrandsService {
           id: id,
         },
       });
+      const seoRecord = await this.seoRepository.findOne({
+        where: { ref_id: id },
+      });
+      if (seoRecord) {
+        seoRecord.id = seoRecord.id;
+        seoRecord.indexed = seo.indexed;
+        seoRecord.meta_title = seo.meta_title;
+        seoRecord.meta_description = seo.meta_description;
+        seoRecord.meta_image = seo.meta_image;
+        seoRecord.canonical_url = seo.canonical_url;
+        seoRecord.ref = 'brand';
+        seoRecord.ref_id = id;
+        await this.seoRepository.save(seoRecord);
+      } else {
+        const seoRecord = new Sitemap();
+        seoRecord.indexed = seo.indexed;
+        seoRecord.meta_title = seo.meta_title;
+        seoRecord.meta_description = seo.meta_description;
+        seoRecord.meta_image = seo.meta_image;
+        seoRecord.canonical_url = seo.canonical_url;
+        seoRecord.ref = 'brand';
+        seoRecord.ref_id = id;
+        await this.seoRepository.save(seoRecord);
+      }
       if (brand) {
         brand.id = id;
         brand.title = title;
