@@ -74,7 +74,9 @@ export class InvestorsService {
     }
   }
 
-  async getSHIDetail(region?: string): Promise<InvestorShareHolder[]> {
+  async getSHIDetail(
+    region?: string,
+  ): Promise<{ result: InvestorShareHolder[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -170,7 +172,7 @@ export class InvestorsService {
       {},
     );
 
-    const result = Object.values(groupedByCategory)
+    const result: any[] = Object.values(groupedByCategory)
       .map((item: any) => {
         if (!item.subcategories) {
           delete item.subcategories;
@@ -183,13 +185,14 @@ export class InvestorsService {
         const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
       });
-      const seoRecord = await this.seoRepository.findOne({
-        where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
-      });
-      if (seoRecord) {
-        (result as any).seo = seoRecord;
-      }
-    return result;
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async getSHIById(id: number): Promise<InvestorShareHolder | null> {
