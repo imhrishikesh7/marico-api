@@ -38,7 +38,7 @@ export class InvestorsController {
   @Get('documentation/shareholder-info')
   async getSHIDetail(
     @Param('region') region: string,
-  ): Promise<InvestorShareHolder[]> {
+  ): Promise<{ result: InvestorShareHolder[]; seo: any }> {
     return await this.investorsService.getSHIDetail(region);
   }
 
