@@ -27,7 +27,7 @@ export class MediaController {
     @Param('region') region: string,
     @Param('category') category: string,
     @Query('year') year?: string,
-  ): Promise<Media[]> {
+  ): Promise<{ result: Media[]; seo: any }> {
     return await this.mediaService.getMediaByCategory(region, category, year);
   }
 }

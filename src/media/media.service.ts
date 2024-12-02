@@ -3,6 +3,7 @@ import { Media } from './entities/media.entity';
 import { LessThanOrEqual, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Region } from 'src/regions/entities/region.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Injectable()
 export class MediaService {
@@ -11,6 +12,8 @@ export class MediaService {
     private readonly mediaRepository: Repository<Media>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @InjectRepository(Sitemap)
+    private seoRepository: Repository<Sitemap>,
   ) {}
 
   async getMedia(search?: string): Promise<Media[]> {
@@ -57,7 +60,7 @@ export class MediaService {
     region?: string,
     category?: string,
     yearfliter?: string,
-  ): Promise<Media[]> {
+  ): Promise<{ result: Media[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -75,9 +78,19 @@ export class MediaService {
       where.year = Like('%' + yearfliter + '%');
     }
     where.category = Like('%' + category + '%');
-    return await this.mediaRepository.find({
+    const result = await this.mediaRepository.find({
       where,
     });
+
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
+    });
+
+    // Return the result and SEO data
+    return {
+      result,
+      seo: seoRecord,
+    };
   }
 
   async addUpdateMedia(

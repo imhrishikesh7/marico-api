@@ -73,105 +73,108 @@ export class InvestorsService {
       return await this.shareHolderRepository.find({});
     }
   }
-
-  async getSHIDetail(
-    region?: string,
-  ): Promise<{ result: InvestorShareHolder[]; seo: any }> {
-    const where: any = {};
-
-    if (region != null && region != '') {
+  async getSHIDetail(region?: string): Promise<{ result: any[]; seo: any }> {
+    const where: Record<string, any> = {};
+  
+    // Check if a region filter is provided
+    if (region) {
       const regionName = await this.regionRepository.findOne({
-        where: {
-          alias: region,
-        },
+        where: { alias: region },
       });
-
-      if (regionName != null) {
-        where.regions = Like('%' + regionName.id + '%');
+  
+      if (regionName) {
+        where.regions = Like(`%${regionName.id}%`);
       }
     }
-
+  
+    // Fetch shareholder data
     const shi = await this.shareHolderRepository.find({
       where,
-      order: {
-        investors_shi_year: 'DESC',
-      },
+      order: { investors_shi_year: 'DESC' },
     });
-
-    // Fetch the title categories for ordering
+  
+    if (!shi.length) {
+      return { result: [], seo: null }; // Early return if no data
+    }
+  
+    // Fetch title categories for ordering
     const titleCategories = await this.titleCategoryRepository.find({
-      where: {
-        sub_menu: Like('shi'),
-      },
-      order: {
-        sort_order: 'ASC',
-      },
+      where: { sub_menu: Like('shi') },
+      order: { sort_order: 'ASC' },
     });
-    const categoryOrder = titleCategories?.reduce((acc: any, category: any) => {
-      acc[category.category_title] = category.sort_order;
-      return acc;
-    }, {});
-
-    const groupedByCategory = shi.reduce(
-      (acc: any, item: InvestorShareHolder) => {
-        const category = item.investors_shi_category;
-        const subcategory = item.investors_shi_year;
-
-        // If the category doesn't exist, initialize it
-        if (!acc[category]) {
-          acc[category] = {
-            category: category,
-            subcategories: subcategory ? [] : undefined,
-            pdfs: subcategory ? undefined : [],
-          };
-        }
-
-        if (subcategory) {
-          const subcategoryIndex = acc[category].subcategories.findIndex(
-            (sub: any) => sub.subcategory === subcategory,
-          );
-
-          if (subcategoryIndex === -1) {
-            acc[category].subcategories.push({
-              subcategory: subcategory,
-              pdfs: [],
-            });
-          }
-
-          const sub = acc[category].subcategories.find(
-            (sub: any) => sub.subcategory === subcategory,
-          );
-
-          sub.pdfs.push({
-            pdf_title: item.investors_shi_title,
-            pdf: item.investors_shi_pdf,
-            id: item.id,
-            title: item.title,
-            url_title: item.url_title,
-            regions: item.regions,
-            sort_order: item.sort_order,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          });
-        } else {
-          acc[category].pdfs.push({
-            pdf_title: item.investors_shi_title,
-            pdf: item.investors_shi_pdf,
-            id: item.id,
-            title: item.title,
-            url_title: item.url_title,
-            regions: item.regions,
-            sort_order: item.sort_order,
-            created_at: item.created_at,
-            updated_at: item.updated_at,
-          });
-        }
-
+  
+    // Map category titles to their sort order
+    const categoryOrder: Record<string, number> = titleCategories.reduce(
+      (acc: Record<string, number>, category) => {
+        acc[category.category_title] = category.sort_order;
         return acc;
       },
       {},
     );
-
+  
+    // Group the data by category and subcategory
+    const groupedByCategory: Record<
+      string,
+      {
+        category: string;
+        subcategories?: Array<{ subcategory: string; pdfs: any[] }>;
+        pdfs?: any[];
+      }
+    > = shi.reduce((acc, item) => {
+      const category = item.investors_shi_category;
+      const subcategory = item.investors_shi_year;
+  
+      // Initialize the category if it doesn't exist
+      if (!acc[category]) {
+        acc[category] = {
+          category,
+          subcategories: subcategory ? [] : undefined,
+          pdfs: subcategory ? undefined : [],
+        };
+      }
+  
+      if (subcategory) {
+        // Find or create the subcategory
+        let sub = acc[category].subcategories?.find(
+          (sub1: { subcategory: string; }) => sub1.subcategory === subcategory,
+        );
+  
+        if (!sub) {
+          sub = { subcategory, pdfs: [] };
+          acc[category].subcategories?.push(sub);
+        }
+  
+        // Add the item to the subcategory
+        sub.pdfs.push({
+          pdf_title: item.investors_shi_title,
+          pdf: item.investors_shi_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          regions: item.regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      } else {
+        // Add the item to the category if no subcategory exists
+        acc[category].pdfs?.push({
+          pdf_title: item.investors_shi_title,
+          pdf: item.investors_shi_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          regions: item.regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      }
+  
+      return acc;
+    }, {} as Record<string, any>);
+  
+    // Convert grouped data to an array and sort by category order
     const result = Object.values(groupedByCategory)
       .map((item: any) => {
         if (!item.subcategories) {
@@ -179,21 +182,25 @@ export class InvestorsService {
         }
         return item;
       })
-      // Sort categories based on title category order
       .sort((a: any, b: any) => {
-        const orderA = categoryOrder?.[a.category] ?? Number.MAX_SAFE_INTEGER;
-        const orderB = categoryOrder?.[b.category] ?? Number.MAX_SAFE_INTEGER;
+        const orderA = categoryOrder[a.category] ?? Number.MAX_SAFE_INTEGER;
+        const orderB = categoryOrder[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
       });
+  
+    // Fetch SEO record
     const seoRecord = await this.seoRepository.findOne({
       where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
     });
-
+  
+    // Return the result and SEO data
     return {
       result,
       seo: seoRecord,
     };
   }
+  
+
 
   async getSHIById(id: number): Promise<InvestorShareHolder | null> {
     return await this.shareHolderRepository.findOne({
