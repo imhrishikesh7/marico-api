@@ -132,6 +132,11 @@ const menu: MenuItem[] = [
         url: '/investors/psi',
         role: ['INVESTOR_PSI'],
       },
+      {
+        name: 'FAQ',
+        url: '/investors/faq',
+        role: ['INVESTOR_FAQ'],
+      },
     ],
   },
   {

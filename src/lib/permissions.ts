@@ -150,6 +150,11 @@ const permissions: Permission[] = [
     name: 'Investors > Price Sensitive Information',
   },
   {
+    key: 'INVESTORS',
+    level: 2,
+    name: 'Investors > FAQ'
+  },
+  {
     key: 'PAGE',
     level: 1,
     name: 'Pages',
