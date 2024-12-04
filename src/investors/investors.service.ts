@@ -301,6 +301,7 @@ export class InvestorsService {
           category: category,
           qr_title: '',
           qr_code: '',
+          qr_link: '',
           pdfs: [],
         };
       }
@@ -312,6 +313,7 @@ export class InvestorsService {
         if (filteredTitles.length > 0) {
           acc[category].qr_title = filteredTitles[0].qr_title;
           acc[category].qr_code = filteredTitles[0].qr_code;
+          acc[category].qr_link = filteredTitles[0].qr_link;
         }
       }
       acc[category].pdfs.push({
