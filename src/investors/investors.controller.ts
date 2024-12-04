@@ -24,6 +24,7 @@ import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { SeoService } from 'src/seo/seo.service';
+import { InvestorFAQ } from './entities/investor_faq.entity';
 
 @Controller(':region/investors')
 export class InvestorsController {
@@ -253,5 +254,13 @@ export class InvestorsController {
     @Param('region') region: string,
   ): Promise<{ result: InvestorMI[]; seo: any }> {
     return await this.investorsService.getMIDetail(region);
+  }
+
+  @ApiBearerAuth()
+  @Get('faq')
+  async getFAQDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorFAQ[]; seo: any }> {
+    return await this.investorsService.getFAQDetail(region);
   }
 }

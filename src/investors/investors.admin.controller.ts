@@ -40,6 +40,7 @@ import { FeaturesService } from 'src/features/features.service';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
+import { InvestorFAQ } from './entities/investor_faq.entity';
 
 @Controller('admin/investors')
 export class InvestorsAdminController {
@@ -1495,4 +1496,95 @@ export class InvestorsAdminController {
       disclosure,
     };
   }
+
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiQuery({
+    name: 'search',
+    type: 'string',
+    required: false,
+  })
+  @Roles(['INVESTOR'])
+  @Get('faq')
+  async getFAQ(
+    @Query('search', new DefaultValuePipe('')) search: string,
+  ): Promise<InvestorFAQ[]> {
+    return await this.investorsService.getFAQ(search || undefined);
+  }
+
+  @Get('faq/:id')
+  async getFAQById(@Param('id', ParseIntPipe) id: number): Promise<{
+    faq: InvestorFAQ | null;
+    faqs: InvestorFAQ[] | null;
+    regions: Region[] | null;
+  }> {
+    const toReturn = {
+      faq: await this.investorsService.getFAQById(id),
+      faqs: await this.investorsService.getFAQ(),
+      regions: await this.regionService.getRegionList(),
+    } as {
+      faq: InvestorFAQ | null;
+      faqs: InvestorFAQ[] | null;
+      regions: Region[] | null;
+    };
+    return toReturn;
+  }
+
+  //add new agm
+  @AdminOnly()
+  @ApiBearerAuth()
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+        },
+        question: {
+          type: 'string',
+        },
+        answer: {
+          type: 'string',
+        },
+        regions: {
+          type: 'array',
+          items: {
+            type: 'string',
+            example: 'UK',
+          },
+        },
+        sort_order: {
+          type: 'number',
+        },
+        is_active: {
+          type: 'boolean',
+        },
+      },
+    },
+  })
+  @Roles(['INVESTOR'])
+  @Post('faq/add-update')
+  async addUpdateFAQ(
+    @Body('id', ParseIntPipe) id: number,
+    @Body('question')
+    question: string,
+    @Body('answer', EmptystringPipe) answer: string,
+    @Body('regions') regions: string[],
+    @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
+  ): Promise<{ faq: InvestorFAQ }> {
+    const faq = await this.investorsService.addUpdateFAQ(
+      id,
+      question,
+      answer,
+      regions,
+      sort_order,
+      is_active,
+    );
+    return {
+      faq,
+    };
+  }
+
 }

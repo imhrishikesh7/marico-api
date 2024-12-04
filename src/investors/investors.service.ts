@@ -20,6 +20,7 @@ import { TitleCategory } from 'src/features/entities/feature.entity';
 import { FeaturesService } from 'src/features/features.service';
 import { Region } from 'src/regions/entities/region.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
+import { InvestorFAQ } from './entities/investor_faq.entity';
 
 @Injectable()
 export class InvestorsService {
@@ -60,6 +61,8 @@ export class InvestorsService {
     private readonly regionRepository: Repository<Region>,
     @InjectRepository(Sitemap)
     private seoRepository: Repository<Sitemap>,
+    @InjectRepository(InvestorFAQ)
+    private faqRepository: Repository<InvestorFAQ>,
   ) {}
 
   async getSHI(search?: string): Promise<InvestorShareHolder[]> {
@@ -1763,4 +1766,86 @@ export class InvestorsService {
       return this.miRepository.save(mi);
     }
   }
+
+  async getFAQ(search?: string): Promise<InvestorFAQ[]> {
+    if (search != null && search != '') {
+      return await this.faqRepository.find({
+        where: {
+          question: Like('%' + search + '%'),
+        },
+      });
+    } else {
+      return await this.faqRepository.find({});
+    }
+  }
+
+  async getFAQById(id: number): Promise<InvestorFAQ | null> {
+    return await this.faqRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async addUpdateFAQ(
+    id: number,
+    question: string,
+    answer: string,
+    faqRegions: string[],
+    sort_order: number,
+    is_active: boolean,
+  ): Promise<InvestorFAQ> {
+    if (id) {
+      const faq = await this.getFAQById(id);
+      if (faq) {
+        faq.id = id;
+        faq.question = question;
+        faq.answer = answer;
+        faq.regions = faqRegions;
+        faq.sort_order = sort_order;
+        faq.is_active = is_active;
+
+        return this.faqRepository.save(faq);
+      }
+      throw new Error('faq not found');
+    } else {
+      const faq = new InvestorFAQ();
+
+      faq.question = question;
+      faq.answer = answer;
+      faq.regions = faqRegions;
+      faq.sort_order = sort_order;
+      faq.is_active = is_active;
+      return this.faqRepository.save(faq);
+    }
+  }
+
+  async getFAQDetail(region?: string): Promise<{result: InvestorFAQ[]; seo:any}> {
+    const where: any = {};
+
+    if (region != null && region != '') {
+      const regionName = await this.regionRepository.findOne({
+        where: {
+          alias: region,
+        },
+      });
+
+      if (regionName != null) {
+        where.regions = Like('%' + regionName.id + '%');
+      }
+    }
+
+    const result = await this.faqRepository.find({ where });
+
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('faq'), indexed: true },
+    });
+
+    return {
+      result,
+      seo: seoRecord,
+    };
+
+  }
+
 }
