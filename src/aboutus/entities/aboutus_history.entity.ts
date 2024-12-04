@@ -22,7 +22,7 @@ export class History {
 
   @Column({ type: 'json', nullable: true })
   thumbnail: { url: string; alt: string; width: number; height: number } | null;
-  
+
   @Column()
   @Index()
   history_title: string;
@@ -40,8 +40,8 @@ export class History {
   @Column()
   @Index()
   sort_order: number;
-  
-  @Column({default: true})
+
+  @Column({ default: true })
   @Index()
   is_active: boolean;
 

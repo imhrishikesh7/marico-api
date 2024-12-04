@@ -27,6 +27,10 @@ export class InvestorPlacement {
   @Index()
   sort_order: number;
 
+  @Column({ default: true })
+  @Index()
+  is_active: boolean;
+
   @CreateDateColumn()
   @Index()
   created_at: Date;

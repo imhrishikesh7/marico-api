@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InformationUpdate {
@@ -21,11 +28,15 @@ export class InformationUpdate {
   iu_documentation_pdf: string;
 
   @Column('json')
-  iu_regions: string[]; 
+  iu_regions: string[];
 
   @Column()
   @Index()
   sort_order: number;
+
+  @Column({ default: true })
+  @Index()
+  is_active: boolean;
 
   @CreateDateColumn()
   @Index()

@@ -78,34 +78,34 @@ export class InvestorsService {
   }
   async getSHIDetail(region?: string): Promise<{ result: any[]; seo: any }> {
     const where: Record<string, any> = {};
-  
+
     // Check if a region filter is provided
     if (region) {
       const regionName = await this.regionRepository.findOne({
         where: { alias: region },
       });
-  
+
       if (regionName) {
         where.regions = Like(`%${regionName.id}%`);
       }
     }
-  
+    where.is_active = true;
     // Fetch shareholder data
     const shi = await this.shareHolderRepository.find({
       where,
       order: { investors_shi_year: 'DESC' },
     });
-  
+
     if (!shi.length) {
       return { result: [], seo: null }; // Early return if no data
     }
-  
+
     // Fetch title categories for ordering
     const titleCategories = await this.titleCategoryRepository.find({
       where: { sub_menu: Like('shi') },
       order: { sort_order: 'ASC' },
     });
-  
+
     // Map category titles to their sort order
     const categoryOrder: Record<string, number> = titleCategories.reduce(
       (acc: Record<string, number>, category) => {
@@ -114,7 +114,7 @@ export class InvestorsService {
       },
       {},
     );
-  
+
     // Group the data by category and subcategory
     const groupedByCategory: Record<
       string,
@@ -123,60 +123,65 @@ export class InvestorsService {
         subcategories?: Array<{ subcategory: string; pdfs: any[] }>;
         pdfs?: any[];
       }
-    > = shi.reduce((acc, item) => {
-      const category = item.investors_shi_category;
-      const subcategory = item.investors_shi_year;
-  
-      // Initialize the category if it doesn't exist
-      if (!acc[category]) {
-        acc[category] = {
-          category,
-          subcategories: subcategory ? [] : undefined,
-          pdfs: subcategory ? undefined : [],
-        };
-      }
-  
-      if (subcategory) {
-        // Find or create the subcategory
-        let sub = acc[category].subcategories?.find(
-          (sub1: { subcategory: string; }) => sub1.subcategory === subcategory,
-        );
-  
-        if (!sub) {
-          sub = { subcategory, pdfs: [] };
-          acc[category].subcategories?.push(sub);
+    > = shi.reduce(
+      (acc, item) => {
+        const category = item.investors_shi_category;
+        const subcategory = item.investors_shi_year;
+
+        // Initialize the category if it doesn't exist
+        if (!acc[category]) {
+          acc[category] = {
+            category,
+            subcategories: subcategory ? [] : undefined,
+            pdfs: subcategory ? undefined : [],
+          };
         }
-  
-        // Add the item to the subcategory
-        sub.pdfs.push({
-          pdf_title: item.investors_shi_title,
-          pdf: item.investors_shi_pdf,
-          id: item.id,
-          title: item.title,
-          url_title: item.url_title,
-          regions: item.regions,
-          sort_order: item.sort_order,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
-        });
-      } else {
-        // Add the item to the category if no subcategory exists
-        acc[category].pdfs?.push({
-          pdf_title: item.investors_shi_title,
-          pdf: item.investors_shi_pdf,
-          id: item.id,
-          title: item.title,
-          url_title: item.url_title,
-          regions: item.regions,
-          sort_order: item.sort_order,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
-        });
-      }
-  
-      return acc;
-    }, {} as Record<string, any>);
-  
+
+        if (subcategory) {
+          // Find or create the subcategory
+          let sub = acc[category].subcategories?.find(
+            (sub1: { subcategory: string }) => sub1.subcategory === subcategory,
+          );
+
+          if (!sub) {
+            sub = { subcategory, pdfs: [] };
+            acc[category].subcategories?.push(sub);
+          }
+
+          // Add the item to the subcategory
+          sub.pdfs.push({
+            pdf_title: item.investors_shi_title,
+            pdf: item.investors_shi_pdf,
+            id: item.id,
+            title: item.title,
+            url_title: item.url_title,
+            regions: item.regions,
+            sort_order: item.sort_order,
+            is_active: item.is_active,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        } else {
+          // Add the item to the category if no subcategory exists
+          acc[category].pdfs?.push({
+            pdf_title: item.investors_shi_title,
+            pdf: item.investors_shi_pdf,
+            id: item.id,
+            title: item.title,
+            url_title: item.url_title,
+            regions: item.regions,
+            sort_order: item.sort_order,
+            is_active: item.is_active,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
+        }
+
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
+
     // Convert grouped data to an array and sort by category order
     const result = Object.values(groupedByCategory)
       .map((item: any) => {
@@ -190,20 +195,18 @@ export class InvestorsService {
         const orderB = categoryOrder[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
       });
-  
+
     // Fetch SEO record
     const seoRecord = await this.seoRepository.findOne({
       where: { ref_id: 0, ref: Like('shareholder-info'), indexed: true },
     });
-  
+
     // Return the result and SEO data
     return {
       result,
       seo: seoRecord,
     };
   }
-  
-
 
   async getSHIById(id: number): Promise<InvestorShareHolder | null> {
     return await this.shareHolderRepository.findOne({
@@ -223,6 +226,7 @@ export class InvestorsService {
     investors_shi_year: string,
     investors_shi_category: string,
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorShareHolder> {
     if (id) {
       const shi = await this.getSHIById(id);
@@ -236,6 +240,7 @@ export class InvestorsService {
         shi.investors_shi_year = investors_shi_year;
         shi.investors_shi_category = investors_shi_category;
         shi.sort_order = sort_order;
+        shi.is_active = is_active;
 
         return this.shareHolderRepository.save(shi);
       }
@@ -251,6 +256,7 @@ export class InvestorsService {
       shi.investors_shi_year = investors_shi_year;
       shi.investors_shi_category = investors_shi_category;
       shi.sort_order = sort_order;
+      shi.is_active = is_active;
       return this.shareHolderRepository.save(shi);
     }
   }
@@ -283,7 +289,7 @@ export class InvestorsService {
         where.agm_regions = Like('%' + regionName.id + '%');
       }
     }
-
+    where.is_active = true;
     const agm = await this.agmRepository.find({
       where,
     });
@@ -324,6 +330,7 @@ export class InvestorsService {
         url_title: item.url_title,
         region: item.agm_regions,
         sort_order: item.sort_order,
+        is_active: item.is_active,
         created_at: item.created_at,
         updated_at: item.updated_at,
       });
@@ -422,6 +429,8 @@ export class InvestorsService {
         where.dividend_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
+
     // Fetch dividends from repository
     const dividends = await this.dividendsRepository.find({
       where,
@@ -711,7 +720,7 @@ export class InvestorsService {
         where.qu_region = Like('%' + regionName.id + '%');
       }
     }
-
+    where.is_active = true;
     const qupdfs = await this.quPdfRepository.find({
       where,
     });
@@ -724,6 +733,7 @@ export class InvestorsService {
       pdf: string;
       qu_region: string[];
       sort_order: number;
+      is_active: boolean;
     };
 
     type Subcategory = {
@@ -744,6 +754,7 @@ export class InvestorsService {
       pdf: pdf.qu_pdf,
       qu_region: pdf.qu_region,
       sort_order: pdf.sort_order,
+      is_active: pdf.is_active,
     }));
 
     const structuredData = qu.reduce<Category[]>((acc, currQu) => {
@@ -798,6 +809,7 @@ export class InvestorsService {
       qu_pdf: string;
       qu_region: string[];
       sort_order: number;
+      is_active: boolean;
     }[],
   ): Promise<QuartelyUpdate[]> {
     const qu_pdfs = await this.quPdfRepository.find({
@@ -921,6 +933,7 @@ export class InvestorsService {
         where.region = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     return await this.scheduleRepository.find({
       where,
@@ -945,6 +958,7 @@ export class InvestorsService {
     schedule_analyst_meet_pdf: string,
     schedule_analyst_meet_year: string,
     scheduleRegion: string[],
+    is_active: boolean,
   ): Promise<InvestorSchedule> {
     if (id) {
       const schedule = await this.getScheduleById(id);
@@ -998,12 +1012,10 @@ export class InvestorsService {
         where.cg_regions = Like('%' + regionName.id + '%');
       }
     }
-
+    where.is_active = true;
     return await this.cgRepository.find({
       where,
     });
-
-   
   }
 
   async getCGById(id: number): Promise<CorporateGovernance | null> {
@@ -1068,7 +1080,9 @@ export class InvestorsService {
     }
   }
 
-  async getIUDetail(region?: string): Promise<{ result: InformationUpdate[]; seo: any }> {
+  async getIUDetail(
+    region?: string,
+  ): Promise<{ result: InformationUpdate[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1082,6 +1096,7 @@ export class InvestorsService {
         where.iu_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const result = await this.iuRepository.find({
       where,
@@ -1112,6 +1127,7 @@ export class InvestorsService {
     iu_documentation_pdf: string,
     iuRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InformationUpdate> {
     if (id) {
       const iu = await this.getIUById(id);
@@ -1123,6 +1139,7 @@ export class InvestorsService {
         iu.iu_documentation_pdf = iu_documentation_pdf;
         iu.iu_regions = iuRegions;
         iu.sort_order = sort_order;
+        iu.is_active = is_active;
 
         return this.iuRepository.save(iu);
       }
@@ -1136,6 +1153,8 @@ export class InvestorsService {
       iu.iu_documentation_pdf = iu_documentation_pdf;
       iu.iu_regions = iuRegions;
       iu.sort_order = sort_order;
+      iu.is_active = is_active;
+
       return this.iuRepository.save(iu);
     }
   }
@@ -1168,6 +1187,7 @@ export class InvestorsService {
         where.pd_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const result: any[] = await this.pdRepository.find({
       where,
@@ -1199,6 +1219,7 @@ export class InvestorsService {
     pd_documentation_pdf: string,
     pdRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorPlacement> {
     if (id) {
       const pd = await this.getPDById(id);
@@ -1210,6 +1231,7 @@ export class InvestorsService {
         pd.pd_documentation_pdf = pd_documentation_pdf;
         pd.pd_regions = pdRegions;
         pd.sort_order = sort_order;
+        pd.is_active = is_active;
 
         return this.pdRepository.save(pd);
       }
@@ -1223,6 +1245,7 @@ export class InvestorsService {
       pd.pd_documentation_pdf = pd_documentation_pdf;
       pd.pd_regions = pdRegions;
       pd.sort_order = sort_order;
+      pd.is_active = is_active;
       return this.pdRepository.save(pd);
     }
   }
@@ -1255,6 +1278,7 @@ export class InvestorsService {
         where.ic_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const result: any[] = await this.icRepository.find({
       where,
@@ -1284,6 +1308,7 @@ export class InvestorsService {
     ic_contact_info: string,
     icRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorContact> {
     if (id) {
       const ic = await this.getICById(id);
@@ -1294,6 +1319,7 @@ export class InvestorsService {
         ic.ic_contact_info = ic_contact_info;
         ic.ic_regions = icRegions;
         ic.sort_order = sort_order;
+        ic.is_active = is_active;
 
         return this.icRepository.save(ic);
       }
@@ -1306,6 +1332,7 @@ export class InvestorsService {
       ic.ic_contact_info = ic_contact_info;
       ic.ic_regions = icRegions;
       ic.sort_order = sort_order;
+      ic.is_active = is_active;
       return this.icRepository.save(ic);
     }
   }
@@ -1322,9 +1349,7 @@ export class InvestorsService {
     }
   }
 
-  async getPSIDetail(
-    region?: string,
-  ): Promise<InvestorPSI[]> {
+  async getPSIDetail(region?: string): Promise<InvestorPSI[]> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1338,11 +1363,11 @@ export class InvestorsService {
         where.psi_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     return await this.psiRepository.find({
       where,
     });
-
   }
 
   async getPSIById(id: number): Promise<InvestorPSI | null> {
@@ -1362,6 +1387,7 @@ export class InvestorsService {
     psiregions: string[],
     psi_category: string,
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorPSI> {
     if (id) {
       const psi = await this.getPSIById(id);
@@ -1374,6 +1400,7 @@ export class InvestorsService {
         psi.psi_regions = psiregions;
         psi.psi_category = psi_category;
         psi.sort_order = sort_order;
+        psi.is_active = is_active;
 
         return this.psiRepository.save(psi);
       }
@@ -1388,6 +1415,7 @@ export class InvestorsService {
       psi.psi_regions = psiregions;
       psi.psi_category = psi_category;
       psi.sort_order = sort_order;
+      psi.is_active = is_active;
       return this.psiRepository.save(psi);
     }
   }
@@ -1404,7 +1432,9 @@ export class InvestorsService {
     }
   }
 
-  async getARDetail(region?: string): Promise<{result: InvestorAR[]; seo:any}> {
+  async getARDetail(
+    region?: string,
+  ): Promise<{ result: InvestorAR[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1418,6 +1448,7 @@ export class InvestorsService {
         where.ar_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const AR = await this.arRepository.find({
       where,
@@ -1565,7 +1596,9 @@ export class InvestorsService {
     }
   }
 
-  async getDRDetail(region?: string): Promise<{result: InvestorDR[]; seo:any}> {
+  async getDRDetail(
+    region?: string,
+  ): Promise<{ result: InvestorDR[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1579,6 +1612,7 @@ export class InvestorsService {
         where.dr_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const DR = await this.drRepository.find({
       where,
@@ -1640,6 +1674,7 @@ export class InvestorsService {
     dr_documentation_pdf: string,
     drRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorDR> {
     if (id) {
       const dr = await this.getDRById(id);
@@ -1651,6 +1686,7 @@ export class InvestorsService {
         dr.dr_documentation_pdf = dr_documentation_pdf;
         dr.dr_regions = drRegions;
         dr.sort_order = sort_order;
+        dr.is_active = is_active;
 
         return this.drRepository.save(dr);
       }
@@ -1664,6 +1700,7 @@ export class InvestorsService {
       dr.dr_documentation_pdf = dr_documentation_pdf;
       dr.dr_regions = drRegions;
       dr.sort_order = sort_order;
+      dr.is_active = is_active;
       return this.drRepository.save(dr);
     }
   }
@@ -1680,12 +1717,13 @@ export class InvestorsService {
     }
   }
 
-  async getMIDetail(region?: string): Promise<{result: any[]; seo:any}> {
+  async getMIDetail(region?: string): Promise<{ result: any[]; seo: any }> {
     interface ProcessedMI {
       pdf: string;
       pdf_title: string;
       region: string[];
       sort_order: number;
+      is_active: boolean;
       url_title: string;
       id: number;
     }
@@ -1703,6 +1741,7 @@ export class InvestorsService {
         where.mi_regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const mi = await this.miRepository.find({ where });
 
@@ -1711,6 +1750,7 @@ export class InvestorsService {
       pdf_title: mi.mi_documentation_title,
       region: mi.mi_regions,
       sort_order: mi.sort_order,
+      is_active: mi.is_active,
       url_title: mi.url_title,
       id: mi.id,
     }));
@@ -1718,14 +1758,17 @@ export class InvestorsService {
     const result = processedMIs;
 
     const seoRecord = await this.seoRepository.findOne({
-      where: { ref_id: 0, ref: Like('investor-principles-disclosure'), indexed: true },
+      where: {
+        ref_id: 0,
+        ref: Like('investor-principles-disclosure'),
+        indexed: true,
+      },
     });
 
     return {
       result,
       seo: seoRecord,
     };
-
   }
 
   async getMIById(id: number): Promise<InvestorMI | null> {
@@ -1743,6 +1786,7 @@ export class InvestorsService {
     mi_documentation_pdf: string,
     miRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<InvestorMI> {
     if (id) {
       const mi = await this.getMIById(id);
@@ -1753,6 +1797,7 @@ export class InvestorsService {
         mi.mi_documentation_pdf = mi_documentation_pdf;
         mi.mi_regions = miRegions;
         mi.sort_order = sort_order;
+        mi.is_active = is_active;
 
         return this.miRepository.save(mi);
       }
@@ -1765,6 +1810,7 @@ export class InvestorsService {
       mi.mi_documentation_pdf = mi_documentation_pdf;
       mi.mi_regions = miRegions;
       mi.sort_order = sort_order;
+      mi.is_active = is_active;
       return this.miRepository.save(mi);
     }
   }
@@ -1822,7 +1868,9 @@ export class InvestorsService {
     }
   }
 
-  async getFAQDetail(region?: string): Promise<{result: InvestorFAQ[]; seo:any}> {
+  async getFAQDetail(
+    region?: string,
+  ): Promise<{ result: InvestorFAQ[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1836,6 +1884,7 @@ export class InvestorsService {
         where.regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
 
     const result = await this.faqRepository.find({ where });
 
@@ -1847,7 +1896,5 @@ export class InvestorsService {
       result,
       seo: seoRecord,
     };
-
   }
-
 }

@@ -23,6 +23,10 @@ export class InvestorSchedule {
   @Column('json')
   region: string[]
 
+  @Column({ default: true })
+  @Index()
+  is_active: boolean;
+
   @CreateDateColumn()
   @Index()
   created_at: Date;

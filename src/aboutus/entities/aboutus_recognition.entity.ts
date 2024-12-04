@@ -37,7 +37,7 @@ export class Recognition {
   @Index()
   is_featured: boolean;
 
-  @Column({default: true})
+  @Column({ default: true })
   @Index()
   is_active: boolean;
 

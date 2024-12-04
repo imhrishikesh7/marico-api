@@ -124,6 +124,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -140,6 +143,8 @@ export class InvestorsAdminController {
     @Body('investors_shi_category', EmptystringPipe)
     investors_shi_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ shi: InvestorShareHolder }> {
     const shi = await this.investorsService.addUpdateSHI(
       id,
@@ -151,6 +156,7 @@ export class InvestorsAdminController {
       investors_shi_year,
       investors_shi_category,
       sort_order,
+      is_active,
     );
     return {
       shi,
@@ -506,6 +512,9 @@ export class InvestorsAdminController {
               sort_order: {
                 type: 'integer',
               },
+              is_actve: {
+                type: 'boolean',
+              },
             },
           },
         },
@@ -524,6 +533,7 @@ export class InvestorsAdminController {
       qu_pdf: string;
       qu_region: string[];
       sort_order: number;
+      is_active: boolean;
     }[],
   ): Promise<QuartelyUpdate[]> {
     return await this.investorsService.addUpdateQUPDFs(
@@ -805,6 +815,9 @@ export class InvestorsAdminController {
             example: 'UK',
           },
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -818,6 +831,8 @@ export class InvestorsAdminController {
     schedule_analyst_meet_pdf: string,
     @Body('schedule_analyst_meet_year') schedule_analyst_meet_year: string,
     @Body('region') region: string[],
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ schedule: InvestorSchedule }> {
     const schedule = await this.investorsService.addUpdateSchedule(
       id,
@@ -826,6 +841,7 @@ export class InvestorsAdminController {
       schedule_analyst_meet_pdf,
       schedule_analyst_meet_year,
       region,
+      is_active,
     );
     return {
       schedule,
@@ -893,6 +909,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -908,6 +927,8 @@ export class InvestorsAdminController {
     iu_documentation_pdf: string,
     @Body('iu_regions') iu_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ iu: InformationUpdate }> {
     const iu = await this.investorsService.addUpdateIU(
       id,
@@ -917,6 +938,7 @@ export class InvestorsAdminController {
       iu_documentation_pdf,
       iu_regions,
       sort_order,
+      is_active,
     );
     return {
       iu,
@@ -988,6 +1010,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1003,6 +1028,8 @@ export class InvestorsAdminController {
     pd_documentation_pdf: string,
     @Body('pd_regions') pd_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ pd: InvestorPlacement }> {
     const pd = await this.investorsService.addUpdatePD(
       id,
@@ -1012,6 +1039,7 @@ export class InvestorsAdminController {
       pd_documentation_pdf,
       pd_regions,
       sort_order,
+      is_active,
     );
     return {
       pd,
@@ -1077,6 +1105,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1090,6 +1121,7 @@ export class InvestorsAdminController {
     ic_contact_info: string,
     @Body('ic_regions') ic_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ ic: InvestorContact }> {
     const ic = await this.investorsService.addUpdateIC(
       id,
@@ -1098,6 +1130,7 @@ export class InvestorsAdminController {
       ic_contact_info,
       ic_regions,
       sort_order,
+      is_active,
     );
     return {
       ic,
@@ -1169,6 +1202,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1186,6 +1222,8 @@ export class InvestorsAdminController {
     @Body('psi_category', EmptystringPipe)
     psi_category: string,
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ psi: InvestorPSI }> {
     const psi = await this.investorsService.addUpdatePSI(
       id,
@@ -1196,6 +1234,7 @@ export class InvestorsAdminController {
       psi_regions,
       psi_category,
       sort_order,
+      is_active,
     );
     return {
       psi,
@@ -1377,6 +1416,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1392,6 +1434,8 @@ export class InvestorsAdminController {
     dr_documentation_pdf: string,
     @Body('dr_regions') dr_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ director_report: InvestorDR }> {
     const director_report = await this.investorsService.addUpdateDR(
       id,
@@ -1401,6 +1445,7 @@ export class InvestorsAdminController {
       dr_documentation_pdf,
       dr_regions,
       sort_order,
+      is_active,
     );
     return {
       director_report,
@@ -1469,6 +1514,9 @@ export class InvestorsAdminController {
         sort_order: {
           type: 'number',
         },
+        is_actve: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -1483,6 +1531,8 @@ export class InvestorsAdminController {
     mi_documentation_pdf: string,
     @Body('mi_regions') mi_regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe)
+    is_active: boolean,
   ): Promise<{ disclosure: InvestorMI }> {
     const disclosure = await this.investorsService.addUpdateMI(
       id,
@@ -1491,6 +1541,7 @@ export class InvestorsAdminController {
       mi_documentation_pdf,
       mi_regions,
       sort_order,
+      is_active,
     );
     return {
       disclosure,

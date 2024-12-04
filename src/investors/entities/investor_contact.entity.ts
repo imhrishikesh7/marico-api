@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorContact {
@@ -13,15 +20,19 @@ export class InvestorContact {
   @Index()
   url_title: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   ic_contact_info: string;
 
   @Column('json')
-  ic_regions: string[]; 
+  ic_regions: string[];
 
   @Column()
   @Index()
   sort_order: number;
+
+  @Column({ default: true })
+  @Index()
+  is_active: boolean;
 
   @CreateDateColumn()
   @Index()
