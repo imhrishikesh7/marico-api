@@ -693,7 +693,7 @@ export class InvestorsService {
     });
   }
 
-  async getQUALL(region?: string): Promise<{ result: any[]; seo: any }> {
+  async getQUALL(region?: string): Promise<{ result: any; seo: any }> {
     const qu = await this.quRepository.find({
       order: { investor_qu_year: 'DESC' },
     });
