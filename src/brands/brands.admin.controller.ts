@@ -77,7 +77,7 @@ export class BrandsAdminController {
       tvc_relations: await this.brandService.getTVCList(),
       print_ad_relations: await this.brandService.getPrintAdList(),
       award_relations: await this.aboutusService.getAwardList(),
-      seo: await this.seoService.findOne(id,'brand'),
+      seo: await this.seoService.findOne(id, 'brand'),
     } as {
       brand: Brand | null;
       brands: Brand[] | null;
@@ -255,23 +255,26 @@ export class BrandsAdminController {
         is_active: {
           type: 'boolean',
         },
-        seo: {
+        meta_title: {
+          type: 'string',
+        },
+        meta_description: {
+          type: 'string',
+        },
+        canonical_url: {
+          type: 'string',
+        },
+        meta_image: {
           type: 'object',
           properties: {
-            meta_title: { type: 'string' },
-            meta_description: { type: 'string' },
-            canonical_url: { type: 'string' },
-            meta_image: {
-              type: 'object',
-              properties: {
-                url: { type: 'string' },
-                alt: { type: 'string' },
-                width: { type: 'number' },
-                height: { type: 'number' },
-              },
-            },
-            indexed: { type: 'boolean' },
+            url: { type: 'string' },
+            alt: { type: 'string' },
+            width: { type: 'number' },
+            height: { type: 'number' },
           },
+        },
+        indexed: {
+          type: 'boolean',
         },
       },
     },
@@ -330,19 +333,16 @@ export class BrandsAdminController {
     @Body('insta_url') insta_url: string,
     @Body('show_in_front') show_in_front: boolean,
     @Body('is_active') is_active: boolean,
-    @Body('seo')
-    seo: {
-      meta_title: string;
-      meta_description: string;
-      canonical_url: string;
-      meta_image: {
-        url: string;
-        alt: string;
-        width: number;
-        height: number;
-      } | null;
-      indexed: boolean;
-    },
+    @Body('meta_title') meta_title: string,
+    @Body('meta_description') meta_description: string,
+    @Body('canonical_url') canonical_url: string,
+    @Body('meta_image')
+    meta_image: {
+      url: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('indexed') indexed: boolean,
   ): Promise<{ brand: Brand }> {
     const brand = await this.brandService.addUpdateBrand(
       id,
@@ -372,7 +372,11 @@ export class BrandsAdminController {
       insta_url,
       show_in_front,
       is_active,
-      seo,
+      meta_title,
+      meta_description,
+      canonical_url,
+      meta_image,
+      indexed,
     );
 
     await this.adminService.addAdminActivity(
@@ -408,7 +412,11 @@ export class BrandsAdminController {
         insta_url,
         show_in_front,
         is_active,
-        seo,
+        meta_title,
+        meta_description,
+        canonical_url,
+        meta_image,
+        indexed,
       },
     );
 

@@ -473,13 +473,11 @@ export class BrandsService {
     insta_url: string,
     show_in_front: boolean,
     is_active: boolean,
-    seo: {
-      meta_title: string;
-      meta_description: string;
-      canonical_url: string;
-      meta_image: { url: string; width: number; height: number } | null;
-      indexed: boolean;
-    },
+    meta_title: string,
+    meta_description: string,
+    canonical_url: string,
+    meta_image: { url: string; width: number; height: number } | null,
+    indexed: boolean,
   ): Promise<Brand> {
     if (id) {
       const brand = await this.brandRepository.findOne({
@@ -492,21 +490,21 @@ export class BrandsService {
       });
       if (seoRecord) {
         seoRecord.id = seoRecord.id;
-        seoRecord.indexed = seo.indexed;
-        seoRecord.meta_title = seo.meta_title;
-        seoRecord.meta_description = seo.meta_description;
-        seoRecord.meta_image = seo.meta_image;
-        seoRecord.canonical_url = seo.canonical_url;
+        seoRecord.indexed = indexed;
+        seoRecord.meta_title = meta_title;
+        seoRecord.meta_description = meta_description;
+        seoRecord.meta_image = meta_image;
+        seoRecord.canonical_url = canonical_url;
         seoRecord.ref = 'brand';
         seoRecord.ref_id = id;
         await this.seoRepository.save(seoRecord);
       } else {
         const seoRecord = new Sitemap();
-        seoRecord.indexed = seo.indexed;
-        seoRecord.meta_title = seo.meta_title;
-        seoRecord.meta_description = seo.meta_description;
-        seoRecord.meta_image = seo.meta_image;
-        seoRecord.canonical_url = seo.canonical_url;
+        seoRecord.indexed = indexed;
+        seoRecord.meta_title = meta_title;
+        seoRecord.meta_description = meta_description;
+        seoRecord.meta_image = meta_image;
+        seoRecord.canonical_url = canonical_url;
         seoRecord.ref = 'brand';
         seoRecord.ref_id = id;
         await this.seoRepository.save(seoRecord);
