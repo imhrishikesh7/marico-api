@@ -186,23 +186,26 @@ export class PageAdminController {
             },
           },
         },
-        seo: {
+        meta_title: {
+          type: 'string',
+        },
+        meta_description: {
+          type: 'string',
+        },
+        canonical_url: {
+          type: 'string',
+        },
+        meta_image: {
           type: 'object',
           properties: {
-            meta_title: { type: 'string' },
-            meta_description: { type: 'string' },
-            canonical_url: { type: 'string' },
-            meta_image: {
-              type: 'object',
-              properties: {
-                url: { type: 'string' },
-                alt: { type: 'string' },
-                width: { type: 'number' },
-                height: { type: 'number' },
-              },
-            },
-            indexed: { type: 'boolean' },
+            url: { type: 'string' },
+            alt: { type: 'string' },
+            width: { type: 'number' },
+            height: { type: 'number' },
           },
+        },
+        indexed: {
+          type: 'boolean',
         },
       },
     },
@@ -239,19 +242,16 @@ export class PageAdminController {
       add_choice: string[];
       download_link: string;
     }[],
-    @Body('seo')
-    seo: {
-      meta_title: string;
-      meta_description: string;
-      canonical_url: string;
-      meta_image: {
-        url: string;
-        alt: string;
-        width: number;
-        height: number;
-      } | null;
-      indexed: boolean;
-    },
+    @Body('meta_title') meta_title: string,
+    @Body('meta_description') meta_description: string,
+    @Body('canonical_url') canonical_url: string,
+    @Body('meta_image')
+    meta_image: {
+      url: string;
+      width: number;
+      height: number;
+    } | null,
+    @Body('indexed') indexed: boolean,
   ): Promise<boolean> {
     const updatedRecord = await this.pageService.createOrUpdatePage(
       id,
@@ -282,7 +282,11 @@ export class PageAdminController {
           download_link: page_content.download_link,
         };
       }),
-      seo,
+      meta_title,
+      meta_description,
+      canonical_url,
+      meta_image,
+      indexed,
     );
     await this.adminService.addAdminActivity(
       this.request.admin,
@@ -301,6 +305,11 @@ export class PageAdminController {
         published_at,
         is_active,
         page_contents,
+        meta_title,
+        meta_description,
+        canonical_url,
+        meta_image,
+        indexed,
       },
     );
     return true;

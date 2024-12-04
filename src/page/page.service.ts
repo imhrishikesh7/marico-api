@@ -163,13 +163,11 @@ export class PageService {
       add_choice: string[];
       download_link: string;
     }[],
-    seo: {
-      meta_title: string;
-      meta_description: string;
-      canonical_url: string;
-      meta_image: { url: string; width: number; height: number } | null;
-      indexed: boolean;
-    },
+      meta_title: string,
+      meta_description: string,
+      canonical_url: string,
+      meta_image: { url: string; width: number; height: number } | null,
+      indexed: boolean,
   ): Promise<Page> {
     //check if page with same url already exists
     const pageWithSameUrl = await this.pageRepository.findOne({
@@ -214,21 +212,21 @@ export class PageService {
     page = await this.pageRepository.save(page);
     if (site) {
       site.id = site.id;
-      site.indexed = seo.indexed;
-      site.meta_title = seo.meta_title;
-      site.meta_description = seo.meta_description;
-      site.meta_image = seo.meta_image;
-      site.canonical_url = seo.canonical_url;
+      site.indexed = indexed;
+      site.meta_title = meta_title;
+      site.meta_description = meta_description;
+      site.meta_image = meta_image;
+      site.canonical_url = canonical_url;
       site.ref = 'page';
       site.ref_id = id;
       await this.seoRepository.save(site);
     } else {
       const site = new Sitemap();
-      site.indexed = seo.indexed;
-      site.meta_title = seo.meta_title;
-      site.meta_description = seo.meta_description;
-      site.meta_image = seo.meta_image;
-      site.canonical_url = seo.canonical_url;
+      site.indexed = indexed;
+      site.meta_title = meta_title;
+      site.meta_description = meta_description;
+      site.meta_image = meta_image;
+      site.canonical_url = canonical_url;
       site.ref = 'page';
       site.ref_id = id;
       await this.seoRepository.save(site);
