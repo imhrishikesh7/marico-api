@@ -44,6 +44,7 @@ export class AboutusService {
         where.regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
     if (role != null && role != '') {
       where.type = Like('%' + role + '%'); // Using In operator for multiple roles
     }
@@ -138,6 +139,7 @@ export class AboutusService {
     if (yearfliter != null && yearfliter != '') {
       where.year = Like('%' + yearfliter + '%');
     }
+    where.is_active = true;
     return await this.recognitionRepository.find({
       where,
     });
@@ -168,6 +170,7 @@ export class AboutusService {
     category: string,
     is_featured: boolean,
     awardRegions: string[],
+    is_active: boolean,
   ): Promise<Recognition> {
     if (id) {
       const recognition = await this.getAwardById(id);
@@ -181,6 +184,7 @@ export class AboutusService {
         recognition.category = category;
         recognition.is_featured = is_featured;
         recognition.regions = awardRegions;
+        recognition.is_active = is_active;
         return this.recognitionRepository.save(recognition);
       }
       throw new Error('Recognition not found');
@@ -195,6 +199,7 @@ export class AboutusService {
       recognition.category = category;
       recognition.is_featured = is_featured;
       recognition.regions = awardRegions;
+      recognition.is_active = is_active;
       return this.recognitionRepository.save(recognition);
     }
   }
@@ -224,6 +229,7 @@ export class AboutusService {
         where.regions = Like('%' + regionName.id + '%');
       }
     }
+    where.is_active = true;
     return await this.historyRepository.find({
       where,
     });
@@ -252,6 +258,7 @@ export class AboutusService {
     // description: string,
     historyRegions: string[],
     sort_order: number,
+    is_active: boolean,
   ): Promise<History> {
     if (id) {
       const history = await this.getHistoryById(id);
@@ -265,6 +272,7 @@ export class AboutusService {
         // history.description = description;
         history.regions = historyRegions;
         history.sort_order = sort_order;
+        history.is_active = is_active;
 
         return this.historyRepository.save(history);
       }
@@ -280,6 +288,7 @@ export class AboutusService {
       // history.description = description;
       history.regions = historyRegions;
       history.sort_order = sort_order;
+      history.is_active = is_active;
       return this.historyRepository.save(history);
     }
   }

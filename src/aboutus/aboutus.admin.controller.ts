@@ -10,6 +10,7 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { AboutusService } from './aboutus.service';
 import { REQUEST } from '@nestjs/core';
@@ -26,6 +27,7 @@ import { Region } from 'src/regions/entities/region.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { RegionsService } from 'src/regions/regions.service';
 import { History } from './entities/aboutus_history.entity';
+import { bool } from 'aws-sdk/clients/signer';
 
 @Controller('admin/about_us')
 export class AboutusAdminController {
@@ -250,6 +252,9 @@ export class AboutusAdminController {
             example: 'UK',
           },
         },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -271,6 +276,7 @@ export class AboutusAdminController {
     @Body('category', EmptystringPipe) category: string,
     @Body('is_featured', SwitchPipe) is_featured: boolean,
     @Body('regions') regions: string[],
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ recognition: Recognition }> {
     const recognition = await this.aboutusService.addUpdateAward(
       id,
@@ -282,6 +288,7 @@ export class AboutusAdminController {
       category,
       is_featured,
       regions,
+      is_active,
     );
 
     await this.adminService.addAdminActivity(
@@ -299,6 +306,7 @@ export class AboutusAdminController {
         category,
         is_featured,
         regions,
+        is_active,
       },
     );
     return {
@@ -388,6 +396,9 @@ export class AboutusAdminController {
         sort_order: {
           type: 'number',
         },
+        is_active: {
+          type: 'boolean',
+        },
       },
     },
   })
@@ -409,6 +420,7 @@ export class AboutusAdminController {
     // @Body('description', EmptystringPipe) description: string,
     @Body('regions') regions: string[],
     @Body('sort_order', ParseIntPipe) sort_order: number,
+    @Body('is_active', ParseBoolPipe) is_active: boolean,
   ): Promise<{ history: History }> {
     const history = await this.aboutusService.addUpdateHistory(
       id,
@@ -420,6 +432,7 @@ export class AboutusAdminController {
       // description,
       regions,
       sort_order,
+      is_active,
     );
     return {
       history,

@@ -157,6 +157,7 @@ export class BrandsService {
           alias: `%${regionName.id}%`,
         });
       }
+      query.andWhere('brand.is_active = :active', { active: true });
     }
 
     // Execute the query and return the results
@@ -189,6 +190,9 @@ export class BrandsService {
         });
       }
     }
+
+    query.andWhere('brand.is_active = :active', { active: true });
+
     query.select(['brand.brand_title', 'brand.brand_url_title']);
 
     query.orderBy('brand.sort_order', 'ASC');
@@ -417,7 +421,7 @@ export class BrandsService {
       where: { ref_id: brand.id, ref: Like('brand') },
     });
     toReturn.brand = brand;
-    toReturn.seo= seoRecord;
+    toReturn.seo = seoRecord;
     return toReturn;
   }
 
