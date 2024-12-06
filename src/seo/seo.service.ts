@@ -48,7 +48,7 @@ export class SeoService {
     const sitemap = await this.seoRepository.find({
       where: { indexed:true },
     });
-    const searcher = new FuzzySearch(sitemap, ['meta_title'], { caseSensitive: false });
+    const searcher = new FuzzySearch(sitemap, ['meta_title','meta_description'], { caseSensitive: false });
     return searcher.search(query);
   }
 }
