@@ -1,16 +1,12 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
+  Query,
 } from '@nestjs/common';
 import { SeoService } from './seo.service';
 import { Contact } from './entities/contact.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { get } from 'http';
 import { Sitemap } from './entities/seo.entity';
 
 @Controller('seo')
@@ -19,7 +15,7 @@ export class SeoController {
 
   @ApiBearerAuth()
   @Get('contact-us')
-  async getSHIDetail(
+  async addContactUS(
     @Param('name') name: string,
     @Param('email') email: string,
     @Param('phone') phone: string,
@@ -42,5 +38,12 @@ export class SeoController {
     @Param('page_id') page_id: number,
   ): Promise<Sitemap | null> {
     return await this.seoService.getSEODetail(page_id);
+  }
+
+  @Get('search')
+  async getSearchDetail(
+    @Query('query') query: string,
+  ): Promise<any> {
+    return await this.seoService.getSearchDetail(query);
   }
 }

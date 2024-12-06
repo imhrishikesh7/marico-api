@@ -24,17 +24,7 @@ export class BrandsService {
 
   async getTVCList(search?: string | null): Promise<Tvc[]> {
     const where: any = {};
-    // if (region != null && region != '') {
-    //   const regionName = await this.regionRepository.findOne({
-    //     where: {
-    //       alias: region,
-    //     },
-    //   });
-
-    //   if (regionName != null) {
-    //     where.region = Like('%' + regionName.name + '%');
-    //   }
-    // }
+    
     if (search != null && search != '') {
       where.title = search;
     }
@@ -408,7 +398,7 @@ export class BrandsService {
         tvcs: subBrandTvcs,
         printAds: subBrandPrintAds,
         superSubBrand:
-          nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined, // Add nested super sub-brands if any
+          nestedSuperSubBrands.length > 0 ? nestedSuperSubBrands : undefined,
       };
     };
 

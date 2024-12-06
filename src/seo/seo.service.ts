@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { Sitemap } from './entities/seo.entity';
 import { Contact } from './entities/contact.entity';
+import * as FuzzySearch from 'fuzzy-search';
 
 @Injectable()
 export class SeoService {
@@ -41,5 +42,13 @@ export class SeoService {
     contact.query_type = query_type;
     contact.query = query;
     return await this.contactRepository.save(contact);
+  }
+
+  async getSearchDetail(query:string): Promise<any> {
+    const sitemap = await this.seoRepository.find({
+      where: { indexed:true },
+    });
+    const searcher = new FuzzySearch(sitemap, ['meta_title'], { caseSensitive: false });
+    return searcher.search(query);
   }
 }
