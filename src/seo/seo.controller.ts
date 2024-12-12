@@ -33,13 +33,6 @@ export class SeoController {
     );
   }
 
-  @Get('')
-  async getSEODetail(
-    @Param('page_id') page_id: number,
-  ): Promise<Sitemap | null> {
-    return await this.seoService.getSEODetail(page_id);
-  }
-
   @Get('search')
   async getSearchDetail(
     @Query('query') query: string,

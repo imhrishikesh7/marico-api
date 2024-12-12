@@ -161,6 +161,11 @@ const menu: MenuItem[] = [
     ],
   },
   {
+    name: 'Sitemap',
+    role: ['SEO'],
+    url: '/seo',
+  },
+  {
     name: 'Admin',
     role: ['ADMIN'],
     sub: [

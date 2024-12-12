@@ -170,9 +170,9 @@ const permissions: Permission[] = [
     name: 'Features > Title Category',
   },
   {
-    key: 'FEATURES',
-    level: 2,
-    name: 'Features > Image Uploader',
+    key: 'SEO',
+    level: 1,
+    name: 'Seo',
   },
 ];
 
