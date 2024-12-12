@@ -111,6 +111,7 @@ export class SeoAdminController {
          ref,
          meta_title,
          meta_description,
+         canonical_url,
          meta_image,
          indexed,
        );
