@@ -93,7 +93,7 @@ const checkImageFileObject = (value: any): boolean => {
     if (typeof value.height === 'string') {
       value.height = parseInt(value.height);
     }
-  } catch (error) {
+  } catch {
     return false;
   }
   return true;

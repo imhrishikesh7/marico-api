@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
@@ -114,7 +116,7 @@ const checkVideoFileObject = (value: any): boolean => {
     if (typeof value.duration === 'string') {
       value.duration = parseInt(value.duration);
     }
-  } catch (error) {
+  } catch {
     return false;
   }
   return true;
