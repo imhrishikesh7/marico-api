@@ -323,27 +323,27 @@ export class InvestorsService {
 
   async getAGMDetail(region?: string): Promise<AGMResult> {
     const where: { agm_regions?: FindOperator<string>; is_active: boolean } = { is_active: true };
-  
+
     if (region) {
       const regionName = await this.regionRepository.findOne({
         where: { alias: region },
       });
-  
+
       if (regionName) {
         where.agm_regions = Like(`%${regionName.id}%`);
       }
     }
-  
+
     const agm = await this.agmRepository.find({ where });
-  
+
     const titleCategory = await this.titleCategoryRepository.find({
       where: { sub_menu: Like('%agm%') },
     });
-  
+
     const groupedByCategory: Record<string, AGMCategory> = agm.reduce(
       (acc, item: InvestorAGM) => {
         const category = item.investors_agm_category;
-  
+
         if (!acc[category]) {
           acc[category] = {
             category,
@@ -353,17 +353,17 @@ export class InvestorsService {
             pdfs: [],
           };
         }
-  
+
         if (titleCategory) {
           const filteredTitles = titleCategory.filter(p => p.category_title === category);
-  
+
           if (filteredTitles.length > 0) {
             acc[category].qr_title = filteredTitles[0].qr_title;
             acc[category].qr_code = filteredTitles[0].qr_code?.url || null;
             acc[category].qr_link = filteredTitles[0].qr_link;
           }
         }
-  
+
         acc[category].pdfs.push({
           pdf_title: item.agm_documentation_title,
           pdf: item.agm_documentation_pdf,
@@ -376,18 +376,18 @@ export class InvestorsService {
           created_at: item.created_at,
           updated_at: item.updated_at,
         });
-  
+
         return acc;
       },
       {} as Record<string, AGMCategory>,
     );
-  
+
     const result: AGMCategory[] = Object.values(groupedByCategory);
-  
+
     const seoRecord = await this.seoRepository.findOne({
       where: { ref_id: 0, ref: Like('agm'), indexed: true },
     });
-  
+
     return { result, seo: seoRecord };
   }
 
@@ -454,8 +454,10 @@ export class InvestorsService {
     }
   }
 
-  async getDividendsDetail(region?: string): Promise<{ result: any[]; seo: any }> {
-    const where: any = {};
+  async getDividendsDetail(
+    region?: string,
+  ): Promise<{ result: InvestorDividends[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
