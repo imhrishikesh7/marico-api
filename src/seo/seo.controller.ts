@@ -22,7 +22,7 @@ export class SeoController {
   }
 
   @Get('search')
-  async getSearchDetail(@Query('query') query: string): Promise<any> {
+  async getSearchDetail(@Query('query') query: string): Promise<Sitemap[]> {
     return await this.seoService.getSearchDetail(query);
   }
 }
