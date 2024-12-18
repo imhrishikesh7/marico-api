@@ -14,7 +14,7 @@ export class ParseDateTimePipe implements PipeTransform {
 
         const date = DateUtil.dateTimeObjectFromMySQLDateTime(value);
         return date;
-      } catch (error) {
+      } catch {
         throw new BadRequestException(`${metadata.data} should be a valid date`);
       }
     }
