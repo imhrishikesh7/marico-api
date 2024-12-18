@@ -1,6 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Like, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Region } from './entities/region.entity';
 import { Utility } from 'src/lib/utility';
 
