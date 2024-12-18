@@ -1,19 +1,10 @@
-import {
-  BadRequestException,
-  Controller,
-  DefaultValuePipe,
-  Get,
-  Inject,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, Query } from '@nestjs/common';
 
 import { ApiQuery } from '@nestjs/swagger';
 import { Page } from './entities/page.entity';
 import { EmptystringPipe } from '../validations/emptystring/emptystring.pipe';
 import { Public } from '../public/public.decorator';
 import { PageService } from './page.service';
-import { Region } from 'src/regions/entities/region.entity';
 import { BrandsService } from 'src/brands/brands.service';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Media } from 'src/media/entities/media.entity';

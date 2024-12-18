@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Region } from './entities/region.entity';
-import { Utility } from 'src/lib/utility';
 
 @Injectable()
 export class RegionsService {
@@ -12,7 +11,9 @@ export class RegionsService {
   ) {}
 
   async getRegionList(search?: string): Promise<Region[]> {
-    const where: any = {};
+    const where: {
+      name?: string;
+    } = {};
     if (search) {
       where.name = search;
     }
@@ -57,7 +58,6 @@ export class RegionsService {
     is_active: boolean,
     sort_order: number,
   ): Promise<Region> {
-    const generatedAlias = Utility.slugify(name);
     if (id) {
       const region = await this.regionRepository.findOne({
         where: {
