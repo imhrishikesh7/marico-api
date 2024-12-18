@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Brand } from './entities/brand.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Like, Repository } from 'typeorm';
+import { FindOperator, In, Like, Repository } from 'typeorm';
 import { Region } from 'src/regions/entities/region.entity';
 import { Tvc } from './entities/tvc.entity';
 import { PrintAd } from './entities/print_ad.entity';
@@ -188,8 +188,11 @@ export class BrandsService {
   }
 
   async getFrontBrandDetail(region: string): Promise<Brand[]> {
-    const where: any = {};
-
+    const where: {
+      regions?: FindOperator<string>;
+      show_in_front?: boolean;
+      is_active?: boolean;
+    } = {};
     const regionName = await this.regionRepository.findOne({
       where: {
         alias: region,
@@ -200,8 +203,8 @@ export class BrandsService {
       where.regions = Like('%' + regionName.id + '%');
     }
 
-    where.show_in_front = 1;
-    where.is_active = 1;
+    where.show_in_front = true;
+    where.is_active = true;
     return await this.brandRepository.find({
       where,
     });
@@ -217,7 +220,14 @@ export class BrandsService {
   }
 
   async getSubBrandList(search?: string | null): Promise<Brand[]> {
-    const where: any = {};
+    const where: {
+          title: string;
+          brand_type: any;
+          award_title?: FindOperator<string>;
+        } = {
+          title: '',
+          brand_type: undefined
+        };
     // if (region != null && region != '') {
     //   const regionName = await this.regionRepository.findOne({
     //     where: {
@@ -539,7 +549,9 @@ export class BrandsService {
   }
 
   async getPrintAdList(search?: string | null): Promise<PrintAd[]> {
-    const where: any = {};
+    const where: {
+      title?: string;
+    } = {};
     // if (region != null && region != '') {
     //   const regionName = await this.regionRepository.findOne({
     //     where: {

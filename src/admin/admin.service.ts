@@ -11,7 +11,6 @@ import menu, { MenuItem } from '../lib/menu';
 import * as AWS from 'aws-sdk';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs';
-import { dir } from 'console';
 @Injectable()
 export class AdminService {
   constructor(
@@ -59,7 +58,7 @@ export class AdminService {
       const payload = this.jwtService.verify(token);
       return await this.getAdminByUniqueIdAndId(payload.unique_id, payload.id);
     } catch (e) {
-      return null;
+      return e;
     }
   }
 

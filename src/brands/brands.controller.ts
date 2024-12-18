@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { BrandsService } from './brands.service';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { Brand } from './entities/brand.entity';

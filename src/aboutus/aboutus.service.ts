@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AboutusMember } from './entities/aboutus_member.entity';
-import { In, Like, Repository } from 'typeorm';
+import { FindOperator, Like, Repository } from 'typeorm';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
 import { Region } from 'src/regions/entities/region.entity';
@@ -32,7 +32,7 @@ export class AboutusService {
   }
 
   async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
         where: {
@@ -106,7 +106,9 @@ export class AboutusService {
   }
 
   async getAwardList(search?: string): Promise<Recognition[]> {
-    const where: any = {};
+    const where: {
+      award_title?: FindOperator<string>;
+    } = {};
     if (search != null && search != '') {
       where.award_title = Like('%' + search + '%');
     }
@@ -120,8 +122,7 @@ export class AboutusService {
     category?: string,
     yearfliter?: string,
   ): Promise<Recognition[]> {
-    const where: any = {};
-
+    const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
         where: {
@@ -217,7 +218,7 @@ export class AboutusService {
   }
 
   async getHistories(region?: string): Promise<History[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
         where: {
