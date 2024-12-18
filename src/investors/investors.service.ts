@@ -3,7 +3,7 @@ import { InvestorShareHolder } from './entities/investor_shareholder.entity';
 import { InvestorAGM } from './entities/investor_agm.entity';
 import { InvestorDividends } from './entities/investor_dividend.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { FindOperator, Like, Repository } from 'typeorm';
 import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 import { Sustainability } from './entities/investor_sustainability.entity';
@@ -17,11 +17,66 @@ import { InvestorAR } from './entities/investor_ar.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { InvestorMI } from './entities/investor_mi.entity';
 import { TitleCategory } from 'src/features/entities/feature.entity';
-import { FeaturesService } from 'src/features/features.service';
 import { Region } from 'src/regions/entities/region.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 import { InvestorFAQ } from './entities/investor_faq.entity';
 
+interface SHIPdf {
+  pdf_title: string;
+  pdf: string;
+  id: number;
+  title: string;
+  url_title: string;
+  regions: string[];
+  sort_order: number;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface SHISubcategory {
+  subcategory: string;
+  pdfs: SHIPdf[];
+}
+
+interface SHICategory {
+  category: string;
+  subcategories?: SHISubcategory[];
+  pdfs?: SHIPdf[];
+}
+
+interface SHIResult {
+  result: SHICategory[];
+  seo: Record<string, any> | null;
+}
+interface AGMCategory {
+  category: string;
+  qr_title: string;
+  qr_code: string | null; // Adjusted type
+  qr_link: string;
+  pdfs: {
+    pdf_title: string;
+    pdf: string;
+    id: number;
+    title: string;
+    url_title: string;
+    region: string[];
+    sort_order: number;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+  }[];
+}
+
+interface AGMResult {
+  result: AGMCategory[];
+  seo: {
+    ref_id: number;
+    ref: string;
+    indexed: boolean;
+    [key: string]: any; // Add other properties of `seoRecord` if needed
+  } | null;
+}
 @Injectable()
 export class InvestorsService {
   constructor(
@@ -76,8 +131,8 @@ export class InvestorsService {
       return await this.shareHolderRepository.find({});
     }
   }
-  async getSHIDetail(region?: string): Promise<{ result: any[]; seo: any }> {
-    const where: Record<string, any> = {};
+  async getSHIDetail(region?: string): Promise<SHIResult> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     // Check if a region filter is provided
     if (region) {
@@ -116,15 +171,8 @@ export class InvestorsService {
     );
 
     // Group the data by category and subcategory
-    const groupedByCategory: Record<
-      string,
-      {
-        category: string;
-        subcategories?: Array<{ subcategory: string; pdfs: any[] }>;
-        pdfs?: any[];
-      }
-    > = shi.reduce(
-      (acc, item) => {
+    const groupedByCategory = shi.reduce(
+      (acc: Record<string, SHICategory>, item) => {
         const category = item.investors_shi_category;
         const subcategory = item.investors_shi_year;
 
@@ -140,7 +188,7 @@ export class InvestorsService {
         if (subcategory) {
           // Find or create the subcategory
           let sub = acc[category].subcategories?.find(
-            (sub1: { subcategory: string }) => sub1.subcategory === subcategory,
+            (sub1: SHISubcategory) => sub1.subcategory === subcategory,
           );
 
           if (!sub) {
@@ -179,18 +227,18 @@ export class InvestorsService {
 
         return acc;
       },
-      {} as Record<string, any>,
+      {} as Record<string, SHICategory>,
     );
 
     // Convert grouped data to an array and sort by category order
-    const result = Object.values(groupedByCategory)
-      .map((item: any) => {
+    const result: SHICategory[] = Object.values(groupedByCategory)
+      .map(item => {
         if (!item.subcategories) {
           delete item.subcategories;
         }
         return item;
       })
-      .sort((a: any, b: any) => {
+      .sort((a, b) => {
         const orderA = categoryOrder[a.category] ?? Number.MAX_SAFE_INTEGER;
         const orderB = categoryOrder[b.category] ?? Number.MAX_SAFE_INTEGER;
         return orderA - orderB;
@@ -273,77 +321,74 @@ export class InvestorsService {
     }
   }
 
-  async getAGMDetail(region?: string): Promise<{ result: InvestorAGM[]; seo: any }> {
-    const where: any = {};
-
-    if (region != null && region != '') {
+  async getAGMDetail(region?: string): Promise<AGMResult> {
+    const where: { agm_regions?: FindOperator<string>; is_active: boolean } = { is_active: true };
+  
+    if (region) {
       const regionName = await this.regionRepository.findOne({
-        where: {
-          alias: region,
-        },
+        where: { alias: region },
       });
-
-      if (regionName != null) {
-        where.agm_regions = Like('%' + regionName.id + '%');
+  
+      if (regionName) {
+        where.agm_regions = Like(`%${regionName.id}%`);
       }
     }
-    where.is_active = true;
-    const agm = await this.agmRepository.find({
-      where,
-    });
-
+  
+    const agm = await this.agmRepository.find({ where });
+  
     const titleCategory = await this.titleCategoryRepository.find({
-      where: {
-        sub_menu: Like('%agm%'),
-      },
+      where: { sub_menu: Like('%agm%') },
     });
-    const groupedByCategory = agm.reduce((acc: any, item: InvestorAGM) => {
-      const category = item.investors_agm_category;
-
-      if (!acc[category]) {
-        acc[category] = {
-          category: category,
-          qr_title: '',
-          qr_code: '',
-          qr_link: '',
-          pdfs: [],
-        };
-      }
-      if (titleCategory) {
-        const filteredTitles = titleCategory.filter(p => p.category_title == category);
-
-        if (filteredTitles.length > 0) {
-          acc[category].qr_title = filteredTitles[0].qr_title;
-          acc[category].qr_code = filteredTitles[0].qr_code;
-          acc[category].qr_link = filteredTitles[0].qr_link;
+  
+    const groupedByCategory: Record<string, AGMCategory> = agm.reduce(
+      (acc, item: InvestorAGM) => {
+        const category = item.investors_agm_category;
+  
+        if (!acc[category]) {
+          acc[category] = {
+            category,
+            qr_title: '',
+            qr_code: null,
+            qr_link: '',
+            pdfs: [],
+          };
         }
-      }
-      acc[category].pdfs.push({
-        pdf_title: item.agm_documentation_title,
-        pdf: item.agm_documentation_pdf,
-        id: item.id,
-        title: item.title,
-        url_title: item.url_title,
-        region: item.agm_regions,
-        sort_order: item.sort_order,
-        is_active: item.is_active,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      });
-
-      return acc;
-    }, {});
-
-    const result: any[] = Object.values(groupedByCategory);
-
+  
+        if (titleCategory) {
+          const filteredTitles = titleCategory.filter(p => p.category_title === category);
+  
+          if (filteredTitles.length > 0) {
+            acc[category].qr_title = filteredTitles[0].qr_title;
+            acc[category].qr_code = filteredTitles[0].qr_code?.url || null;
+            acc[category].qr_link = filteredTitles[0].qr_link;
+          }
+        }
+  
+        acc[category].pdfs.push({
+          pdf_title: item.agm_documentation_title,
+          pdf: item.agm_documentation_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          region: item.agm_regions,
+          sort_order: item.sort_order,
+          is_active: item.is_active,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+  
+        return acc;
+      },
+      {} as Record<string, AGMCategory>,
+    );
+  
+    const result: AGMCategory[] = Object.values(groupedByCategory);
+  
     const seoRecord = await this.seoRepository.findOne({
       where: { ref_id: 0, ref: Like('agm'), indexed: true },
     });
-
-    return {
-      result,
-      seo: seoRecord,
-    };
+  
+    return { result, seo: seoRecord };
   }
 
   async getAGMById(id: number): Promise<InvestorAGM | null> {
