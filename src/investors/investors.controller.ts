@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -17,7 +17,53 @@ import { InvestorMI } from './entities/investor_mi.entity';
 import { InvestorDR } from './entities/investor_dr.entity';
 import { SeoService } from 'src/seo/seo.service';
 import { InvestorFAQ } from './entities/investor_faq.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
+import { QuartelyUpdate } from './entities/investor_qu_update.entity';
+interface PdfItem {
+  pdf_title: string;
+  pdf: string;
+  id: number;
+  title: string;
+  url_title: string;
+  regions: string[];
+  sort_order: number;
+  created_at: Date;
+  updated_at: Date;
+}
+interface GroupedCategory {
+  category: string;
+  pdfs: PdfItem[];
+}
 
+interface SchedulePdf {
+  pdf_title: string;
+  pdf: string;
+  id: number;
+  url_title: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface GroupedScheduleCategory {
+  category: string;
+  pdfs: SchedulePdf[];
+}
+
+interface PSIPdf {
+  pdf_title: string;
+  pdf: string;
+  id: number;
+  title: string;
+  url_title: string;
+  sort_order: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface GroupedPSICategory {
+  category: string;
+  pdfs: PSIPdf[];
+}
 @Controller(':region/investors')
 export class InvestorsController {
   constructor(
@@ -35,7 +81,7 @@ export class InvestorsController {
   @Get('documentation/shareholder-info')
   async getSHIDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorShareHolder[]; seo: any }> {
+  ): Promise<{ result: InvestorShareHolder[]; seo: Sitemap }> {
     return await this.investorsService.getSHIDetail(region);
   }
 
@@ -43,7 +89,7 @@ export class InvestorsController {
   @Get('documentation/agm')
   async getAGMDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorAGM[]; seo: any }> {
+  ): Promise<{ result: InvestorAGM[]; seo: Sitemap }> {
     return await this.investorsService.getAGMDetail(region);
   }
 
@@ -51,7 +97,7 @@ export class InvestorsController {
   @Get('documentation/dividend')
   async getDevidendsDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorDividends[]; seo: any }> {
+  ): Promise<{ result: InvestorDividends[]; seo: Sitemap }> {
     return await this.investorsService.getDividendsDetail(region);
   }
 
@@ -65,35 +111,38 @@ export class InvestorsController {
   @Get('documentation/cg')
   async getCGDetail(
     @Param('region') region: string,
-  ): Promise<{ result: CorporateGovernance[]; seo: any }> {
+  ): Promise<{ result: GroupedCategory[]; seo: Sitemap | null }> {
     const cg = await this.investorsService.getCGDetail(region);
 
-    const groupedByCategory = cg.reduce((acc: any, item: CorporateGovernance) => {
-      const category = item.documentation_cg_category;
+    const groupedByCategory = cg.reduce(
+      (acc: Record<string, GroupedCategory>, item: CorporateGovernance) => {
+        const category = item.documentation_cg_category;
 
-      if (!acc[category]) {
-        acc[category] = {
-          category: category,
-          pdfs: [],
-        };
-      }
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            pdfs: [],
+          };
+        }
 
-      acc[category].pdfs.push({
-        pdf_title: item.documentation_cg_title,
-        pdf: item.documentation_cg_pdf,
-        id: item.id,
-        title: item.title,
-        url_title: item.url_title,
-        regions: item.cg_regions,
-        sort_order: item.sort_order,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      });
+        acc[category].pdfs.push({
+          pdf_title: item.documentation_cg_title,
+          pdf: item.documentation_cg_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          regions: item.cg_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
 
-    const result: any[] = Object.values(groupedByCategory);
+    const result: GroupedCategory[] = Object.values(groupedByCategory);
 
     const seoRecord = await this.seoService.findOne(0, 'cg');
 
@@ -107,7 +156,7 @@ export class InvestorsController {
   @Get('documentation/latest-update')
   async getIUDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InformationUpdate[]; seo: any }> {
+  ): Promise<{ result: InformationUpdate[]; seo: Sitemap }> {
     return await this.investorsService.getIUDetail(region);
   }
 
@@ -115,31 +164,34 @@ export class InvestorsController {
   @Get('documentation/schedule-of-investors')
   async getScheduleDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorSchedule[]; seo: any }> {
+  ): Promise<{ result: GroupedScheduleCategory[]; seo: Sitemap | null }> {
     const schedule = await this.investorsService.getScheduleDetail();
-    const groupedByCategory = schedule.reduce((acc: any, item: InvestorSchedule) => {
-      const category = item.schedule_analyst_meet_year;
+    const groupedByCategory = schedule.reduce(
+      (acc: Record<string, GroupedScheduleCategory>, item: InvestorSchedule) => {
+        const category = item.schedule_analyst_meet_year;
 
-      if (!acc[category]) {
-        acc[category] = {
-          category: category,
-          pdfs: [],
-        };
-      }
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            pdfs: [],
+          };
+        }
 
-      acc[category].pdfs.push({
-        pdf_title: item.title,
-        pdf: item.schedule_analyst_meet_pdf,
-        id: item.id,
-        url_title: item.url_title,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      });
+        acc[category].pdfs.push({
+          pdf_title: item.title,
+          pdf: item.schedule_analyst_meet_pdf,
+          id: item.id,
+          url_title: item.url_title,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
 
-    const result: any[] = Object.values(groupedByCategory);
+    const result: GroupedScheduleCategory[] = Object.values(groupedByCategory);
 
     const seoRecord = await this.seoService.findOne(0, 'schedule-of-investors');
 
@@ -153,13 +205,15 @@ export class InvestorsController {
   @Get('documentation/placement-document')
   async getPDDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorPlacement[]; seo: any }> {
+  ): Promise<{ result: InvestorPlacement[]; seo: Sitemap }> {
     return await this.investorsService.getPDDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/quarterly-updates')
-  async getQUDetail(@Param('region') region: string): Promise<{ result: any[]; seo: any }> {
+  async getQUDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: QuartelyUpdate[]; seo: Sitemap }> {
     return await this.investorsService.getQUALL(region);
   }
 
@@ -167,7 +221,7 @@ export class InvestorsController {
   @Get('documentation/investor-contact')
   async getICDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorContact[]; seo: any }> {
+  ): Promise<{ result: InvestorContact[]; seo: Sitemap }> {
     return await this.investorsService.getICDetail();
   }
 
@@ -175,9 +229,9 @@ export class InvestorsController {
   @Get('documentation/price-sensitive-information')
   async getPSIDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorPSI[]; seo: any }> {
+  ): Promise<{ result: GroupedPSICategory[]; seo: Sitemap | null }> {
     const psi = await this.investorsService.getPSIDetail();
-    const groupedByCategory = psi.reduce((acc: any, item: InvestorPSI) => {
+    const groupedByCategory = psi.reduce((acc: Record<string, GroupedPSICategory>, item: InvestorPSI) => {
       const category = item.psi_category;
 
       if (!acc[category]) {
@@ -201,7 +255,7 @@ export class InvestorsController {
       return acc;
     }, {});
 
-    const result: any[] = Object.values(groupedByCategory);
+    const result:GroupedPSICategory[] = Object.values(groupedByCategory);
 
     const seoRecord = await this.seoService.findOne(0, 'price-sensitive-information');
 
@@ -213,19 +267,25 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/annual-reports')
-  async getARDetail(@Param('region') region: string): Promise<{ result: InvestorAR[]; seo: any }> {
+  async getARDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorAR[]; seo: Sitemap }> {
     return await this.investorsService.getARDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/latest-director-report')
-  async getDRDetail(@Param('region') region: string): Promise<{ result: InvestorDR[]; seo: any }> {
+  async getDRDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorDR[]; seo: Sitemap }> {
     return await this.investorsService.getDRDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/investor-principles-disclosure')
-  async getMIDetail(@Param('region') region: string): Promise<{ result: InvestorMI[]; seo: any }> {
+  async getMIDetail(
+    @Param('region') region: string,
+  ): Promise<{ result: InvestorMI[]; seo: Sitemap }> {
     return await this.investorsService.getMIDetail(region);
   }
 
@@ -233,7 +293,7 @@ export class InvestorsController {
   @Get('faq')
   async getFAQDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorFAQ[]; seo: any }> {
+  ): Promise<{ result: InvestorFAQ[]; seo: Sitemap }> {
     return await this.investorsService.getFAQDetail(region);
   }
 }
