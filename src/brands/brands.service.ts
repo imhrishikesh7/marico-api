@@ -23,8 +23,9 @@ export class BrandsService {
   ) {}
 
   async getTVCList(search?: string | null): Promise<Tvc[]> {
-    const where: any = {};
-
+    const where: {
+      title?: string;
+    } = {};
     if (search != null && search != '') {
       where.title = search;
     }
@@ -104,7 +105,9 @@ export class BrandsService {
   }
 
   async getBrandList(search?: string | null): Promise<Brand[]> {
-    const where: any = {};
+    const where: {
+      title?: string;
+    } = {};
     if (search != null && search != '') {
       where.title = search;
     }
@@ -221,13 +224,9 @@ export class BrandsService {
 
   async getSubBrandList(search?: string | null): Promise<Brand[]> {
     const where: {
-      title: string;
-      brand_type: any;
-      award_title?: FindOperator<string>;
-    } = {
-      title: '',
-      brand_type: undefined,
-    };
+      title?: string;
+      brand_type?: FindOperator<string>;
+    } = {};
     // if (region != null && region != '') {
     //   const regionName = await this.regionRepository.findOne({
     //     where: {
@@ -280,7 +279,7 @@ export class BrandsService {
       printAds: PrintAd[];
       superSubBrand?: SubBrandWithSuperSubBrand[]; // Nested sub-brands (recursive structure)
     };
-    const where: { regions?: any; url_title?: any } = {};
+    const where: { regions?: FindOperator<string>; url_title?: FindOperator<string> } = {};
 
     // Handling region filter (only if region is "1")
     const regionName = await this.regionRepository.findOne({

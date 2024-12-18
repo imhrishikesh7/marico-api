@@ -165,7 +165,7 @@ export class InvestorsController {
   async getScheduleDetail(
     @Param('region') region: string,
   ): Promise<{ result: GroupedScheduleCategory[]; seo: Sitemap | null }> {
-    const schedule = await this.investorsService.getScheduleDetail();
+    const schedule = await this.investorsService.getScheduleDetail(region);
     const groupedByCategory = schedule.reduce(
       (acc: Record<string, GroupedScheduleCategory>, item: InvestorSchedule) => {
         const category = item.schedule_analyst_meet_year;
@@ -222,7 +222,7 @@ export class InvestorsController {
   async getICDetail(
     @Param('region') region: string,
   ): Promise<{ result: InvestorContact[]; seo: Sitemap }> {
-    return await this.investorsService.getICDetail();
+    return await this.investorsService.getICDetail(region);
   }
 
   @ApiBearerAuth()
@@ -230,32 +230,35 @@ export class InvestorsController {
   async getPSIDetail(
     @Param('region') region: string,
   ): Promise<{ result: GroupedPSICategory[]; seo: Sitemap | null }> {
-    const psi = await this.investorsService.getPSIDetail();
-    const groupedByCategory = psi.reduce((acc: Record<string, GroupedPSICategory>, item: InvestorPSI) => {
-      const category = item.psi_category;
+    const psi = await this.investorsService.getPSIDetail(region);
+    const groupedByCategory = psi.reduce(
+      (acc: Record<string, GroupedPSICategory>, item: InvestorPSI) => {
+        const category = item.psi_category;
 
-      if (!acc[category]) {
-        acc[category] = {
-          category: category,
-          pdfs: [],
-        };
-      }
+        if (!acc[category]) {
+          acc[category] = {
+            category: category,
+            pdfs: [],
+          };
+        }
 
-      acc[category].pdfs.push({
-        pdf_title: item.documentation_psi_title,
-        pdf: item.psi_documentation_pdf,
-        id: item.id,
-        title: item.title,
-        url_title: item.url_title,
-        sort_order: item.sort_order,
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-      });
+        acc[category].pdfs.push({
+          pdf_title: item.documentation_psi_title,
+          pdf: item.psi_documentation_pdf,
+          id: item.id,
+          title: item.title,
+          url_title: item.url_title,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
 
-    const result:GroupedPSICategory[] = Object.values(groupedByCategory);
+    const result: GroupedPSICategory[] = Object.values(groupedByCategory);
 
     const seoRecord = await this.seoService.findOne(0, 'price-sensitive-information');
 
