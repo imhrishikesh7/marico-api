@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Media } from './entities/media.entity';
+import { Sitemap } from '../seo/entities/seo.entity';
 
 @Controller(':region/media')
 export class MediaController {
@@ -18,7 +19,7 @@ export class MediaController {
     @Param('region') region: string,
     @Param('category') category: string,
     @Query('year') year?: string,
-  ): Promise<{ result: Media[]; seo: any }> {
+  ): Promise<{ result: Media[]; seo: Sitemap | null }> {
     return await this.mediaService.getMediaByCategory(region, category, year);
   }
 }

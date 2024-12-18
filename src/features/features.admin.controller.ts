@@ -3,7 +3,9 @@ import {
   Get,
   Post,
   Body,
+  Patch,
   Param,
+  Delete,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
@@ -15,6 +17,7 @@ import { Roles } from 'src/admin/roles.decorator';
 import { TitleCategory } from './entities/feature.entity';
 import { SwitchPipe } from 'src/validations/switch/switch.pipe';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
+import { IntOrNullPipe } from 'src/validations/intornull/intornull.pipe';
 
 @Controller('admin/features')
 export class FeaturesAdminController {

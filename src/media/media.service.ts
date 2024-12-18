@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Media } from './entities/media.entity';
-import { LessThanOrEqual, Like, Repository } from 'typeorm';
+import { FindOperator, Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Region } from 'src/regions/entities/region.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
@@ -29,7 +29,11 @@ export class MediaService {
   }
 
   async getFrontNewsDetail(region?: string): Promise<Media | null> {
-    const where: any = {};
+    const where: {
+      media_regions?: FindOperator<string>;
+      is_latest?: boolean;
+      category?: FindOperator<string>;
+    } = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -60,8 +64,15 @@ export class MediaService {
     region?: string,
     category?: string,
     yearfliter?: string,
-  ): Promise<{ result: Media[]; seo: any }> {
-    const where: any = {};
+  ): Promise<{
+    result: Media[];
+    seo: Sitemap | null;
+  }> {
+    const where: {
+      media_regions?: FindOperator<string>;
+      year?: FindOperator<string>;
+      category?: FindOperator<string>;
+    } = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
