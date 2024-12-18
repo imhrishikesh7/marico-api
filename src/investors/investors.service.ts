@@ -20,7 +20,15 @@ import { TitleCategory } from 'src/features/entities/feature.entity';
 import { Region } from 'src/regions/entities/region.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 import { InvestorFAQ } from './entities/investor_faq.entity';
-
+interface ProcessedMI {
+  pdf: string;
+  pdf_title: string;
+  region: string[];
+  sort_order: number;
+  is_active: boolean;
+  url_title: string;
+  id: number;
+}
 interface SHIPdf {
   pdf_title: string;
   pdf: string;
@@ -883,7 +891,7 @@ export class InvestorsService {
   }
 
   async getSustainabilityDetail(region?: string): Promise<Sustainability[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string>> = {};
 
     if (region != null && region != '') {
       where.sustain_regions = Like('%' + region + '%');
@@ -956,7 +964,7 @@ export class InvestorsService {
   }
 
   async getScheduleDetail(region?: string): Promise<InvestorSchedule[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
         where: {
@@ -1034,7 +1042,7 @@ export class InvestorsService {
   }
 
   async getCGDetail(region?: string): Promise<CorporateGovernance[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1115,8 +1123,10 @@ export class InvestorsService {
     }
   }
 
-  async getIUDetail(region?: string): Promise<{ result: InformationUpdate[]; seo: any }> {
-    const where: any = {};
+  async getIUDetail(
+    region?: string,
+  ): Promise<{ result: InformationUpdate[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1204,8 +1214,10 @@ export class InvestorsService {
     }
   }
 
-  async getPDDetail(region?: string): Promise<{ result: InvestorPlacement[]; seo: any }> {
-    const where: any = {};
+  async getPDDetail(
+    region?: string,
+  ): Promise<{ result: InvestorPlacement[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1293,8 +1305,8 @@ export class InvestorsService {
     }
   }
 
-  async getICDetail(region?: string): Promise<{ result: InvestorContact[]; seo: any }> {
-    const where: any = {};
+  async getICDetail(region?: string): Promise<{ result: InvestorContact[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1309,7 +1321,7 @@ export class InvestorsService {
     }
     where.is_active = true;
 
-    const result: any[] = await this.icRepository.find({
+    const result: InvestorContact[] = await this.icRepository.find({
       where,
     });
     const seoRecord = await this.seoRepository.findOne({
@@ -1379,7 +1391,7 @@ export class InvestorsService {
   }
 
   async getPSIDetail(region?: string): Promise<InvestorPSI[]> {
-    const where: any = {};
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1461,9 +1473,8 @@ export class InvestorsService {
     }
   }
 
-  async getARDetail(region?: string): Promise<{ result: InvestorAR[]; seo: any }> {
-    const where: any = {};
-
+  async getARDetail(region?: string): Promise<{ result: InvestorAR[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
         where: {
@@ -1617,8 +1628,8 @@ export class InvestorsService {
     }
   }
 
-  async getDRDetail(region?: string): Promise<{ result: InvestorDR[]; seo: any }> {
-    const where: any = {};
+  async getDRDetail(region?: string): Promise<{ result: InvestorDR[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1736,18 +1747,8 @@ export class InvestorsService {
     }
   }
 
-  async getMIDetail(region?: string): Promise<{ result: any[]; seo: any }> {
-    interface ProcessedMI {
-      pdf: string;
-      pdf_title: string;
-      region: string[];
-      sort_order: number;
-      is_active: boolean;
-      url_title: string;
-      id: number;
-    }
-
-    const where: any = {};
+  async getMIDetail(region?: string): Promise<{ result: ProcessedMI[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -1887,8 +1888,8 @@ export class InvestorsService {
     }
   }
 
-  async getFAQDetail(region?: string): Promise<{ result: InvestorFAQ[]; seo: any }> {
-    const where: any = {};
+  async getFAQDetail(region?: string): Promise<{ result: InvestorFAQ[]; seo: Sitemap | null }> {
+    const where: Record<string, FindOperator<string> | boolean> = {};
 
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
