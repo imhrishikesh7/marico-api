@@ -221,13 +221,13 @@ export class BrandsService {
 
   async getSubBrandList(search?: string | null): Promise<Brand[]> {
     const where: {
-          title: string;
-          brand_type: any;
-          award_title?: FindOperator<string>;
-        } = {
-          title: '',
-          brand_type: undefined
-        };
+      title: string;
+      brand_type: any;
+      award_title?: FindOperator<string>;
+    } = {
+      title: '',
+      brand_type: undefined,
+    };
     // if (region != null && region != '') {
     //   const regionName = await this.regionRepository.findOne({
     //     where: {

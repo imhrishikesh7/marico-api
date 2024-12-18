@@ -3,12 +3,9 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinColumn,
-  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Brand } from './brand.entity';
 
 @Entity()
 export class Tvc {
