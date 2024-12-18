@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorPSI {
@@ -19,14 +26,14 @@ export class InvestorPSI {
 
   @Column({ type: 'text' })
   psi_documentation_pdf: string;
-  
+
   @Column('json')
-  psi_regions: string[]; 
+  psi_regions: string[];
 
   @Column()
   @Index()
   psi_category: string;
-  
+
   @Column()
   @Index()
   sort_order: number;

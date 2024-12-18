@@ -95,7 +95,7 @@ export class PageContent {
   @Index()
   updated_at: Date;
 
-  @ManyToOne(() => Page, (page) => page.page_contents)
+  @ManyToOne(() => Page, page => page.page_contents)
   @JoinColumn({ name: 'page_id' })
   page: Page;
 }

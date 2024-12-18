@@ -108,9 +108,10 @@ export class FeaturesAdminController {
     @Body('sub_menu', EmptystringPipe) sub_menu: string,
     @Body('category_title', EmptystringPipe) category_title: string,
     @Body('is_active', SwitchPipe) is_active: boolean,
-    @Body('sort_order') sort_order:number,
+    @Body('sort_order') sort_order: number,
     @Body('qr_title') qr_title?: string,
-    @Body('qr_code') qr_code?: {
+    @Body('qr_code')
+    qr_code?: {
       url: string;
       alt: string;
       width: number;

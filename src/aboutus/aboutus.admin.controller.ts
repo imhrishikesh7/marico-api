@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   Inject,
   Query,
   DefaultValuePipe,
@@ -27,7 +25,6 @@ import { Region } from 'src/regions/entities/region.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { RegionsService } from 'src/regions/regions.service';
 import { History } from './entities/aboutus_history.entity';
-import { bool } from 'aws-sdk/clients/signer';
 
 @Controller('admin/about_us')
 export class AboutusAdminController {
@@ -323,9 +320,7 @@ export class AboutusAdminController {
   })
   @Roles(['ABOUT_US'])
   @Get('history')
-  async getHistory(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<History[]> {
+  async getHistory(@Query('search', new DefaultValuePipe('')) search: string): Promise<History[]> {
     return await this.aboutusService.getHistory(search || undefined);
   }
 

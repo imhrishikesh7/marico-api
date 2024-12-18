@@ -18,12 +18,9 @@ export class RedirectUrlsController {
       },
     },
   })
-   @Post('')
-   async getRedirecturl(
-    @Body('url') url: string,
-   ): Promise<RedirectUrl | null> {
+  @Post('')
+  async getRedirecturl(@Body('url') url: string): Promise<RedirectUrl | null> {
     console.log(url, 'urllllllll');
-     return await this.redirectUrlsService.getRedirectUrl(url);
-   }
-
+    return await this.redirectUrlsService.getRedirectUrl(url);
+  }
 }

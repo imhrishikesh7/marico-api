@@ -27,8 +27,30 @@ import { SeoAdminController } from './seo/seo.admin.controller';
 import { RedirectUrlsModule } from './redirect_urls/redirect_urls.module';
 
 @Module({
-  imports: [TypeOrmModule.forRoot(config as TypeOrmModuleOptions), AdminModule, RegionsModule, AboutusModule, BrandsModule, InvestorsModule, PageModule, MediaModule, FeaturesModule, SeoModule, RedirectUrlsModule],
-  controllers: [AppController, RegionAdminController, AboutusAdminController,BrandsAdminController, InvestorsAdminController, PageAdminController, MediaAdminController,FeaturesAdminController,SeoAdminController],
+  imports: [
+    TypeOrmModule.forRoot(config as TypeOrmModuleOptions),
+    AdminModule,
+    RegionsModule,
+    AboutusModule,
+    BrandsModule,
+    InvestorsModule,
+    PageModule,
+    MediaModule,
+    FeaturesModule,
+    SeoModule,
+    RedirectUrlsModule,
+  ],
+  controllers: [
+    AppController,
+    RegionAdminController,
+    AboutusAdminController,
+    BrandsAdminController,
+    InvestorsAdminController,
+    PageAdminController,
+    MediaAdminController,
+    FeaturesAdminController,
+    SeoAdminController,
+  ],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
@@ -37,8 +59,6 @@ import { RedirectUrlsModule } from './redirect_urls/redirect_urls.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer): void {
-    consumer
-      .apply(AppLogger)
-      .forRoutes({ path: '*', method: RequestMethod.ALL });
+    consumer.apply(AppLogger).forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

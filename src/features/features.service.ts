@@ -29,16 +29,14 @@ export class FeaturesService {
     });
   }
 
-  async getTitleCategoryDropdownBySubmenu(
-    sub_menu: string,
-  ): Promise<TitleCategory[] | null> {
+  async getTitleCategoryDropdownBySubmenu(sub_menu: string): Promise<TitleCategory[] | null> {
     return await this.titleCategoryRepository.find({
       where: {
         sub_menu: Like('%' + sub_menu + '%'),
       },
       order: {
-        sort_order: "ASC",
-      }
+        sort_order: 'ASC',
+      },
     });
   }
 
@@ -85,7 +83,6 @@ export class FeaturesService {
       head.qr_title = qr_title ? qr_title : '';
       head.qr_code = qr_code ? qr_code : null;
       head.qr_link = qr_link ? qr_link : '';
-
 
       return this.titleCategoryRepository.save(head);
     }

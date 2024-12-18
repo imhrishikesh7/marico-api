@@ -75,12 +75,7 @@ export class PageAdminController {
     page: number;
     per_page: number;
   }> {
-    const pagesAndCount = await this.pageService.findAll(
-      is_active,
-      page,
-      limit,
-      search,
-    );
+    const pagesAndCount = await this.pageService.findAll(is_active, page, limit, search);
     const total = pagesAndCount.count;
     const total_pages = Math.ceil(total / limit);
     return {

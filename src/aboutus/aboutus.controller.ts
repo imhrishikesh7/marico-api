@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AboutusService } from './aboutus.service';
 import { AboutusMember } from './entities/aboutus_member.entity';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
@@ -16,25 +11,19 @@ export class AboutusController {
 
   @ApiBearerAuth()
   @Get('leadership')
-  async getLeadership(
-    @Param('region') region: string,
-  ): Promise<AboutusMember[]> {
+  async getLeadership(@Param('region') region: string): Promise<AboutusMember[]> {
     return await this.aboutusService.getMembers(region, 'leadership');
   }
 
- @ApiBearerAuth()
- @Get('board-of-directors')
- async getDirectors(
-  @Param('region') region: string,
-  ): Promise<AboutusMember[]> {
+  @ApiBearerAuth()
+  @Get('board-of-directors')
+  async getDirectors(@Param('region') region: string): Promise<AboutusMember[]> {
     return await this.aboutusService.getMembers(region, 'board-of-directors');
   }
 
   @ApiBearerAuth()
   @Get('history')
-  async getHistory(
-    @Param('region') region: string,
-  ): Promise<History[]> {
+  async getHistory(@Param('region') region: string): Promise<History[]> {
     return await this.aboutusService.getHistories(region);
   }
 

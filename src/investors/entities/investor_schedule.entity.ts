@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorSchedule {
@@ -15,13 +22,13 @@ export class InvestorSchedule {
 
   @Column({ type: 'text' })
   schedule_analyst_meet_pdf: string;
-  
+
   @Column()
   @Index()
   schedule_analyst_meet_year: string;
 
   @Column('json')
-  region: string[]
+  region: string[];
 
   @Column({ default: true })
   @Index()

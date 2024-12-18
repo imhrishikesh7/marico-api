@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { SeoService } from './seo.service';
 import { Contact } from './entities/contact.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -23,20 +18,11 @@ export class SeoController {
     @Param('query_type') query_type: string,
     @Param('query') query: string,
   ): Promise<Contact> {
-    return await this.seoService.addContactUS(
-      name,
-      email,
-      phone,
-      address,
-      query_type,
-      query,
-    );
+    return await this.seoService.addContactUS(name, email, phone, address, query_type, query);
   }
 
   @Get('search')
-  async getSearchDetail(
-    @Query('query') query: string,
-  ): Promise<any> {
+  async getSearchDetail(@Query('query') query: string): Promise<any> {
     return await this.seoService.getSearchDetail(query);
   }
 }

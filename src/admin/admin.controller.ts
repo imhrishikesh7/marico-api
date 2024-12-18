@@ -13,13 +13,7 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { AdminService } from './admin.service';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConsumes,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AdminRequest } from '../interfaces/adminrequest.interface';
 import { EmptystringPipe } from '../validations/emptystring/emptystring.pipe';
 import { EmailPipe } from '../validations/email/email.pipe';
@@ -303,14 +297,7 @@ export class AdminController {
     @Body('role_id', ParseIntPipe) role_id: number,
     @Body('is_active', SwitchPipe) is_active: boolean,
   ): Promise<boolean> {
-    await this.adminService.newAdmin(
-      this.request.admin,
-      name,
-      email,
-      password,
-      role_id,
-      is_active,
-    );
+    await this.adminService.newAdmin(this.request.admin, name, email, password, role_id, is_active);
     return true;
   }
 
@@ -349,14 +336,7 @@ export class AdminController {
     @Body('role_id', ParseIntPipe) role_id: number,
     @Body('is_active', SwitchPipe) is_active: boolean,
   ): Promise<boolean> {
-    await this.adminService.updateAdmin(
-      this.request.admin,
-      id,
-      name,
-      email,
-      role_id,
-      is_active,
-    );
+    await this.adminService.updateAdmin(this.request.admin, id, name, email, role_id, is_active);
     return true;
   }
 
@@ -384,11 +364,7 @@ export class AdminController {
     @Body('id', ParseIntPipe) id: number,
     @Body('password', EmptystringPipe) password: string,
   ): Promise<boolean> {
-    await this.adminService.updateAdminPassword(
-      this.request.admin,
-      id,
-      password,
-    );
+    await this.adminService.updateAdminPassword(this.request.admin, id, password);
     return true;
   }
 
@@ -430,13 +406,7 @@ export class AdminController {
       throw new Error('Permissions must be an array of strings');
     }
 
-    await this.adminService.newRole(
-      this.request.admin,
-      name,
-      permissions,
-      landing_url,
-      is_active,
-    );
+    await this.adminService.newRole(this.request.admin, name, permissions, landing_url, is_active);
     return true;
   }
 
@@ -509,7 +479,7 @@ export class AdminController {
           type: 'string',
           example: 'about-us/coc',
         },
-      }, 
+      },
     },
   })
   @AdminOnly()

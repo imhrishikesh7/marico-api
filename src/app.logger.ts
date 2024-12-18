@@ -18,8 +18,7 @@ export class AppLogger implements NestMiddleware {
       const contentLength = response.get('content-length');
       const diff = process.hrtime(startAt);
       //response time in milliseconds with 2 decimal places
-      const responseTime =
-        Math.round(((diff[0] * 1e9 + diff[1]) / 1e6) * 100) / 100;
+      const responseTime = Math.round(((diff[0] * 1e9 + diff[1]) / 1e6) * 100) / 100;
       this.logger.log(
         `${method} ${originalUrl} ${statusCode} ${responseTime}ms ${contentLength} ${ip}`,
       );

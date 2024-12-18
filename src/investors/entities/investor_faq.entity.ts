@@ -26,7 +26,7 @@ export class InvestorFAQ {
   @Column()
   @Index()
   sort_order: number;
-  
+
   @Column({ default: true })
   @Index()
   is_active: boolean;

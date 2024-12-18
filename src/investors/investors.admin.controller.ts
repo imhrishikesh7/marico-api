@@ -76,8 +76,7 @@ export class InvestorsAdminController {
     const toReturn = {
       shi: await this.investorsService.getSHIById(id),
       regions: await this.regionService.getRegionList(),
-      categoryMenu:
-        await this.featuresService.getTitleCategoryDropdownBySubmenu('shi'),
+      categoryMenu: await this.featuresService.getTitleCategoryDropdownBySubmenu('shi'),
     } as {
       shi: InvestorShareHolder | null;
       regions: Region[] | null;
@@ -172,9 +171,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('agm')
-  async getAGM(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorAGM[]> {
+  async getAGM(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorAGM[]> {
     return await this.investorsService.getAGM(search || undefined);
   }
 
@@ -187,8 +184,7 @@ export class InvestorsAdminController {
     const toReturn = {
       agm: await this.investorsService.getAGMById(id),
       regions: await this.regionService.getRegionList(),
-      categoryMenu:
-        await this.featuresService.getTitleCategoryDropdownBySubmenu('agm'),
+      categoryMenu: await this.featuresService.getTitleCategoryDropdownBySubmenu('agm'),
     } as {
       agm: InvestorAGM | null;
       regions: Region[] | null;
@@ -456,9 +452,7 @@ export class InvestorsAdminController {
   }
 
   @Get('qu/pdfs/:investor_qu_id')
-  async getQUPDFById(
-    @Param('investor_qu_id', ParseIntPipe) investor_qu_id: number,
-  ): Promise<{
+  async getQUPDFById(@Param('investor_qu_id', ParseIntPipe) investor_qu_id: number): Promise<{
     qu_pdf: QuartelyUpdate[];
     qu: InvestorQUMaster | null;
     regions: Region[] | null;
@@ -536,10 +530,7 @@ export class InvestorsAdminController {
       is_active: boolean;
     }[],
   ): Promise<QuartelyUpdate[]> {
-    return await this.investorsService.addUpdateQUPDFs(
-      investor_qu_id,
-      contentText,
-    );
+    return await this.investorsService.addUpdateQUPDFs(investor_qu_id, contentText);
   }
 
   @AdminOnly()
@@ -1146,9 +1137,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('psi')
-  async getPSI(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorPSI[]> {
+  async getPSI(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorPSI[]> {
     return await this.investorsService.getPSI(search || undefined);
   }
 
@@ -1250,9 +1239,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('ar')
-  async getAR(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorAR[]> {
+  async getAR(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorAR[]> {
     return await this.investorsService.getAR(search || undefined);
   }
 
@@ -1267,8 +1254,7 @@ export class InvestorsAdminController {
       annual_report: await this.investorsService.getARById(id),
       annual_reports: await this.investorsService.getAR(),
       regions: await this.regionService.getRegionList(),
-      categoryMenu:
-        await this.featuresService.getTitleCategoryDropdownBySubmenu('ar'),
+      categoryMenu: await this.featuresService.getTitleCategoryDropdownBySubmenu('ar'),
     } as {
       annual_report: InvestorAR | null;
       annual_reports: InvestorAR[] | null;
@@ -1360,9 +1346,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('dr')
-  async getDR(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorDR[]> {
+  async getDR(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorDR[]> {
     return await this.investorsService.getDR(search || undefined);
   }
 
@@ -1461,9 +1445,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('principles_disclosure')
-  async getMI(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorMI[]> {
+  async getMI(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorMI[]> {
     return await this.investorsService.getMI(search || undefined);
   }
 
@@ -1557,9 +1539,7 @@ export class InvestorsAdminController {
   })
   @Roles(['INVESTOR'])
   @Get('faq')
-  async getFAQ(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<InvestorFAQ[]> {
+  async getFAQ(@Query('search', new DefaultValuePipe('')) search: string): Promise<InvestorFAQ[]> {
     return await this.investorsService.getFAQ(search || undefined);
   }
 
@@ -1637,5 +1617,4 @@ export class InvestorsAdminController {
       faq,
     };
   }
-
 }

@@ -42,7 +42,7 @@ export class TitleCategory {
   @Column()
   @Index()
   qr_link: string;
-  
+
   @CreateDateColumn()
   @Index()
   created_at: Date;

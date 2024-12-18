@@ -12,15 +12,10 @@ export interface Response<T> {
 }
 
 @Injectable()
-export class TransformInterceptor<T>
-  implements NestInterceptor<T, Response<T>>
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<Response<T>> {
+export class TransformInterceptor<T> implements NestInterceptor<T, Response<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<Response<T>> {
     return next.handle().pipe(
-      map((data) => {
+      map(data => {
         const response = context.switchToHttp().getResponse();
 
         //if response header content type == text/csv then return data as it is
@@ -31,10 +26,7 @@ export class TransformInterceptor<T>
           return data;
         }
 
-        if (
-          response.statusCode === HttpStatus.OK ||
-          response.statusCode === HttpStatus.CREATED
-        ) {
+        if (response.statusCode === HttpStatus.OK || response.statusCode === HttpStatus.CREATED) {
           const toReturn = {
             data,
             success: true,

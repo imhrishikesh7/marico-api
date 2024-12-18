@@ -52,9 +52,7 @@ export class BrandsAdminController {
   })
   @Roles(['BRANDS'])
   @Get('master')
-  async getBrandList(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<Brand[]> {
+  async getBrandList(@Query('search', new DefaultValuePipe('')) search: string): Promise<Brand[]> {
     return await this.brandService.getBrandList(search || undefined);
   }
 
@@ -434,9 +432,7 @@ export class BrandsAdminController {
   })
   @Roles(['BRANDS'])
   @Get('tvc')
-  async getTVCList(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<Tvc[]> {
+  async getTVCList(@Query('search', new DefaultValuePipe('')) search: string): Promise<Tvc[]> {
     return await this.brandService.getTVCList(search || undefined);
   }
 

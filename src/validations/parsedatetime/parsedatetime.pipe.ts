@@ -1,9 +1,4 @@
-import {
-  ArgumentMetadata,
-  BadRequestException,
-  Injectable,
-  PipeTransform,
-} from '@nestjs/common';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { DateUtil } from '../../lib/utility';
 
 @Injectable()
@@ -20,9 +15,7 @@ export class ParseDateTimePipe implements PipeTransform {
         const date = DateUtil.dateTimeObjectFromMySQLDateTime(value);
         return date;
       } catch (error) {
-        throw new BadRequestException(
-          `${metadata.data} should be a valid date`,
-        );
+        throw new BadRequestException(`${metadata.data} should be a valid date`);
       }
     }
     throw new BadRequestException(`Bad Input for ${metadata.data} + "`);

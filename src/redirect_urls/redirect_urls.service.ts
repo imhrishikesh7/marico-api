@@ -9,10 +9,8 @@ export class RedirectUrlsService {
     private redirectUrlRepository: Repository<RedirectUrl>,
   ) {}
 
-  async getRedirectUrl(
-    url: string,
-  ): Promise<RedirectUrl | null> {
-    console.log(url,'====url');
+  async getRedirectUrl(url: string): Promise<RedirectUrl | null> {
+    console.log(url, '====url');
     const where: any = {};
     where.from_url = Like('%' + url + '%');
     where.is_active = true;

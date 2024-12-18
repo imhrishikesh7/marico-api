@@ -5,11 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TitleCategory } from './entities/feature.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      TitleCategory,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([TitleCategory])],
   controllers: [FeaturesController],
   providers: [FeaturesService],
   exports: [FeaturesService],

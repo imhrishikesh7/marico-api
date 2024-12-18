@@ -40,7 +40,7 @@ export class Media {
   @Column()
   release_date: Date;
 
-  @Column({ type: 'text'})
+  @Column({ type: 'text' })
   external_link: string;
 
   @Column({ type: 'json', nullable: true })
@@ -71,7 +71,7 @@ export class Media {
   @Index()
   sort_order: number;
 
-  @Column({default: true})
+  @Column({ default: true })
   @Index()
   is_latest: boolean;
 

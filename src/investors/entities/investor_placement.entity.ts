@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorPlacement {
@@ -21,7 +28,7 @@ export class InvestorPlacement {
   pd_documentation_pdf: string;
 
   @Column('json')
-  pd_regions: string[]; 
+  pd_regions: string[];
 
   @Column()
   @Index()

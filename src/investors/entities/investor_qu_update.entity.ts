@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class QuartelyUpdate {
@@ -26,7 +33,7 @@ export class QuartelyUpdate {
 
   @Column('json')
   qu_region: string[];
-  
+
   @Column()
   @Index()
   sort_order: number;
@@ -42,5 +49,4 @@ export class QuartelyUpdate {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
-
 }

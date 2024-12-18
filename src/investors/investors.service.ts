@@ -273,9 +273,7 @@ export class InvestorsService {
     }
   }
 
-  async getAGMDetail(
-    region?: string,
-  ): Promise<{ result: InvestorAGM[]; seo: any }> {
+  async getAGMDetail(region?: string): Promise<{ result: InvestorAGM[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -294,7 +292,7 @@ export class InvestorsService {
       where,
     });
 
-    let titleCategory = await this.titleCategoryRepository.find({
+    const titleCategory = await this.titleCategoryRepository.find({
       where: {
         sub_menu: Like('%agm%'),
       },
@@ -312,9 +310,7 @@ export class InvestorsService {
         };
       }
       if (titleCategory) {
-        const filteredTitles = titleCategory.filter(
-          (p) => p.category_title == category,
-        );
+        const filteredTitles = titleCategory.filter(p => p.category_title == category);
 
         if (filteredTitles.length > 0) {
           acc[category].qr_title = filteredTitles[0].qr_title;
@@ -413,9 +409,7 @@ export class InvestorsService {
     }
   }
 
-  async getDividendsDetail(
-    region?: string,
-  ): Promise<{ result: any[]; seo: any }> {
+  async getDividendsDetail(region?: string): Promise<{ result: any[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -454,87 +448,69 @@ export class InvestorsService {
     }, {});
 
     // Group the data
-    const groupedData = dividends.reduce(
-      (acc: any, item: InvestorDividends) => {
-        const category = item.investors_dividend_category;
-        const subcategory =
-          item.investors_dividend_subcategory !== ''
-            ? item.investors_dividend_subcategory
-            : item.dividends_year;
-        const supersubcategory =
-          item.investors_dividend_subcategory !== ''
-            ? item.dividends_year
-            : undefined;
+    const groupedData = dividends.reduce((acc: any, item: InvestorDividends) => {
+      const category = item.investors_dividend_category;
+      const subcategory =
+        item.investors_dividend_subcategory !== ''
+          ? item.investors_dividend_subcategory
+          : item.dividends_year;
+      const supersubcategory =
+        item.investors_dividend_subcategory !== '' ? item.dividends_year : undefined;
 
-        // Find or create category
-        let categoryObj = acc.find((c: any) => c.category === category);
-        if (!categoryObj) {
-          categoryObj = {
-            category,
-            subcategories: [],
+      // Find or create category
+      let categoryObj = acc.find((c: any) => c.category === category);
+      if (!categoryObj) {
+        categoryObj = {
+          category,
+          subcategories: [],
+          pdfs: [],
+        };
+        acc.push(categoryObj);
+      }
+
+      // If subcategory exists
+      if (subcategory) {
+        let subcategoryObj = categoryObj.subcategories.find(
+          (sub: any) => sub.subcategory === subcategory,
+        );
+        if (!subcategoryObj) {
+          subcategoryObj = {
+            subcategory,
+            supersubcategories: [],
             pdfs: [],
           };
-          acc.push(categoryObj);
+          categoryObj.subcategories.push(subcategoryObj);
         }
 
-        // If subcategory exists
-        if (subcategory) {
-          let subcategoryObj = categoryObj.subcategories.find(
-            (sub: any) => sub.subcategory === subcategory,
+        // If supersubcategory exists
+        if (supersubcategory) {
+          let supersubcategoryObj = subcategoryObj.supersubcategories.find(
+            (superSub: any) => superSub.supersubcategory === supersubcategory,
           );
-          if (!subcategoryObj) {
-            subcategoryObj = {
-              subcategory,
-              supersubcategories: [],
+          if (!supersubcategoryObj) {
+            supersubcategoryObj = {
+              supersubcategory,
               pdfs: [],
             };
-            categoryObj.subcategories.push(subcategoryObj);
+            subcategoryObj.supersubcategories.push(supersubcategoryObj);
           }
 
-          // If supersubcategory exists
-          if (supersubcategory) {
-            let supersubcategoryObj = subcategoryObj.supersubcategories.find(
-              (superSub: any) => superSub.supersubcategory === supersubcategory,
-            );
-            if (!supersubcategoryObj) {
-              supersubcategoryObj = {
-                supersubcategory,
-                pdfs: [],
-              };
-              subcategoryObj.supersubcategories.push(supersubcategoryObj);
-            }
-
-            // Push PDFs into supersubcategory
-            supersubcategoryObj.pdfs.push({
-              id: item.id,
-              pdf_title: item.pdf_title,
-              url_title: item.url_title,
-              pdf: item.pdf,
-              writeup: item.writeup,
-              dividends_year: item.dividends_year,
-              dividend_regions: item.dividend_regions,
-              sort_order: item.sort_order,
-              created_at: item.created_at,
-              updated_at: item.updated_at,
-            });
-          } else {
-            // Push PDFs into subcategory directly if no supersubcategory
-            subcategoryObj.pdfs.push({
-              id: item.id,
-              pdf_title: item.pdf_title,
-              url_title: item.url_title,
-              pdf: item.pdf,
-              writeup: item.writeup,
-              dividends_year: item.dividends_year,
-              dividend_regions: item.dividend_regions,
-              sort_order: item.sort_order,
-              created_at: item.created_at,
-              updated_at: item.updated_at,
-            });
-          }
+          // Push PDFs into supersubcategory
+          supersubcategoryObj.pdfs.push({
+            id: item.id,
+            pdf_title: item.pdf_title,
+            url_title: item.url_title,
+            pdf: item.pdf,
+            writeup: item.writeup,
+            dividends_year: item.dividends_year,
+            dividend_regions: item.dividend_regions,
+            sort_order: item.sort_order,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          });
         } else {
-          // If no subcategory, push PDFs directly into the category
-          categoryObj.pdfs.push({
+          // Push PDFs into subcategory directly if no supersubcategory
+          subcategoryObj.pdfs.push({
             id: item.id,
             pdf_title: item.pdf_title,
             url_title: item.url_title,
@@ -547,11 +523,24 @@ export class InvestorsService {
             updated_at: item.updated_at,
           });
         }
+      } else {
+        // If no subcategory, push PDFs directly into the category
+        categoryObj.pdfs.push({
+          id: item.id,
+          pdf_title: item.pdf_title,
+          url_title: item.url_title,
+          pdf: item.pdf,
+          writeup: item.writeup,
+          dividends_year: item.dividends_year,
+          dividend_regions: item.dividend_regions,
+          sort_order: item.sort_order,
+          created_at: item.created_at,
+          updated_at: item.updated_at,
+        });
+      }
 
-        return acc;
-      },
-      [],
-    );
+      return acc;
+    }, []);
 
     // Map grouped data and sort categories
     const result: any[] = groupedData
@@ -615,8 +604,7 @@ export class InvestorsService {
       if (dividend) {
         dividend.id = id;
         dividend.investors_dividend_category = investors_dividend_category;
-        dividend.investors_dividend_subcategory =
-          investors_dividend_subcategory;
+        dividend.investors_dividend_subcategory = investors_dividend_subcategory;
         dividend.pdf_title = pdf_title;
         dividend.url_title = url_title;
         dividend.pdf = pdf;
@@ -746,7 +734,7 @@ export class InvestorsService {
       subcategories: Subcategory[];
     };
 
-    const pdfs: PDF[] = qupdfs.map((pdf) => ({
+    const pdfs: PDF[] = qupdfs.map(pdf => ({
       investor_qu_id: pdf.investor_qu_id,
       investor_qu: pdf.investor_qu,
       investor_qu_pdf: pdf.investor_qu_pdf,
@@ -760,7 +748,7 @@ export class InvestorsService {
     const structuredData = qu.reduce<Category[]>((acc, currQu) => {
       const { investor_qu_year, id } = currQu;
 
-      let category = acc.find((c) => c.category === investor_qu_year);
+      let category = acc.find(c => c.category === investor_qu_year);
       if (!category) {
         category = {
           category: investor_qu_year,
@@ -774,12 +762,12 @@ export class InvestorsService {
         acc.push(category);
       }
 
-      const pdfsForQu = pdfs.filter((pdf) => pdf.investor_qu_id === id);
+      const pdfsForQu = pdfs.filter(pdf => pdf.investor_qu_id === id);
 
-      pdfsForQu.forEach((pdf) => {
+      pdfsForQu.forEach(pdf => {
         const quarterIndex = `${pdf.investor_qu}`;
         const subcategory = category!.subcategories.find(
-          (subcat) => subcat.subcategory === quarterIndex,
+          subcat => subcat.subcategory === quarterIndex,
         );
 
         if (subcategory) {
@@ -821,7 +809,7 @@ export class InvestorsService {
       await this.quPdfRepository.remove(qu_pdfs);
     }
     // add new image individually in table and return all images for product_id
-    const newPDFs = contexText.map((pdf) => {
+    const newPDFs = contexText.map(pdf => {
       const qu_pdfs = new QuartelyUpdate();
       qu_pdfs.investor_qu_id = investor_qu_id;
       qu_pdfs.investor_qu = pdf.investor_qu;
@@ -1080,9 +1068,7 @@ export class InvestorsService {
     }
   }
 
-  async getIUDetail(
-    region?: string,
-  ): Promise<{ result: InformationUpdate[]; seo: any }> {
+  async getIUDetail(region?: string): Promise<{ result: InformationUpdate[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1171,9 +1157,7 @@ export class InvestorsService {
     }
   }
 
-  async getPDDetail(
-    region?: string,
-  ): Promise<{ result: InvestorPlacement[]; seo: any }> {
+  async getPDDetail(region?: string): Promise<{ result: InvestorPlacement[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1262,9 +1246,7 @@ export class InvestorsService {
     }
   }
 
-  async getICDetail(
-    region?: string,
-  ): Promise<{ result: InvestorContact[]; seo: any }> {
+  async getICDetail(region?: string): Promise<{ result: InvestorContact[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1432,9 +1414,7 @@ export class InvestorsService {
     }
   }
 
-  async getARDetail(
-    region?: string,
-  ): Promise<{ result: InvestorAR[]; seo: any }> {
+  async getARDetail(region?: string): Promise<{ result: InvestorAR[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1458,13 +1438,9 @@ export class InvestorsService {
     });
     const groupedByCategory = AR.reduce((acc: any, item: InvestorAR) => {
       const category =
-        item.ar_documentation_year !== ''
-          ? item.ar_documentation_year
-          : item.investors_ar_category;
+        item.ar_documentation_year !== '' ? item.ar_documentation_year : item.investors_ar_category;
       const subcategory =
-        item.ar_documentation_year !== ''
-          ? item.investors_ar_category
-          : undefined;
+        item.ar_documentation_year !== '' ? item.investors_ar_category : undefined;
       const is_year = item.ar_documentation_year !== '' ? true : false;
       // If the category doesn't exist, initialize it
       if (!acc[category]) {
@@ -1488,9 +1464,7 @@ export class InvestorsService {
           });
         }
 
-        const sub = acc[category].subcategories.find(
-          (sub: any) => sub.subcategory === subcategory,
-        );
+        const sub = acc[category].subcategories.find((sub: any) => sub.subcategory === subcategory);
 
         sub.pdfs.push({
           pdf_title: item.ar_documentation_title,
@@ -1596,9 +1570,7 @@ export class InvestorsService {
     }
   }
 
-  async getDRDetail(
-    region?: string,
-  ): Promise<{ result: InvestorDR[]; seo: any }> {
+  async getDRDetail(region?: string): Promise<{ result: InvestorDR[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {
@@ -1745,7 +1717,7 @@ export class InvestorsService {
 
     const mi = await this.miRepository.find({ where });
 
-    const processedMIs: ProcessedMI[] = mi.map((mi) => ({
+    const processedMIs: ProcessedMI[] = mi.map(mi => ({
       pdf: mi.mi_documentation_pdf,
       pdf_title: mi.mi_documentation_title,
       region: mi.mi_regions,
@@ -1868,9 +1840,7 @@ export class InvestorsService {
     }
   }
 
-  async getFAQDetail(
-    region?: string,
-  ): Promise<{ result: InvestorFAQ[]; seo: any }> {
+  async getFAQDetail(region?: string): Promise<{ result: InvestorFAQ[]; seo: any }> {
     const where: any = {};
 
     if (region != null && region != '') {

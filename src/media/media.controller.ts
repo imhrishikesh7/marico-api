@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { Media } from './entities/media.entity';

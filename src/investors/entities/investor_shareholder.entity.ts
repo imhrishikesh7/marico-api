@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class InvestorShareHolder {
@@ -17,11 +24,11 @@ export class InvestorShareHolder {
   @Index()
   investors_shi_title: string;
 
-  @Column({ type: 'text'})
+  @Column({ type: 'text' })
   investors_shi_pdf: string;
 
   @Column('json')
-  regions: string[]; 
+  regions: string[];
 
   @Column()
   @Index()

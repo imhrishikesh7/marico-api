@@ -14,7 +14,7 @@ export class InvestorDR {
 
   @Column()
   @Index()
-  dr_documentation_year: string ;
+  dr_documentation_year: string;
 
   @Column()
   @Index()

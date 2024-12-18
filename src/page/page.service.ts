@@ -163,11 +163,11 @@ export class PageService {
       add_choice: string[];
       download_link: string;
     }[],
-      meta_title: string,
-      meta_description: string,
-      canonical_url: string,
-      meta_image: { url: string; width: number; height: number } | null,
-      indexed: boolean,
+    meta_title: string,
+    meta_description: string,
+    canonical_url: string,
+    meta_image: { url: string; width: number; height: number } | null,
+    indexed: boolean,
   ): Promise<Page> {
     //check if page with same url already exists
     const pageWithSameUrl = await this.pageRepository.findOne({
@@ -289,7 +289,7 @@ export class PageService {
         .from(PageContent)
         .where('page_id = :page_id AND id NOT IN (:...ids)', {
           page_id: page.id,
-          ids: page_contents.map((page_content) => page_content.id),
+          ids: page_contents.map(page_content => page_content.id),
         })
         .execute();
     }

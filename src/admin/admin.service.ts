@@ -64,10 +64,7 @@ export class AdminService {
   }
 
   //get admin by unique_id and id
-  async getAdminByUniqueIdAndId(
-    unique_id: string,
-    id: number,
-  ): Promise<Admin | null> {
+  async getAdminByUniqueIdAndId(unique_id: string, id: number): Promise<Admin | null> {
     return await this.adminRepository.findOne({
       where: { unique_id: unique_id, id: id },
       relations: ['role'],
@@ -175,11 +172,7 @@ export class AdminService {
   }
 
   //update admin password
-  async updateAdminPassword(
-    loggedInAdmin: Admin,
-    id: number,
-    password: string,
-  ): Promise<boolean> {
+  async updateAdminPassword(loggedInAdmin: Admin, id: number, password: string): Promise<boolean> {
     const admins = await this.adminRepository.find({
       where: { id: id },
       relations: ['role'],
@@ -217,7 +210,7 @@ export class AdminService {
       order: { name: 'ASC' },
     });
 
-    return admins.map((admin) => {
+    return admins.map(admin => {
       return {
         id: admin.id,
         name: admin.name,
@@ -264,7 +257,7 @@ export class AdminService {
     const admins = await this.adminRepository.find({
       where: { id: In(ids) },
     });
-    return admins.map((admin) => {
+    return admins.map(admin => {
       return {
         id: admin.id,
         name: admin.name,
@@ -289,7 +282,7 @@ export class AdminService {
 
     //check if permissions are valid
     for (const permission of rolePermissions) {
-      const foundPermission = allowedPermissions.find((allowedPermission) => {
+      const foundPermission = allowedPermissions.find(allowedPermission => {
         return allowedPermission.key == permission;
       });
       if (!foundPermission) {
@@ -332,7 +325,7 @@ export class AdminService {
 
     //check if permissions are valid
     for (const permission of rolePermissions) {
-      const foundPermission = allowedPermissions.find((allowedPermission) => {
+      const foundPermission = allowedPermissions.find(allowedPermission => {
         return allowedPermission.key == permission;
       });
       if (!foundPermission) {
@@ -401,10 +394,7 @@ export class AdminService {
         filteredMenu.push(menuItem);
         continue;
       }
-      if (
-        menuItem.role.some((item) => role.permissions.includes(item)) ||
-        role.is_super_admin
-      ) {
+      if (menuItem.role.some(item => role.permissions.includes(item)) || role.is_super_admin) {
         if (!menuItem.sub) {
           filteredMenu.push(menuItem);
           continue;
@@ -414,7 +404,7 @@ export class AdminService {
           continue;
         }
         //check if sub menu has role
-        menuItem.sub = menuItem.sub.filter((subMenuItem) => {
+        menuItem.sub = menuItem.sub.filter(subMenuItem => {
           if (!subMenuItem.role) {
             return true;
           }
@@ -422,7 +412,7 @@ export class AdminService {
             return true;
           }
           if (
-            subMenuItem.role.some((item) => role.permissions.includes(item)) ||
+            subMenuItem.role.some(item => role.permissions.includes(item)) ||
             role.is_super_admin
           ) {
             return true;
@@ -461,16 +451,15 @@ export class AdminService {
     //set enddate to 23:59:59
     endDate.setHours(23, 59, 59, 999);
 
-    const [adminActivities, total] =
-      await this.adminActivityRepository.findAndCount({
-        where: {
-          created_at: Between(startDate, endDate),
-        },
-        relations: ['admin'],
-        order: { created_at: 'DESC' },
-        skip: skip,
-        take: limit,
-      });
+    const [adminActivities, total] = await this.adminActivityRepository.findAndCount({
+      where: {
+        created_at: Between(startDate, endDate),
+      },
+      relations: ['admin'],
+      order: { created_at: 'DESC' },
+      skip: skip,
+      take: limit,
+    });
 
     return {
       adminActivities: adminActivities,
@@ -479,15 +468,12 @@ export class AdminService {
   }
 
   //upload file to s3
-  async uploadFileToS3(
-    file: Express.Multer.File,
-    directory: string,
-  ): Promise<string> {
+  async uploadFileToS3(file: Express.Multer.File, directory: string): Promise<string> {
     const s3 = new AWS.S3({
       region: process.env.AWS_REGION,
     });
     //generate unique file name (slugify original name)
-    let file_name = file.originalname.split('.');
+    const file_name = file.originalname.split('.');
     const filename = `${Utility.slugify(file_name[0])}.${file_name[1]}`;
     //check if extension is allowed
     const allowedExtensions = [
@@ -532,14 +518,12 @@ export class AdminService {
 
   //generate thumbnail for video file using fluent-ffmpeg and upload to s3
   generateThumbnailForVideoFile(file: Express.Multer.File): Promise<string> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const s3 = new AWS.S3({
         region: process.env.AWS_REGION,
       });
       //generate thumbnail
-      const thumbnailFilename = `${Date.now()}-${Utility.slugify(
-        file.originalname,
-      )}.jpg`;
+      const thumbnailFilename = `${Date.now()}-${Utility.slugify(file.originalname)}.jpg`;
       const thumbnailPath = `/tmp/${thumbnailFilename}`;
       const thumbnailUploadPath = `uploads/${thumbnailFilename}`;
       //save file to tmp

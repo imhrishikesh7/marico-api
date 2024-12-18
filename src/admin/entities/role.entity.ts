@@ -46,6 +46,6 @@ export class Role {
   @Index()
   updated_at: Date;
 
-  @OneToMany(() => Admin, (admin) => admin.role)
+  @OneToMany(() => Admin, admin => admin.role)
   admins: Admin[];
 }

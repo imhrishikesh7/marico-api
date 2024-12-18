@@ -1,4 +1,11 @@
-import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class CorporateGovernance {
@@ -25,7 +32,7 @@ export class CorporateGovernance {
   documentation_cg_category: string;
 
   @Column('json')
-  cg_regions: string[]; 
+  cg_regions: string[];
 
   @Column()
   @Index()

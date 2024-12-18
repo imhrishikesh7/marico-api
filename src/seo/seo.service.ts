@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { FindOperator, Like, Repository } from 'typeorm';
 import { Sitemap } from './entities/seo.entity';
 import { Contact } from './entities/contact.entity';
 import * as FuzzySearch from 'fuzzy-search';
@@ -33,7 +33,9 @@ export class SeoService {
   }
 
   async getSEO(search: string): Promise<Sitemap[]> {
-    const where: any = {};
+    const where: {
+      meta_title?: FindOperator<string>;
+    } = {};
     if (search) {
       where.meta_title = Like('%' + search + '%');
     }
@@ -105,15 +107,13 @@ export class SeoService {
     return await this.contactRepository.save(contact);
   }
 
-  async getSearchDetail(query: string): Promise<any> {
+  async getSearchDetail(query: string): Promise<Sitemap[]> {
     const sitemap = await this.seoRepository.find({
       where: { indexed: true },
     });
-    const searcher = new FuzzySearch(
-      sitemap,
-      ['meta_title', 'meta_description'],
-      { caseSensitive: false },
-    );
+    const searcher = new FuzzySearch(sitemap, ['meta_title', 'meta_description'], {
+      caseSensitive: false,
+    });
     return searcher.search(query);
   }
 }

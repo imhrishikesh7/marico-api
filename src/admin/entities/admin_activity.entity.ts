@@ -51,7 +51,7 @@ export class AdminActivity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @ManyToOne(() => Admin, (admin) => admin.admin_activities)
+  @ManyToOne(() => Admin, admin => admin.admin_activities)
   @JoinColumn({ name: 'admin_id' })
   admin: Admin;
 }

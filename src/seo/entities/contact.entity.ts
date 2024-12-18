@@ -24,27 +24,27 @@ export class Contact {
 
   @Column()
   @Index()
-  name:string;
- 
-  @Column()
-  @Index()
-  phone:string;
+  name: string;
 
   @Column()
   @Index()
-  email:string;
+  phone: string;
 
   @Column()
   @Index()
-  address:string;
+  email: string;
 
   @Column()
   @Index()
-  query_type:string;
+  address: string;
 
   @Column()
   @Index()
-  query:string;
+  query_type: string;
+
+  @Column()
+  @Index()
+  query: string;
 
   @CreateDateColumn()
   @Index()

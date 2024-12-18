@@ -7,11 +7,9 @@ import { Region } from './entities/region.entity';
 export class RegionsController {
   constructor(private readonly regionService: RegionsService) {}
 
- 
   @ApiBearerAuth()
   @Get('')
   async getRegionList(): Promise<Region[]> {
     return await this.regionService.getRegions();
   }
-
 }

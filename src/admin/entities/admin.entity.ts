@@ -75,10 +75,10 @@ export class Admin {
   @Index()
   role_id: number;
 
-  @ManyToOne(() => Role, (role) => role.admins)
+  @ManyToOne(() => Role, role => role.admins)
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @OneToMany(() => AdminActivity, (admin_activity) => admin_activity.admin)
+  @OneToMany(() => AdminActivity, admin_activity => admin_activity.admin)
   admin_activities: AdminActivity[];
 }

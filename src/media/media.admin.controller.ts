@@ -41,9 +41,7 @@ export class MediaAdminController {
   })
   @Roles(['MEDIA'])
   @Get('/')
-  async getMedia(
-    @Query('search', new DefaultValuePipe('')) search: string,
-  ): Promise<Media[]> {
+  async getMedia(@Query('search', new DefaultValuePipe('')) search: string): Promise<Media[]> {
     return await this.mediaService.getMedia(search || undefined);
   }
 
@@ -159,19 +157,22 @@ export class MediaAdminController {
     @Body('media_regions') media_regions: string[],
     @Body('release_date', ParseDateTimePipe) release_date: Date,
     @Body('external_link') external_link: string,
-    @Body('small_image') small_image: {
+    @Body('small_image')
+    small_image: {
       url: string;
       width: number;
       height: number;
       alt: string;
     } | null,
-    @Body('thumbnail') thumbnail: {
+    @Body('thumbnail')
+    thumbnail: {
       url: string;
       width: number;
       height: number;
       alt: string;
     } | null,
-    @Body('marico_img') marico_img: {
+    @Body('marico_img')
+    marico_img: {
       url: string;
       width: number;
       height: number;
