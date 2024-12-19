@@ -6,7 +6,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 RUN npm i -g @nestjs/cli -y
 RUN apk add ffmpeg
 
-RUN COPY package*.json ./
+COPY package*.json ./
 RUN npm install
 
 COPY . .
