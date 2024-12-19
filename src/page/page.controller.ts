@@ -9,6 +9,8 @@ import { BrandsService } from 'src/brands/brands.service';
 import { Brand } from 'src/brands/entities/brand.entity';
 import { Media } from 'src/media/entities/media.entity';
 import { MediaService } from 'src/media/media.service';
+import { Sitemap } from 'src/seo/entities/seo.entity';
+import { SeoService } from 'src/seo/seo.service';
 
 @Controller(':region/page')
 export class PageController {
@@ -16,6 +18,7 @@ export class PageController {
     private readonly pageService: PageService,
     private readonly brandService: BrandsService,
     private readonly mediaService: MediaService,
+    private readonly seoService: SeoService,
   ) {}
 
   //public get page by url
@@ -33,10 +36,13 @@ export class PageController {
     page: Page;
     brand_slider: Brand[];
     news: Media | null;
+    seo: Sitemap|null;
   }> {
     const page = await this.pageService.findOneByUrl(url, true, true, region);
     let brand_slider: Brand[] = [];
     let news = null;
+    let seo = null;
+
     if (page) {
       for (const content of page.page_contents) {
         if (content.component_type === 'Brands Collection') {
@@ -46,6 +52,7 @@ export class PageController {
           news = await this.mediaService.getFrontNewsDetail(region);
         }
       }
+      seo = await this.seoService.findOne(page.id, url);
     }
     if (!page) {
       throw new BadRequestException('Page not found');
@@ -54,6 +61,7 @@ export class PageController {
       page,
       brand_slider,
       news,
+      seo,
     };
   }
 }
