@@ -1,3 +1,4 @@
+import { Page } from 'src/page/entities/page.entity';
 import {
   Entity,
   Column,
@@ -5,6 +6,8 @@ import {
   Index,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -45,4 +48,8 @@ export class Sitemap {
   @UpdateDateColumn()
   @Index()
   updated_at: Date;
+
+  @OneToOne(() => Page, page => page.seo)
+  @JoinColumn({ name: 'ref_id' })
+  page: Page;
 }
