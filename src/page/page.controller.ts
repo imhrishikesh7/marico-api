@@ -36,12 +36,12 @@ export class PageController {
     page: Page;
     brand_slider: Brand[];
     news: Media | null;
-    seo: Sitemap|null;
+    seo: Sitemap | null;
   }> {
     const page = await this.pageService.findOneByUrl(url, true, true, region);
     let brand_slider: Brand[] = [];
     let news = null;
-    let seo = null;
+    let seoRecord = null;
 
     if (page) {
       for (const content of page.page_contents) {
@@ -52,8 +52,8 @@ export class PageController {
           news = await this.mediaService.getFrontNewsDetail(region);
         }
       }
-      seo = await this.seoService.findOne(page.id, url);
     }
+
     if (!page) {
       throw new BadRequestException('Page not found');
     }
@@ -61,7 +61,7 @@ export class PageController {
       page,
       brand_slider,
       news,
-      seo,
+      seo: page.seo,
     };
   }
 }

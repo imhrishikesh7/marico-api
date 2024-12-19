@@ -121,7 +121,7 @@ export class PageService {
               region: Like('%' + regionName.id + '%'),
             },
           },
-          relations: ['page_contents'],
+          relations: ['page_contents', 'seo'],
           order: { page_contents: { order: 'ASC' } },
         });
       }
@@ -135,7 +135,7 @@ export class PageService {
           is_active: true,
         },
       },
-      relations: ['page_contents'],
+      relations: ['page_contents', 'seo'],
       order: { page_contents: { order: 'ASC' } },
     });
   }

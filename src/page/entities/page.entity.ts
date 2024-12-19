@@ -23,10 +23,12 @@ import {
   Entity,
   Index,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { PageContent } from './page_content.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 export const PageTypes = ['page'];
 
@@ -81,4 +83,7 @@ export class Page {
 
   @OneToMany(() => PageContent, page_content => page_content.page)
   page_contents: PageContent[];
+
+  @OneToOne(() => Sitemap, seo => seo.page)
+  seo: Sitemap;
 }
