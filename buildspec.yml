@@ -4,24 +4,22 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS
+        --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo Pre-build phase completed.
 
   build:
     commands:
       - echo Building the Docker image...
-      - docker build --file Dockerfile.prod -t $ECR_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - echo Tagging the Docker image with 'latest'...
-      - docker tag $ECR_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME:latest
+      - docker build --file Dockerfile.prod -t $ECR_REPO_NAME:latest .
 
   post_build:
     commands:
       - echo Pushing the Docker image to Amazon ECR...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPO_NAME:latest
       - echo Build and push completed.
 
 artifacts:
   files:
-    - "**/*"
+    - '**/*'
   discard-paths: yes
