@@ -41,7 +41,6 @@ export class PageController {
     const page = await this.pageService.findOneByUrl(url, true, true, region);
     let brand_slider: Brand[] = [];
     let news = null;
-    let seoRecord = null;
 
     if (page) {
       for (const content of page.page_contents) {
