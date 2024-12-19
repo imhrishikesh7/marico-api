@@ -820,8 +820,6 @@ export class InvestorsAdminController {
     schedule_analyst_meet_pdf: string,
     @Body('schedule_analyst_meet_year') schedule_analyst_meet_year: string,
     @Body('region') region: string[],
-    @Body('is_active', ParseBoolPipe)
-    is_active: boolean,
   ): Promise<{ schedule: InvestorSchedule }> {
     const schedule = await this.investorsService.addUpdateSchedule(
       id,
@@ -830,7 +828,6 @@ export class InvestorsAdminController {
       schedule_analyst_meet_pdf,
       schedule_analyst_meet_year,
       region,
-      is_active,
     );
     return {
       schedule,

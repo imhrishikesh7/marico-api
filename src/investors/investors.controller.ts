@@ -2,9 +2,6 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { InvestorQUMaster } from './entities/investor_qu_master.entity';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { InvestorShareHolder } from './entities/investor_shareholder.entity';
-import { InvestorAGM } from './entities/investor_agm.entity';
-import { InvestorDividends } from './entities/investor_dividend.entity';
 import { Sustainability } from './entities/investor_sustainability.entity';
 import { CorporateGovernance } from './entities/investor_cogevernance.entity';
 import { InformationUpdate } from './entities/investor_iu.entity';
@@ -12,13 +9,9 @@ import { InvestorSchedule } from './entities/investor_schedule.entity';
 import { InvestorPlacement } from './entities/investor_placement.entity';
 import { InvestorContact } from './entities/investor_contact.entity';
 import { InvestorPSI } from './entities/investor_psi.entity';
-import { InvestorAR } from './entities/investor_ar.entity';
-import { InvestorMI } from './entities/investor_mi.entity';
-import { InvestorDR } from './entities/investor_dr.entity';
 import { SeoService } from 'src/seo/seo.service';
 import { InvestorFAQ } from './entities/investor_faq.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
-import { QuartelyUpdate } from './entities/investor_qu_update.entity';
 interface PdfItem {
   pdf_title: string;
   pdf: string;
@@ -64,6 +57,90 @@ interface GroupedPSICategory {
   category: string;
   pdfs: PSIPdf[];
 }
+interface ProcessedMI {
+  pdf: string;
+  pdf_title: string;
+  sort_order: number;
+  url_title: string;
+  writeup: string;
+  dividends_year: string;
+  dividend_regions: string[];
+  id: number;
+  created_at: Date;
+  updated_at: Date;
+}
+interface SHIPdf {
+  pdf_title: string;
+  pdf: string;
+  id: number;
+  title: string;
+  url_title: string;
+  regions: string[];
+  sort_order: number;
+  is_active: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+interface SHISubcategory {
+  subcategory: string;
+  pdfs: SHIPdf[];
+}
+
+interface SHICategory {
+  category: string;
+  subcategories?: SHISubcategory[];
+  pdfs?: SHIPdf[];
+}
+
+interface SHIResult {
+  result: SHICategory[];
+  seo: Sitemap | null;
+}
+
+type PDF = {
+  investor_qu_id: number;
+  investor_qu: string;
+  investor_qu_pdf: string;
+  pdf_title: string;
+  pdf: string;
+  qu_region: string[];
+  sort_order: number;
+  is_active: boolean;
+};
+interface AGMCategory {
+  category: string;
+  qr_title: string;
+  qr_code: string | null; // Adjusted type
+  qr_link: string;
+  pdfs: {
+    pdf_title: string;
+    pdf: string;
+    id: number;
+    title: string;
+    url_title: string;
+    region: string[];
+    sort_order: number;
+    is_active: boolean;
+    created_at: Date;
+    updated_at: Date;
+  }[];
+}
+
+interface AGMResult {
+  result: AGMCategory[];
+  seo: Sitemap | null;
+}
+
+type Subcategory = {
+  subcategory: string;
+  pdfs: PDF[];
+};
+
+type Category = {
+  category: string;
+  subcategories: Subcategory[];
+};
 @Controller(':region/investors')
 export class InvestorsController {
   constructor(
@@ -79,25 +156,33 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/shareholder-info')
-  async getSHIDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorShareHolder[]; seo: Sitemap }> {
+  async getSHIDetail(@Param('region') region: string): Promise<SHIResult> {
     return await this.investorsService.getSHIDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/agm')
-  async getAGMDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorAGM[]; seo: Sitemap }> {
+  async getAGMDetail(@Param('region') region: string): Promise<AGMResult> {
     return await this.investorsService.getAGMDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/dividend')
-  async getDevidendsDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorDividends[]; seo: Sitemap }> {
+  async getDevidendsDetail(@Param('region') region: string): Promise<{
+    result: {
+      category: string;
+      subcategories: {
+        subcategory: string;
+        supersubcategories: {
+          supersubcategory: string;
+          pdfs: ProcessedMI[];
+        }[];
+        pdfs: ProcessedMI[];
+      }[];
+      pdfs: ProcessedMI[];
+    }[];
+    seo: Sitemap | null;
+  }> {
     return await this.investorsService.getDividendsDetail(region);
   }
 
@@ -156,7 +241,7 @@ export class InvestorsController {
   @Get('documentation/latest-update')
   async getIUDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InformationUpdate[]; seo: Sitemap }> {
+  ): Promise<{ result: InformationUpdate[]; seo: Sitemap | null }> {
     return await this.investorsService.getIUDetail(region);
   }
 
@@ -205,7 +290,7 @@ export class InvestorsController {
   @Get('documentation/placement-document')
   async getPDDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorPlacement[]; seo: Sitemap }> {
+  ): Promise<{ result: InvestorPlacement[]; seo: Sitemap | null }> {
     return await this.investorsService.getPDDetail(region);
   }
 
@@ -213,7 +298,7 @@ export class InvestorsController {
   @Get('documentation/quarterly-updates')
   async getQUDetail(
     @Param('region') region: string,
-  ): Promise<{ result: QuartelyUpdate[]; seo: Sitemap }> {
+  ): Promise<{ result: Category[]; seo: Sitemap | null }> {
     return await this.investorsService.getQUALL(region);
   }
 
@@ -221,7 +306,7 @@ export class InvestorsController {
   @Get('documentation/investor-contact')
   async getICDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorContact[]; seo: Sitemap }> {
+  ): Promise<{ result: InvestorContact[]; seo: Sitemap | null }> {
     return await this.investorsService.getICDetail(region);
   }
 
@@ -270,25 +355,74 @@ export class InvestorsController {
 
   @ApiBearerAuth()
   @Get('documentation/annual-reports')
-  async getARDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorAR[]; seo: Sitemap }> {
+  async getARDetail(@Param('region') region: string): Promise<{
+    result: {
+      category: string;
+      is_year: boolean;
+      subcategories: {
+        subcategory: string;
+        pdfs: {
+          pdf_title: string;
+          pdf: string;
+          id: number;
+          url_title: string;
+          regions: string[];
+          sort_order: number;
+          created_at: Date;
+          updated_at: Date;
+        }[];
+      }[];
+      pdfs: {
+        pdf_title: string;
+        pdf: string;
+        id: number;
+        url_title: string;
+        regions: string[];
+        sort_order: number;
+        created_at: Date;
+        updated_at: Date;
+      }[];
+    }[];
+    seo: Sitemap | null;
+  }> {
     return await this.investorsService.getARDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/latest-director-report')
-  async getDRDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorDR[]; seo: Sitemap }> {
+  async getDRDetail(@Param('region') region: string): Promise<{
+    result: {
+      category: string;
+      pdfs: {
+        pdf_title: string;
+        pdf: string;
+        id: number;
+        url_title: string;
+        regions: string[];
+        sort_order: number;
+        created_at: Date;
+        updated_at: Date;
+      }[];
+    }[];
+    seo: Sitemap | null;
+  }> {
     return await this.investorsService.getDRDetail(region);
   }
 
   @ApiBearerAuth()
   @Get('documentation/investor-principles-disclosure')
-  async getMIDetail(
-    @Param('region') region: string,
-  ): Promise<{ result: InvestorMI[]; seo: Sitemap }> {
+  async getMIDetail(@Param('region') region: string): Promise<{
+    result: {
+      pdf: string;
+      pdf_title: string;
+      region: string[];
+      sort_order: number;
+      is_active: boolean;
+      url_title: string;
+      id: number;
+    }[];
+    seo: Sitemap | null;
+  }> {
     return await this.investorsService.getMIDetail(region);
   }
 
@@ -296,7 +430,7 @@ export class InvestorsController {
   @Get('faq')
   async getFAQDetail(
     @Param('region') region: string,
-  ): Promise<{ result: InvestorFAQ[]; seo: Sitemap }> {
+  ): Promise<{ result: InvestorFAQ[]; seo: Sitemap | null }> {
     return await this.investorsService.getFAQDetail(region);
   }
 }
