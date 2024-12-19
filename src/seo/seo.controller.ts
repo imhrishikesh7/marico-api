@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { SeoService } from './seo.service';
 import { Contact } from './entities/contact.entity';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Sitemap } from './entities/seo.entity';
 
 @Controller('seo')
@@ -9,14 +9,39 @@ export class SeoController {
   constructor(private readonly seoService: SeoService) {}
 
   @ApiBearerAuth()
-  @Get('contact-us')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string',
+        },
+        email: {
+          type: 'string',
+        },
+        phone: {
+          type: 'string',
+        },
+        address: {
+          type: 'string',
+        },
+        query_type: {
+          type: 'string',
+        },
+        query: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @Post('contact-us')
   async addContactUS(
-    @Param('name') name: string,
-    @Param('email') email: string,
-    @Param('phone') phone: string,
-    @Param('address') address: string,
-    @Param('query_type') query_type: string,
-    @Param('query') query: string,
+    @Body('name') name: string,
+    @Body('email') email: string,
+    @Body('phone') phone: string,
+    @Body('address') address: string,
+    @Body('query_type') query_type: string,
+    @Body('query') query: string,
   ): Promise<Contact> {
     return await this.seoService.addContactUS(name, email, phone, address, query_type, query);
   }
