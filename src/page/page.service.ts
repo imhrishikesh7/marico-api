@@ -120,6 +120,10 @@ export class PageService {
               is_active: true,
               region: Like('%' + regionName.id + '%'),
             },
+            seo: {
+              indexed: true,
+              ref: 'page',
+            },
           },
           relations: ['page_contents', 'seo'],
           order: { page_contents: { order: 'ASC' } },
