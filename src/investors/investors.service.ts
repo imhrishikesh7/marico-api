@@ -257,6 +257,16 @@ export class InvestorsService {
       {} as Record<string, SHICategory>,
     );
 
+    Object.values(groupedByCategory).forEach(category => {
+      if (category.subcategories) {
+        category.subcategories.forEach(sub => {
+          sub.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+        });
+      } else if (category.pdfs) {
+        category.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+      }
+    });;
+
     // Convert grouped data to an array and sort by category order
     const result: SHICategory[] = Object.values(groupedByCategory)
       .map(item => {
