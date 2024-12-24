@@ -265,7 +265,7 @@ export class InvestorsService {
       } else if (category.pdfs) {
         category.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
       }
-    });;
+    });
 
     // Convert grouped data to an array and sort by category order
     const result: SHICategory[] = Object.values(groupedByCategory)
