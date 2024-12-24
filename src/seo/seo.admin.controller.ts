@@ -7,6 +7,7 @@ import {
   DefaultValuePipe,
   Query,
   ParseIntPipe,
+  Inject,
 } from '@nestjs/common';
 import { SeoService } from './seo.service';
 import { Sitemap } from './entities/seo.entity';
@@ -14,10 +15,17 @@ import { Roles } from 'src/admin/roles.decorator';
 import { ApiBearerAuth, ApiBody, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { AdminOnly } from 'src/admin/admin.decorator';
 import { EmptystringPipe } from 'src/validations/emptystring/emptystring.pipe';
+import { AdminService } from 'src/admin/admin.service';
+import { AdminRequest } from 'src/interfaces/adminrequest.interface';
+import { REQUEST } from '@nestjs/core';
 
 @Controller('admin/seo')
 export class SeoAdminController {
-  constructor(private readonly seoService: SeoService) {}
+  constructor(
+    private readonly seoService: SeoService,
+    private readonly adminService: AdminService,
+    @Inject(REQUEST) private readonly request: AdminRequest,
+  ) {}
 
   // get seo list
   @AdminOnly()
@@ -117,7 +125,7 @@ export class SeoAdminController {
   ): Promise<Sitemap> {
     // try catch block
     try {
-      return await this.seoService.addUpdateSitemap(
+      let sitemap = await this.seoService.addUpdateSitemap(
         id,
         ref,
         ref_id,
@@ -127,6 +135,23 @@ export class SeoAdminController {
         meta_image,
         indexed,
       );
+      await this.adminService.addAdminActivity(
+        this.request.admin,
+        `Sitemap ${sitemap.meta_title}`,
+        'created_sitemap',
+        `${sitemap.id}`,
+        {
+          id,
+          ref,
+          ref_id,
+          meta_title,
+          meta_description,
+          canonical_url,
+          meta_image,
+          indexed,
+        },
+      );
+      return sitemap;
     } catch (e) {
       console.log(e);
       throw e;
