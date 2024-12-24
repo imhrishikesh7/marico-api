@@ -65,6 +65,9 @@ export class SeoAdminController {
         ref: {
           type: 'string',
         },
+        ref_id: {
+          type: 'number',
+        },
         meta_title: {
           type: 'string',
         },
@@ -99,6 +102,7 @@ export class SeoAdminController {
   async addUpdateSitemap(
     @Body('id', new DefaultValuePipe(0), ParseIntPipe) id: number,
     @Body('ref', EmptystringPipe) ref: string,
+    @Body('ref_id', ParseIntPipe) ref_id: number,
     @Body('meta_title', EmptystringPipe) meta_title: string,
     @Body('meta_description', EmptystringPipe) meta_description: string,
     @Body('canonical_url', EmptystringPipe) canonical_url: string,
@@ -116,6 +120,7 @@ export class SeoAdminController {
       return await this.seoService.addUpdateSitemap(
         id,
         ref,
+        ref_id,
         meta_title,
         meta_description,
         canonical_url,

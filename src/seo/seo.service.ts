@@ -47,6 +47,7 @@ export class SeoService {
   async addUpdateSitemap(
     id: number,
     ref: string,
+    ref_id: number,
     meta_title: string,
     meta_description: string,
     canonical_url: string,
@@ -66,7 +67,7 @@ export class SeoService {
       });
       if (sitemap) {
         sitemap.ref = ref;
-        sitemap.ref_id = 0;
+        sitemap.ref_id = ref_id;
         sitemap.meta_title = meta_title;
         sitemap.meta_description = meta_description;
         sitemap.canonical_url = canonical_url;
@@ -79,7 +80,7 @@ export class SeoService {
       const sitemap = new Sitemap();
 
       sitemap.ref = ref;
-      sitemap.ref_id = 0;
+      sitemap.ref_id = ref_id;
       sitemap.meta_title = meta_title;
       sitemap.meta_description = meta_description;
       sitemap.canonical_url = canonical_url;
