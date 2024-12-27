@@ -50,4 +50,9 @@ export class SeoController {
   async getSearchDetail(@Query('query') query: string): Promise<Sitemap[]> {
     return await this.seoService.getSearchDetail(query);
   }
+
+  @Get('sitemap')
+  async getSitemapDetail(): Promise<Sitemap[]> {
+    return await this.seoService.getSitemapDetail();
+  }
 }

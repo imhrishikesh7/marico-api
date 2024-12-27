@@ -117,4 +117,8 @@ export class SeoService {
     });
     return searcher.search(query);
   }
+
+  async getSitemapDetail(): Promise<Sitemap[]> {
+    return await this.seoRepository.find();
+  }
 }
