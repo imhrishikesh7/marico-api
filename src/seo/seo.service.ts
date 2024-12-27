@@ -119,6 +119,28 @@ export class SeoService {
   }
 
   async getSitemapDetail(): Promise<Sitemap[]> {
-    return await this.seoRepository.find();
+    const sitemap = await this.seoRepository.find();
+
+    const updatedSitemap = sitemap.map(item => {
+      // Extract the canonical URL from the item
+      let { canonical_url } = item;
+
+      if (canonical_url.includes('.pdf')) {
+        // Find the index of '/investorspdf' in the URL
+        const pdfIndex = canonical_url.indexOf('/investorspdf');
+        if (pdfIndex !== -1) {
+          // Trim everything before '/investorspdf' and append base URL
+          canonical_url = `${canonical_url.substring(pdfIndex)}`;
+        }
+      }
+
+      return { ...item, canonical_url };
+    });
+
+    // Remove duplicates by using a Set
+    const uniqueSitemap = updatedSitemap.filter(
+      (item, index, self) => index === self.findIndex(t => t.canonical_url === item.canonical_url),
+    );
+    return uniqueSitemap;
   }
 }
