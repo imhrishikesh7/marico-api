@@ -473,7 +473,8 @@ export class AdminService {
     });
     //generate unique file name (slugify original name)
     const file_name = file.originalname.split('.');
-    const filename = `${Utility.slugify(file_name[0])}.${file_name[1]}`;
+    const filename = `${file_name[0]}.${file_name[1]}`;
+
     //check if extension is allowed
     const allowedExtensions = [
       'jpg',
