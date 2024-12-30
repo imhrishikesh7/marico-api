@@ -5,6 +5,7 @@ import { FindOperator, Like, Repository } from 'typeorm';
 import { Recognition } from './entities/aboutus_recognition.entity';
 import { History } from './entities/aboutus_history.entity';
 import { Region } from 'src/regions/entities/region.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Injectable()
 export class AboutusService {
@@ -17,6 +18,8 @@ export class AboutusService {
     private readonly historyRepository: Repository<History>,
     @InjectRepository(Region)
     private readonly regionRepository: Repository<Region>,
+    @InjectRepository(Sitemap)
+    private readonly seoRepository: Repository<Sitemap>,
   ) {}
 
   async getMemberList(search?: string): Promise<AboutusMember[]> {
@@ -31,7 +34,10 @@ export class AboutusService {
     }
   }
 
-  async getMembers(region?: string, role?: string): Promise<AboutusMember[]> {
+  async getMembers(
+    region?: string,
+    role?: string,
+  ): Promise<{ members: AboutusMember[]; seo: Sitemap | null }> {
     const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -48,9 +54,17 @@ export class AboutusService {
     if (role != null && role != '') {
       where.type = Like('%' + role + '%'); // Using In operator for multiple roles
     }
-    return await this.aboutUsRepository.find({
+    let members = await this.aboutUsRepository.find({
       where,
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('%' + role + '%') },
+    });
+
+    return {
+      members,
+      seo: seoRecord,
+    };
   }
 
   async getMemberById(id: number): Promise<AboutusMember | null> {
@@ -121,7 +135,7 @@ export class AboutusService {
     region?: string,
     category?: string,
     yearfliter?: string,
-  ): Promise<Recognition[]> {
+  ): Promise<{ recognition: Recognition[]; seo: Sitemap | null }> {
     const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -141,9 +155,17 @@ export class AboutusService {
       where.year = Like('%' + yearfliter + '%');
     }
     where.is_active = true;
-    return await this.recognitionRepository.find({
+    let recognition = await this.recognitionRepository.find({
       where,
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('recognition') },
+    });
+
+    return {
+      recognition,
+      seo: seoRecord,
+    };
   }
   async getAwardById(id: number): Promise<Recognition | null> {
     return await this.recognitionRepository.findOne({
@@ -217,7 +239,7 @@ export class AboutusService {
     }
   }
 
-  async getHistories(region?: string): Promise<History[]> {
+  async getHistories(region?: string): Promise<{history: History[], seo:Sitemap|null}> {
     const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({
@@ -231,9 +253,17 @@ export class AboutusService {
       }
     }
     where.is_active = true;
-    return await this.historyRepository.find({
+    let history = await this.historyRepository.find({
       where,
     });
+    const seoRecord = await this.seoRepository.findOne({
+      where: { ref_id: 0, ref: Like('history') },
+    });
+
+    return {
+      history,
+      seo: seoRecord,
+    };
   }
 
   async getHistoryById(id: number): Promise<History | null> {

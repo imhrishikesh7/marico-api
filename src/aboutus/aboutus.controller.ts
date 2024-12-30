@@ -4,6 +4,7 @@ import { AboutusMember } from './entities/aboutus_member.entity';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { History } from './entities/aboutus_history.entity';
 import { Recognition } from './entities/aboutus_recognition.entity';
+import { Sitemap } from 'src/seo/entities/seo.entity';
 
 @Controller(':region/about-us')
 export class AboutusController {
@@ -11,19 +12,19 @@ export class AboutusController {
 
   @ApiBearerAuth()
   @Get('leadership')
-  async getLeadership(@Param('region') region: string): Promise<AboutusMember[]> {
+  async getLeadership(@Param('region') region: string): Promise<{members: AboutusMember[], seo: Sitemap|null}> {
     return await this.aboutusService.getMembers(region, 'leadership');
   }
 
   @ApiBearerAuth()
   @Get('board-of-directors')
-  async getDirectors(@Param('region') region: string): Promise<AboutusMember[]> {
+  async getDirectors(@Param('region') region: string): Promise<{members: AboutusMember[], seo: Sitemap|null}> {
     return await this.aboutusService.getMembers(region, 'board-of-directors');
   }
 
   @ApiBearerAuth()
   @Get('history')
-  async getHistory(@Param('region') region: string): Promise<History[]> {
+  async getHistory(@Param('region') region: string): Promise<{history: History[], seo:Sitemap|null}> {
     return await this.aboutusService.getHistories(region);
   }
 
@@ -42,7 +43,7 @@ export class AboutusController {
     @Param('region') region: string,
     @Query('category') category: string,
     @Query('year') year?: string,
-  ): Promise<Recognition[]> {
+  ): Promise<{recognition: Recognition[], seo:Sitemap|null}> {
     return await this.aboutusService.getRecognition(region, category, year);
   }
 }
