@@ -56,6 +56,9 @@ export class AboutusService {
     }
     let members = await this.aboutUsRepository.find({
       where,
+      order: {
+        sort_order: 'ASC',
+      },
     });
     const seoRecord = await this.seoRepository.findOne({
       where: { ref_id: 0, ref: Like('%' + role + '%') },
@@ -90,6 +93,7 @@ export class AboutusService {
     } | null,
     memberRegions: string[],
     is_active: boolean,
+    sort_order: number,
   ): Promise<AboutusMember> {
     if (id) {
       const member = await this.getMemberById(id);
@@ -102,6 +106,7 @@ export class AboutusService {
         member.thumbnail = thumbnail;
         member.regions = memberRegions;
         member.is_active = is_active;
+        member.sort_order = sort_order;
         return this.aboutUsRepository.save(member);
       }
       throw new Error('Member not found');
@@ -115,6 +120,7 @@ export class AboutusService {
       member.thumbnail = thumbnail;
       member.regions = memberRegions;
       member.is_active = is_active;
+      member.sort_order = sort_order;
       return await this.aboutUsRepository.save(member);
     }
   }
@@ -239,7 +245,7 @@ export class AboutusService {
     }
   }
 
-  async getHistories(region?: string): Promise<{history: History[], seo:Sitemap|null}> {
+  async getHistories(region?: string): Promise<{ history: History[]; seo: Sitemap | null }> {
     const where: Record<string, FindOperator<string> | boolean> = {};
     if (region != null && region != '') {
       const regionName = await this.regionRepository.findOne({

@@ -36,6 +36,10 @@ export class AboutusMember {
   @Index()
   is_active: boolean;
 
+  @Column()
+  @Index()
+  sort_order: number;
+  
   @CreateDateColumn()
   @Index()
   created_at: Date;

@@ -173,8 +173,8 @@ export class MediaService {
       media.small_image = small_image;
       media.thumbnail = thumbnail;
       media.marico_img = marico_img;
-      media.sort_order = sort_order;
       media.is_latest = is_latest;
+      media.sort_order = sort_order;
       return this.mediaRepository.save(media);
     }
   }

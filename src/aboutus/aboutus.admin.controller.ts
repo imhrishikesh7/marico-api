@@ -120,6 +120,9 @@ export class AboutusAdminController {
         is_active: {
           type: 'boolean',
         },
+        sort_order: {
+          type: 'number',
+        }
       },
     },
   })
@@ -140,6 +143,7 @@ export class AboutusAdminController {
     } | null,
     @Body('regions') regions: string[],
     @Body('is_active', SwitchPipe) is_active: boolean,
+    @Body('sort_order', ParseIntPipe) sort_order: number,
   ): Promise<{ member: AboutusMember }> {
     const member = await this.aboutusService.addUpdateMember(
       id,
@@ -150,6 +154,7 @@ export class AboutusAdminController {
       thumbnail,
       regions,
       is_active,
+      sort_order,
     );
 
     await this.adminService.addAdminActivity(
