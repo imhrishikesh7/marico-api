@@ -91,6 +91,9 @@ export class MediaService {
     where.category = Like('%' + category + '%');
     const result = await this.mediaRepository.find({
       where,
+      order: {
+        year: 'DESC',
+      }
     });
 
     const seoRecord = await this.seoRepository.findOne({
