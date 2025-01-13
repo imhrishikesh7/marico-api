@@ -92,7 +92,7 @@ export class MediaService {
     const result = await this.mediaRepository.find({
       where,
       order: {
-        year: 'DESC',
+        release_date: 'DESC',
       }
     });
 
