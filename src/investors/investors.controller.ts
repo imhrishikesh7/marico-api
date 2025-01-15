@@ -13,7 +13,6 @@ import { SeoService } from 'src/seo/seo.service';
 import { InvestorFAQ } from './entities/investor_faq.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
 import { FeaturesService } from 'src/features/features.service';
-import { Like } from 'typeorm';
 import { TitleCategory } from 'src/features/entities/feature.entity';
 interface PdfItem {
   pdf_title: string;
