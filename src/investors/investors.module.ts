@@ -23,6 +23,7 @@ import { Sitemap } from 'src/seo/entities/seo.entity';
 import { SeoService } from 'src/seo/seo.service';
 import { Contact } from 'src/seo/entities/contact.entity';
 import { InvestorFAQ } from './entities/investor_faq.entity';
+import { FeaturesService } from 'src/features/features.service';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import { InvestorFAQ } from './entities/investor_faq.entity';
     ]),
   ],
   controllers: [InvestorsController],
-  providers: [InvestorsService, SeoService],
-  exports: [InvestorsService, SeoService],
+  providers: [InvestorsService, SeoService,FeaturesService],
+  exports: [InvestorsService, SeoService, FeaturesService],
 })
 export class InvestorsModule {}

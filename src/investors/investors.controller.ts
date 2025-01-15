@@ -12,6 +12,9 @@ import { InvestorPSI } from './entities/investor_psi.entity';
 import { SeoService } from 'src/seo/seo.service';
 import { InvestorFAQ } from './entities/investor_faq.entity';
 import { Sitemap } from 'src/seo/entities/seo.entity';
+import { FeaturesService } from 'src/features/features.service';
+import { Like } from 'typeorm';
+import { TitleCategory } from 'src/features/entities/feature.entity';
 interface PdfItem {
   pdf_title: string;
   pdf: string;
@@ -145,6 +148,7 @@ type Category = {
 export class InvestorsController {
   constructor(
     private readonly investorsService: InvestorsService,
+    private readonly featuresService: FeaturesService,
     private readonly seoService: SeoService,
   ) {}
 
@@ -199,6 +203,15 @@ export class InvestorsController {
   ): Promise<{ result: GroupedCategory[]; seo: Sitemap | null }> {
     const cg = await this.investorsService.getCGDetail(region);
 
+    const titleCategories = await this.featuresService.findCategory('cg');
+    const categoryOrder = titleCategories?.reduce(
+      (acc: { [key: string]: number }, category: TitleCategory) => {
+        acc[category.category_title] = category.sort_order;
+        return acc;
+      },
+      {},
+    );
+
     const groupedByCategory = cg.reduce(
       (acc: Record<string, GroupedCategory>, item: CorporateGovernance) => {
         const category = item.documentation_cg_category;
@@ -226,9 +239,11 @@ export class InvestorsController {
       },
       {},
     );
-
-    const result: GroupedCategory[] = Object.values(groupedByCategory);
-
+    const result: GroupedCategory[] = Object.values(groupedByCategory).sort((a, b) => {
+      const orderA = categoryOrder[a.category] ?? Number.MAX_SAFE_INTEGER;
+      const orderB = categoryOrder[b.category] ?? Number.MAX_SAFE_INTEGER;
+      return orderA - orderB;
+    });
     const seoRecord = await this.seoService.findOne(0, 'cg');
 
     return {

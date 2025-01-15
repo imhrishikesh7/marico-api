@@ -40,6 +40,13 @@ export class FeaturesService {
     });
   }
 
+  async findCategory(sub_menu: string): Promise<TitleCategory[]> {
+    return await this.titleCategoryRepository.find({
+      where: { sub_menu: Like(sub_menu) },
+      order: { sort_order: 'ASC' },
+    });
+  }
+
   async addUpdateTitleCategory(
     id: number,
     menu: string,
