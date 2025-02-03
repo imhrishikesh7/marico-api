@@ -257,16 +257,21 @@ export class InvestorsService {
       {} as Record<string, SHICategory>,
     );
 
+
     Object.values(groupedByCategory).forEach(category => {
       if (category.subcategories) {
         category.subcategories.forEach(sub => {
-          sub.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+          sub.pdfs.sort((a, b) => 
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          );
         });
       } else if (category.pdfs) {
-        category.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+        category.pdfs.sort((a, b) => 
+          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+        );
       }
     });
-
+    
     // Convert grouped data to an array and sort by category order
     const result: SHICategory[] = Object.values(groupedByCategory)
       .map(item => {
