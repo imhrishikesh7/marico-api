@@ -185,7 +185,7 @@ export class InvestorsService {
     // Fetch title categories for ordering
     const titleCategories = await this.titleCategoryRepository.find({
       where: { sub_menu: Like('shi') },
-      order: { sort_order: 'ASC' },
+      order: { updated_at: 'DESC' },
     });
 
     // Map category titles to their sort order
