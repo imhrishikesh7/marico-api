@@ -513,7 +513,7 @@ export class AdminService {
       ContentType: file.mimetype,
     };
     await s3.upload(params).promise();
-    return process.env.AWS_S3_CDN + '/' + params.Key;
+    return '/' + params.Key;
   }
 
   //generate thumbnail for video file using fluent-ffmpeg and upload to s3
