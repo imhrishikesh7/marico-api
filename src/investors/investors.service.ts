@@ -185,7 +185,7 @@ export class InvestorsService {
     // Fetch title categories for ordering
     const titleCategories = await this.titleCategoryRepository.find({
       where: { sub_menu: Like('shi') },
-      order: { updated_at: 'DESC' },
+      order: { sort_order: 'ASC' },
     });
 
     // Map category titles to their sort order
@@ -257,21 +257,28 @@ export class InvestorsService {
       {} as Record<string, SHICategory>,
     );
 
+    // Object.values(groupedByCategory).forEach(category => {
+    //   if (category.subcategories) {
+    //     category.subcategories.forEach(sub => {
+    //       sub.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+    //     });
+    //   } else if (category.pdfs) {
+    //     category.pdfs.sort((a, b) => (b.sort_order ?? 0) - (a.sort_order ?? 0));
+    //   }
+    // });
 
     Object.values(groupedByCategory).forEach(category => {
       if (category.subcategories) {
         category.subcategories.forEach(sub => {
-          sub.pdfs.sort((a, b) => 
-            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-          );
+          // Sort PDFs by created_at (descending)
+          sub.pdfs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         });
       } else if (category.pdfs) {
-        category.pdfs.sort((a, b) => 
-          new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
-        );
+        // Sort PDFs by created_at (descending) if no subcategories exist
+        category.pdfs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       }
     });
-    
+
     // Convert grouped data to an array and sort by category order
     const result: SHICategory[] = Object.values(groupedByCategory)
       .map(item => {
