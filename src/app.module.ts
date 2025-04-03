@@ -25,6 +25,7 @@ import { FeaturesAdminController } from './features/features.admin.controller';
 import { SeoModule } from './seo/seo.module';
 import { SeoAdminController } from './seo/seo.admin.controller';
 import { RedirectUrlsModule } from './redirect_urls/redirect_urls.module';
+import { PressReleasesModule } from './press-releases/press-releases.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { RedirectUrlsModule } from './redirect_urls/redirect_urls.module';
     FeaturesModule,
     SeoModule,
     RedirectUrlsModule,
+    PressReleasesModule,
   ],
   controllers: [
     AppController,

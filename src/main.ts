@@ -29,7 +29,7 @@ async function bootstrap(): Promise<void> {
     new TimeoutInterceptor(),
     new ErrorsInterceptor(),
   );
-  app.enableCors();
+  app.enableCors({origin:"*"});
   await app.listen(3000);
 }
 
