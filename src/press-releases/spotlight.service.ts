@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { spotlight } from "../../data/press-releases-new/in-the-spotlight";
+import { spotlight } from "src/dummy-data/press-releases-new/in-the-spotlight";
 
 @Injectable()
 export class SpotlightService {
