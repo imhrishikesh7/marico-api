@@ -27,6 +27,20 @@ import { SeoAdminController } from './seo/seo.admin.controller';
 import { RedirectUrlsModule } from './redirect_urls/redirect_urls.module';
 import { PressReleasesModule } from './press-releases/press-releases.module';
 import MailModule from './download-approval/mail.module';
+import { QuarterlyModule } from './investor-new/Quaterly/Quaterly.module';
+import { PresentationModule } from './investor-new/presentation/presentation.module';
+import { FinincialModule } from './investor-new/finincial/finincial.module';
+import { AnnualReportModule } from './investor-new/annualReport/annualReport.module';
+import { AnnualReportDocModule } from './investor-new/annualReportDoc/annualReportDoc.module';
+import { SubsidiariesModule } from './investor-new/subsidiaries/subsidiaries.module';
+import { StockExchangeModule } from './investor-new/stockExchange/stockExchange.module';
+import { GeneralMeetingModule } from './investor-new/generalMeeting/generalMeeting.module';
+import { ShareHoldingPatternModule } from './investor-new/shareHoldingPattern/shareHoldingPattern.module';
+import { DisclosureModule } from './investor-new/disclosure/disclosure.module';
+import { ArchivesMoudle } from './investor-new/archives/archives.module';
+import { UnclaimedDividendModule } from './investor-new/unclaimedDividend/unclaimedDividend.module';
+import { TransferSharesModule } from './investor-new/transferShares/transferShares.module';
+import { AnnualUnclaimedDividendModule } from './investor-new/annualUnclaimedDividend/annualUnclaimedDividend.module';
 
 @Module({
   imports: [
@@ -42,7 +56,21 @@ import MailModule from './download-approval/mail.module';
     SeoModule,
     RedirectUrlsModule,
     PressReleasesModule,
-    MailModule
+    MailModule,
+    QuarterlyModule,
+    PresentationModule,
+    FinincialModule,
+    AnnualReportModule,
+    AnnualReportDocModule,
+    SubsidiariesModule,
+    StockExchangeModule,
+    GeneralMeetingModule,
+    ShareHoldingPatternModule,
+    DisclosureModule,
+    ArchivesMoudle,
+    UnclaimedDividendModule,
+    TransferSharesModule,
+    AnnualUnclaimedDividendModule
   ],
   controllers: [
     AppController,
@@ -54,6 +82,7 @@ import MailModule from './download-approval/mail.module';
     MediaAdminController,
     FeaturesAdminController,
     SeoAdminController,
+
   ],
   providers: [
     { provide: APP_GUARD, useClass: AdminGuard },

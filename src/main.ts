@@ -24,7 +24,7 @@ async function bootstrap(): Promise<void> {
     new ErrorsInterceptor(),
   );
   app.enableCors();
-  await app.listen(3000, '0.0.0.0');
+  await app.listen(3000);
 }
 function mainSwaggerDocument(apiVersion: string, app: INestApplication): void {
   const swaggerConfig = new DocumentBuilder()
